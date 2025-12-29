@@ -2,6 +2,8 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+@tailwind components;
+@tailwind utilities;
 
 /* Outfit Font Family - All Weights */
 @font-face {
