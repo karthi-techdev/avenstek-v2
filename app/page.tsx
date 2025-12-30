@@ -137,7 +137,7 @@ const [activeTab, setActiveTab] = useState('Founders');
  
   return (
     <>
-      <section className="home-section mt-10 px-4">
+      <section className="home-section pt-10 px-4">
       <div className="text-center">
         <button className="px-3 py-1 bg-[var(--color-24)] cursor-pointer rounded-full text-sm md:text-base">
           Hexa for Desktop is here

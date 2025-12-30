@@ -13,7 +13,7 @@ import { FaXbox } from "react-icons/fa";
 import { GoPeople } from "react-icons/go";
 import { TbLicenseOff } from "react-icons/tb";
 import { RiUserHeartLine } from "react-icons/ri";
-
+import logoImg from '../public/assets/images/logo-avenstek.png'
 import { useState } from 'react'
 import {
   Dialog,
@@ -36,6 +36,8 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/react/20/solid'
+import Link from "next/link";
+import Image from "next/image";
 
 const products = [
   { name: 'AI Assist', description: 'Ask questions, get sales answers instantly', href: '#', icon: ChartPieIcon },
@@ -74,13 +76,12 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
       <body>
 
 
-        <header className="bg-white dark:bg-gray-900">
+        <header className="bg-white dark:bg-gray-900 fixed w-[100%] top-[0] z-10000 border-b-[1px]">
           <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
             <div className="flex lg:flex-1">
-              <a href="#" className="-m-1.5 p-1.5">
-                <p className=" flex text-[var(--color-1)] font-bold text-2xl ">
-                  <span className="rounded-full w-7 h-7 bg-[var(--color-8)] mr-2"><GoZap className="text-[var(--color-2)] text-3xl font-bold" /></span> Hexa</p>
-              </a>
+              <Link href="/" className="-m-1.5 p-1.5">
+                 <Image src={logoImg} alt="logo" height="20" className="invert-70"/>
+              </Link>
 
             </div>
             <div className="flex lg:hidden ">
@@ -94,8 +95,8 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
               </button>
             </div>
             <PopoverGroup className="hidden lg:flex lg:gap-x-12 ">
-              <Popover className="relative">
-                <PopoverButton className="flex items-center text-[var(--color-20)] gap-x-1 text-sm/6 font-semibold  dark:text-white hover:bg-[var(--color-13)] hover:rounded-full">
+              {/* <Popover className="relative">
+                <PopoverButton className="flex items-center text-[var(--color-20)] gap-x-1 text-sm/6 font-semibold  dark:text-white">
                   Product
                   <ChevronDownIcon aria-hidden="true" className="size-5 flex-none text-gray-400 dark:text-gray-500" />
                 </PopoverButton>
@@ -128,12 +129,30 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
                   </div>
 
                 </PopoverPanel>
-              </Popover>
+              </Popover> */}
 
+               <Link href="/about-us" className="text-sm/6 font-semibold text-[var(--color-20)] dark:text-white">
+                About us
+              </Link>
 
+              {/* <Link href="/product" className="text-sm/6 font-semibold text-[var(--color-20)] dark:text-white">
+                Product
+              </Link> */}
 
-              <Popover className="relative">
-                <PopoverButton className="flex items-center text-[var(--color-20)] gap-x-1 text-sm/6 font-semibold  dark:text-white hover:bg-[var(--color-13)] hover:rounded-full">
+              <Link href="/services" className="text-sm/6 font-semibold text-[var(--color-20)] dark:text-white">
+                Services
+              </Link>
+
+              <Link href="/blog" className="text-sm/6 font-semibold text-[var(--color-20)] dark:text-white">
+                Blog
+               </Link>
+
+               <Link href="/contact-us" className="text-sm/6 font-semibold text-[var(--color-20)] dark:text-white">
+                Contact us
+               </Link>
+
+              {/* <Popover className="relative">
+                <PopoverButton className="flex items-center text-[var(--color-20)] gap-x-1 text-sm/6 font-semibold  dark:text-white">
                   Solution
                   <ChevronDownIcon aria-hidden="true" className="size-5 flex-none text-gray-400 dark:text-gray-500" />
                 </PopoverButton>
@@ -166,10 +185,10 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
                   </div>
 
                 </PopoverPanel>
-              </Popover>
+              </Popover> */}
 
-              <Popover className="relative">
-                <PopoverButton className="flex items-center text-[var(--color-20)]  gap-x-1 text-sm/6 font-semibold  dark:text-white hover:bg-[var(--color-13)] hover:rounded-full">
+              {/* <Popover className="relative">
+                <PopoverButton className="flex items-center text-[var(--color-20)]  gap-x-1 text-sm/6 font-semibold  dark:text-white">
                   Resources
                   <ChevronDownIcon aria-hidden="true" className="size-5 flex-none text-gray-400 dark:text-gray-500" />
                 </PopoverButton>
@@ -202,10 +221,10 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
                   </div>
 
                 </PopoverPanel>
-              </Popover>
+              </Popover> */}
 
-              <Popover className="relative">
-                <PopoverButton className="flex items-center text-[var(--color-20)] gap-x-1 text-sm/6 font-semibold  dark:text-white hover:bg-[var(--color-13)] hover:rounded-full">
+              {/* <Popover className="relative">
+                <PopoverButton className="flex items-center text-[var(--color-20)] gap-x-1 text-sm/6 font-semibold  dark:text-white">
                   Company
                   <ChevronDownIcon aria-hidden="true" className="size-5 flex-none text-gray-400 dark:text-gray-500" />
                 </PopoverButton>
@@ -238,34 +257,27 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
                   </div>
 
                 </PopoverPanel>
-              </Popover>
+              </Popover> */}
 
-
-
-
-              <a href="#" className="text-sm/6 font-semibold text-[var(--color-20)] dark:text-white hover:bg-[var(--color-13)] hover:rounded-full ">
-                Pricing
-              </a>
             </PopoverGroup>
             <div className="hidden lg:flex lg:flex-1 lg:justify-end ml-[3rem]">
-              <a href="#" className="text-sm/6 font-semibold text-gray-900 dark:text-white">
+              {/* <a href="#" className="text-sm/6 font-semibold text-gray-900 dark:text-white">
                 <button className="flex bg-[var(--color-8)] text-[var(--color-2)] text-sm  px-3 py-3 rounded-full font-semibold hover:bg-[var(--color-7)] transition ">Purchase template<GoChevronRight className="text-xl text-[var(--color-2)] font-semibold" /></button>
-              </a>
-              <a href="#" className="text-sm/6 font-semibold text-gray-900 dark:text-white">
+              </a> */}
+              <Link href="/contact-us" className="text-sm/6 font-semibold text-gray-900 dark:text-white">
                 <button className=" ml-3 flex rounded-full bg-[var(--color-2)] text-sm font-semibold px-3 py-3 text-[var(--color-1)] border border-[var(--color-21)]  hover:bg-[var(--color-13)] transition">
                   Book a demo <TbClick className=" pl-1 pt-1 text-xl text-[var(--color-20)]" />
                 </button>
-              </a>
+              </Link>
             </div>
           </nav>
           <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
             <div className="fixed inset-0 z-50" />
-            <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 dark:bg-gray-900 dark:sm:ring-gray-100/10">
+            <DialogPanel className="fixed inset-y-0 right-0 z-100000 w-full overflow-y-auto bg-white p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 dark:bg-gray-900 dark:sm:ring-gray-100/10">
               <div className="flex items-center justify-between">
-                <a href="#" className="-m-1.5 p-1.5">
-                  <p className=" flex text-[var(--color-1)] font-bold text-2xl ">
-                    <span className="rounded-full w-7 h-7 bg-[var(--color-8)] mr-2"><GoZap className="text-[var(--color-2)] text-3xl font-bold" /></span> Hexa</p>
-                </a>
+                 <Link href="/" className="-m-1.5 p-1.5">
+                  <Image src={logoImg} alt="logo" height="20" className="invert-70"/>
+                 </Link>
                 <button
                   type="button"
                   onClick={() => setMobileMenuOpen(false)}
@@ -425,9 +437,10 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
           </Dialog>
         </header>
 
-        <main>
+        <main className="mt-25">
           {children}
         </main>
+
         <footer className="bg-[var(--color-13)] h-auto">
 
           <div className="flex justify-center">
