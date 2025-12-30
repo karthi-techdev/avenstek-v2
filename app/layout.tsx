@@ -64,8 +64,6 @@ const company = [
 ]
 
 
-
-
 export default function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   return (
