@@ -3,49 +3,49 @@
 /* Outfit Font Family - All Weights */
 @font-face {
   font-family: 'Outfit';
-  src: url('/public/assets/fonts/Outfit-Thin.ttf') format('truetype');
+  src: url('../public/assets/fonts/Outfit-Thin.ttf') format('truetype');
   font-weight: 100;
   font-style: normal;
 }
 @font-face {
   font-family: 'Outfit';
-  src: url('/public/assets/fonts/Outfit-ExtraLight.ttf') format('truetype');
+  src: url('../public/assets/fonts/Outfit-ExtraLight.ttf') format('truetype');
   font-weight: 200;
   font-style: normal;
 }
 @font-face {
   font-family: 'Outfit';
-  src: url('/public/assets/fonts/Outfit-Light.ttf') format('truetype');
+  src: url('../public/assets/fonts/Outfit-Light.ttf') format('truetype');
   font-weight: 300;
   font-style: normal;
 }
 @font-face {
   font-family: 'Outfit';
-  src: url('/public/assets/fonts/Outfit-Regular.ttf') format('truetype');
+  src: url('../public/assets/fonts/Outfit-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
 }
 @font-face {
   font-family: 'Outfit';
-  src: url('/public/assets/fonts/Outfit-Medium.ttf') format('truetype');
+  src: url('../public/assets/fonts/Outfit-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
 }
 @font-face {
   font-family: 'Outfit';
-  src: url('/public/assets/fonts/Outfit-SemiBold.ttf') format('truetype');
+  src: url('../public/assets/fonts/Outfit-SemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
 }
 @font-face {
   font-family: 'Outfit';
-  src: url('/public/assets/fonts/Outfit-Bold.ttf') format('truetype');
+  src: url('../public/assets/fonts/Outfit-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
 }
 @font-face {
   font-family: 'Outfit';
-  src: url('/public/assets/fonts/Outfit-ExtraBold.ttf') format('truetype');
+  src: url('../public/assets/fonts/Outfit-ExtraBold.ttf') format('truetype');
   font-weight: 800;
   font-style: normal;
 }
@@ -85,9 +85,60 @@
   --color-26: #FDFDFD;
   --color-27: #F97066;
   --color-28: #17B26A;
+
+ /* //section css */
+--color-black: #000000;
+    --color-white: #ffffff;
+    --color-gray-500: #6b7280;
+    --color-gray-400: #9ca3af;
+    --color-gray-300: #d1d5db;
+    --color-gray-600: #4b5563;
+    --color-blue-500: #3b82f6;
+    --color-blue-400: #60a5fa;
+    --color-blue-100: #dbeafe;
+    --color-blue-50: #eff6ff;
+    --color-zinc-900: #18181b;
+    --color-zinc-400: #a1a1aa;
+    --color-zinc-500: #737373;
+    --color-zinc-200: #e5e7eb;
+    --color-gray-400-light: #9ca3af;
+    
+    --line-clamp-count: 4;
 }
 
-html, body {
-  font-family: 'Outfit', sans-serif;
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
+
+.animate-gradientMove {
+  background-size: 300% 300%;
+  animation: gradientMove 8s ease infinite;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+
+.line-clamp-var {
+  display: -webkit-box;
+  -webkit-line-clamp: var(--line-clamp-count);
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-scroll {
+  display: flex;
+  align-items: center;
+  animation: scroll 12s linear infinite;
+}
+
 
