@@ -1,5 +1,5 @@
 "use client"
-import {FiClock,FiDollarSign,FiMapPin, FiGlobe,FiArrowRight,} from "react-icons/fi";
+import {FiClock,FiDollarSign,FiMapPin, FiGlobe} from "react-icons/fi";
 import { LuGlobe } from "react-icons/lu";
 import { FaRegClock } from "react-icons/fa";
 import { IoLocationOutline } from "react-icons/io5";
