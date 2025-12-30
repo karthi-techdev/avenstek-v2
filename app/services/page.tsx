@@ -1,11 +1,7 @@
 import { FaRegCalendarCheck } from "react-icons/fa";
 import { IoStar } from "react-icons/io5";
-import { LuUserSearch } from 'react-icons/lu'
 import { IoStarHalf } from "react-icons/io5";
 import { FiEdit3 } from "react-icons/fi";
-import { SlEmotsmile } from "react-icons/sl";
-import { RiChatSearchLine } from "react-icons/ri";
-import { PiWaveformBold } from "react-icons/pi";
 import { TbStairsUp } from "react-icons/tb";
 import { FaUserCircle } from "react-icons/fa";
 import { HiMiniUserGroup } from "react-icons/hi2";
@@ -15,252 +11,199 @@ import { FiDatabase } from "react-icons/fi";
 import { IoCode } from "react-icons/io5";
 import { HiOutlineChip } from "react-icons/hi";
 import { FaNetworkWired } from "react-icons/fa";
+import { BsGlobe } from "react-icons/bs";
+import { FiSmartphone } from "react-icons/fi";
+import { FiMonitor } from "react-icons/fi";
+
 export default function Home() {
     return (
         <>
-            <main className=" flex px-[1rem] pb-[3rem] sm:px-[2rem] md:px-[3rem] lg:px-[4rem]">
-                <section>
+            <main className="flex px-[1rem] pb-[3rem] sm:px-[2rem] md:px-[3rem] lg:px-[4rem]">
+                <section className="w-full">
                     <header className="flex justify-center">
-                        <div className="max-w-[35rem] w-[100%] my-[2rem] text-center">
-                            <div className="inline-block">
-                                <div className="text-[var(--color-8)] bg-[var(--color-13)] flex text-[0.9rem] py-[0.5rem] px-3 rounded-lg">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sparkles-icon lucide-sparkles"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z" /><path d="M20 2v4" /><path d="M22 4h-4" /><circle cx="4" cy="20" r="2" /></svg>
-                                    <h2 className="ps-2 font-semibold">AI-Powered Productivity</h2>
+                        <div className="max-w-[35rem] w-[100%] my-[3rem] text-center">
+                            <div className="inline-block mb-[1rem]">
+                                <div className="text-[var(--color-8)] bg-[var(--color-13)] flex text-[0.9rem] py-[0.6rem] px-4 rounded-lg items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sparkles-icon lucide-sparkles flex-shrink-0">
+                                        <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z" />
+                                        <path d="M20 2v4" />
+                                        <path d="M22 4h-4" />
+                                        <circle cx="4" cy="20" r="2" />
+                                    </svg>
+                                    <h2 className="ps-2 font-semibold whitespace-nowrap">Innovative IT Solutions</h2>
                                 </div>
                             </div>
-                            <h2 className="text-[2rem] sm:text-[2.5rem] md:text-[3rem] font-semibold">See Our all <span className="text-[var(--color-20)]">Services</span></h2>
+                            <h2 className="text-[2rem] sm:text-[2.5rem] md:text-[3rem] font-bold leading-[1.2] mb-[1rem]">Discover Our Comprehensive <span className="text-[var(--color-20)]">Services</span></h2>
+                            <p className="text-[var(--color-20)] text-lg font-light max-w-[30rem] mx-auto">Expert solutions tailored to drive your digital transformation</p>
                         </div>
                     </header>
-                    <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-[1.5rem]">
-                        <div className=" cursor-pointer  group  transition-all duration-500 border-[var(--color-22)] justify-center hover:border-[var(--color-8)]  border rounded-md p-[1.4rem]   ">
-                            <div className="flex  gap-[1rem] ">
-                                <div className=" transition-all duration-500  group-hover:bg-[var(--color-8)]  bg-[var(--color-24)] rounded-md inline-block h-[3.9rem] p-[1rem]">
-                                    <CiCloud className="text-[1.9rem] transition-all duration-500  text-[var(--color-8)] group-hover:text-[var(--color-25)]" />
-                                </div>
-                                <div>
-                                    <h3 className="text-[1.2rem] sm:text-[1.4rem] md:text-[1.6rem] leading-[2.5rem] font-medium">Cloud Solutions</h3>
-                                    <p className="font-light text-[var(--color-20)]">Scalable cloud infrastructure and migration services to modernize your business operations and reduce IT overhead.</p>
-                                    <ul className="list-disc text-[var(--color-20)] font-light pt-[0.6rem] pl-[0.65rem]">
-                                        <li>Cloud Migration</li>
-                                        <li>Infrastructure Management</li>
-                                        <li>Cost Optimization</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div className=" cursor-pointer  group  transition-all duration-500 border-[var(--color-22)] justify-center hover:border-[var(--color-8)]  border rounded-md p-[1.4rem]  ">
-                            <div className="flex  gap-[1rem] ">
-                                <div className=" transition-all duration-500  group-hover:bg-[var(--color-8)]  bg-[var(--color-24)] rounded-md inline-block h-[3.9rem] p-[1rem]">
-                                    <LuShield className="text-[1.9rem] transition-all duration-500  text-[var(--color-8)] group-hover:text-[var(--color-25)]" />
-                                </div>
-                                <div>
-                                    <h3 className="text-[1.2rem] sm:text-[1.4rem] md:text-[1.6rem] leading-[2.5rem] font-medium">Cybersecurity</h3>
-                                    <p className="font-light text-[var(--color-20)]">Comprehensive security solutions to protect your digital assets and ensure compliance with industry standards.</p>
-                                    <ul className="list-disc text-[var(--color-20)] font-light pt-[0.6rem] pl-[0.65rem]">
-                                        <li>Threat Detection</li>
-                                        <li>Security Audits</li>
-                                        <li>Compliance Management</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div className=" cursor-pointer  group  transition-all duration-500 border-[var(--color-22)] justify-center hover:border-[var(--color-8)]  border rounded-md p-[1.4rem]   ">
-                            <div className="flex  gap-[1rem] ">
-                                <div className=" transition-all duration-500  group-hover:bg-[var(--color-8)]  bg-[var(--color-24)] rounded-md inline-block h-[3.9rem] p-[1rem]">
-                                    <FiDatabase className="text-[1.9rem] transition-all duration-500  text-[var(--color-8)] group-hover:text-[var(--color-25)]" />
-                                </div>
-                                <div>
-                                    <h3 className="text-[1.2rem] sm:text-[1.4rem] md:text-[1.6rem] leading-[2.5rem] font-medium">Data Management</h3>
-                                    <p className="font-light text-[var(--color-20)]">Expert data architecture and management services to unlock insights and drive informed business decisions.</p>
-                                    <ul className="list-disc text-[var(--color-20)] font-light pt-[0.6rem] pl-[0.65rem]">
-                                        <li>Database Design</li>
-                                        <li>Data Analytics</li>
-                                        <li>Backup Solutions</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div className=" cursor-pointer  group  transition-all duration-500 border-[var(--color-22)] justify-center hover:border-[var(--color-8)]  border rounded-md p-[1.4rem]  ">
-                            <div className="flex  gap-[1rem] ">
-                                <div className=" transition-all duration-500  group-hover:bg-[var(--color-8)]  bg-[var(--color-24)] rounded-md inline-block h-[3.9rem] p-[1rem]">
-                                    <IoCode className="text-[1.9rem] transition-all duration-500  text-[var(--color-8)] group-hover:text-[var(--color-25)]" />
-                                </div>
-                                <div>
-                                    <h3 className="text-[1.2rem] sm:text-[1.4rem] md:text-[1.6rem] leading-[2.5rem] font-medium">Custom Development</h3>
-                                    <p className="font-light text-[var(--color-20)]">Tailored software solutions built to meet your unique business requirements and accelerate digital transformation.</p>
-                                    <ul className="list-disc text-[var(--color-20)] font-light pt-[0.6rem] pl-[0.65rem]">
-                                        <li>Web Applications</li>
-                                        <li>Mobile Apps</li>
-                                        <li>API Integration</li>
-                                    </ul>
+                    <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[1.5rem]">
+                        {[
+                            {
+                                icon: <BsGlobe className="text-[1.9rem] transition-all duration-500 text-[var(--color-8)] group-hover:text-[var(--color-25)]" />,
+                                title: "Web Development",
+                                desc: "Custom, responsive websites and web applications designed to elevate your online presence and drive business growth.",
+                                items: ["Custom Websites", "Responsive Design", "Content Management Systems"]
+                            },
+                            {
+                                icon: <FiSmartphone className="text-[1.9rem] transition-all duration-500 text-[var(--color-8)] group-hover:text-[var(--color-25)]" />,
+                                title: "Mobile App Development",
+                                desc: "Native and cross-platform mobile applications that deliver seamless user experiences across iOS and Android devices.",
+                                items: ["iOS & Android Apps", "Cross-Platform Solutions", "App Maintenance"]
+                            },
+                            {
+                                icon: <FiMonitor className="text-[1.9rem] transition-all duration-500 text-[var(--color-8)] group-hover:text-[var(--color-25)]" />,
+                                title: "UI/UX Design",
+                                desc: "User-centered designs that combine aesthetics with functionality to create intuitive and engaging digital experiences.",
+                                items: ["Wireframing & Prototyping", "User Research", "Visual Design"]
+                            },
+                            {
+                                icon: <IoCode className="text-[1.9rem] transition-all duration-500 text-[var(--color-8)] group-hover:text-[var(--color-25)]" />,
+                                title: "Custom Software Development",
+                                desc: "Tailored software solutions built to address your specific business challenges and streamline operations.",
+                                items: ["Enterprise Applications", "API Development", "Integration Services"]
+                            },
+                            {
+                                icon: <HiOutlineChip className="text-[1.9rem] transition-all duration-500 text-[var(--color-8)] group-hover:text-[var(--color-25)]" />,
+                                title: "AI & Machine Learning",
+                                desc: "Advanced AI-driven solutions to automate processes, gain insights, and enhance decision-making.",
+                                items: ["Predictive Analytics", "Automation Tools", "Custom AI Models"]
+                            },
+                            {
+                                icon: <LuShield className="text-[1.9rem] transition-all duration-500 text-[var(--color-8)] group-hover:text-[var(--color-25)]" />,
+                                title: "Cybersecurity",
+                                desc: "Robust security measures to protect your systems, data, and operations from evolving threats.",
+                                items: ["Vulnerability Assessments", "Security Consulting", "Incident Response"]
+                            }
+                        ].map((service, index) => (
+                            <div key={index} className="cursor-pointer group transition-all duration-500 border-[var(--color-22)] hover:border-[var(--color-8)] border rounded-lg p-[1.6rem] hover:shadow-lg hover:-translate-y-1">
+                                <div className="flex gap-[1.2rem]">
+                                    <div className="transition-all duration-500 group-hover:bg-[var(--color-8)] bg-[var(--color-24)] rounded-lg inline-flex items-center justify-center h-[3.9rem] w-[3.9rem] p-[1rem] flex-shrink-0">
+                                        {service.icon}
+                                    </div>
+                                    <div>
+                                        <h3 className="text-[1.25rem] sm:text-[1.4rem] font-bold leading-[1.8rem] mb-[0.5rem]">{service.title}</h3>
+                                        <p className="font-light text-[var(--color-20)] text-[0.95rem] leading-[1.5rem] mb-[0.75rem]">{service.desc}</p>
+                                        <ul className="list-disc text-[var(--color-20)] font-light text-[0.9rem] pl-[1rem] space-y-[0.3rem]">
+                                            {service.items.map((item, idx) => (
+                                                <li key={idx} className="leading-[1.4]">{item}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className=" cursor-pointer  group  transition-all duration-500 border-[var(--color-22)] justify-center hover:border-[var(--color-8)]  border rounded-md p-[1.4rem]   ">
-                            <div className="flex  gap-[1rem] ">
-                                <div className=" transition-all duration-500  group-hover:bg-[var(--color-8)]  bg-[var(--color-24)] rounded-md inline-block h-[3.9rem] p-[1rem]">
-                                    <HiOutlineChip className="text-[1.9rem] transition-all duration-500  text-[var(--color-8)] group-hover:text-[var(--color-25)]" />
-                                </div>
-                                <div>
-                                    <h3 className="text-[1.2rem] sm:text-[1.4rem] md:text-[1.6rem] leading-[2.5rem] font-medium">AI & Machine Learning</h3>
-                                    <p className="font-light text-[var(--color-20)]">Leverage cutting-edge AI technologies to automate processes and gain competitive advantages in your industry.</p>
-                                    <ul className="list-disc text-[var(--color-20)] font-light pt-[0.6rem] pl-[0.65rem]">
-                                        <li>Process Automation</li>
-                                        <li>Predictive Analytics</li>
-                                        <li>NLP Solutions</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div className=" cursor-pointer  group  transition-all duration-500 border-[var(--color-22)] justify-center hover:border-[var(--color-8)]  border rounded-md p-[1.4rem]   ">
-                            <div className="flex  gap-[1rem] ">
-                                <div className=" transition-all duration-500  group-hover:bg-[var(--color-8)]  bg-[var(--color-24)] rounded-md inline-block h-[3.9rem] p-[1rem]">
-                                    <FaNetworkWired className="text-[1.9rem] transition-all duration-500  text-[var(--color-8)] group-hover:text-[var(--color-25)]" />
-                                </div>
-                                <div>
-                                    <h3 className="text-[1.2rem] sm:text-[1.4rem] md:text-[1.6rem] leading-[2.5rem] font-medium">Network Infrastructure</h3>
-                                    <p className="font-light text-[var(--color-20)]">Robust network design and management solutions ensuring reliable connectivity and optimal performance.</p>
-                                    <ul className="list-disc text-[var(--color-20)] font-light pt-[0.6rem] pl-[0.65rem]">
-                                        <li>Network Design</li>
-                                        <li>SD-WAN</li>
-                                        <li>Performance Monitoring</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </section>
             </main>
-            <section className="bg-[var(--color-24)] px-[2rem] sm:px-[3rem] md:px-[4rem] lg:px-[6rem] py-[3rem]">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-[3rem] ">
-                    <div className=" p-[1rem]">
-                        <div className="text-[var(--color-8)] w-[11.5rem] bg-[var(--color-13)] flex text-[0.8rem] py-[0.5rem] px-3 rounded-lg font-semibold items-center mb-[0.7rem]">
-                            <FaRegCalendarCheck />
-                            <h2 className="ps-2 text-left">Intelligent Meeting Sync</h2>
+            <section className="bg-[var(--color-24)] px-[1rem] sm:px-[2rem] md:px-[3rem] lg:px-[5rem] py-[4rem]">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-[3rem]">
+                    <div className="p-[1rem]">
+                        <div className="text-[var(--color-8)] w-fit bg-[var(--color-13)] flex text-[0.85rem] py-[0.6rem] px-4 rounded-lg font-semibold items-center mb-[1.2rem]">
+                            <FaRegCalendarCheck className="flex-shrink-0" />
+                            <h2 className="ps-2 text-left whitespace-nowrap">Client-Centric Approach</h2>
                         </div>
-                        <h3 className="text-[1.5rem] sm:text-[1.8rem] md:text-[2rem] leading-[1.8rem] font-semibold mb-[0.6rem]">Showcase your <span className="text-[var(--color-20)]">Strengths</span></h3>
-                        <p className="font-light text-[var(--color-20)] max-w-[25rem] w-full">Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima voluptate odit officiis eius. Saepe numquam corporis, sapiente ullam unde error suscipit labore deleniti reprehenderit harum nostrum. Sequi, quisquam dignissimos. Aspernatur quo praesentium laborum, facilis sunt nihil nisi inventore enim unde!</p>
-                        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-[10px] mt-[2.5rem]">
-                            <div className="flex gap-[0.8rem]">
-                                <span className="p-[7px] rounded-sm h-[2.3rem] border bg-[var(--color-26)] inline-block"><PiWaveformBold size={22} className=" flex-shrink-0 text-[var(--color-8)]  " /></span>
+                        <h3 className="text-[1.8rem] sm:text-[2rem] md:text-[2.2rem] font-bold mb-[1rem] leading-[1.3]">Delivering <span className="text-[var(--color-20)]">Excellence</span> in Every Project</h3>
+                        <p className="font-light text-[var(--color-20)] text-lg max-w-[28rem] leading-[1.6] mb-[2rem]">At Avenstek Solutions Pvt Ltd, we partner with businesses to deliver innovative, reliable, and scalable IT solutions. Our experienced team ensures your digital transformation journey is seamless, efficient, and aligned with your strategic goals.</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-[1.2rem]">
+                            {[
+                                { icon: <IoCode size={22} className="flex-shrink-0 text-[var(--color-8)]" />, title: "Agile Development", desc: "Flexible methodologies for faster delivery and adaptability." },
+                                { icon: <LuShield size={22} className="flex-shrink-0 text-[var(--color-8)]" />, title: "Secure Solutions", desc: "Built-in security best practices to protect your assets." },
+                                { icon: <FiDatabase size={22} className="flex-shrink-0 text-[var(--color-8)]" />, title: "Scalable Architecture", desc: "Solutions designed to grow with your business needs." },
+                                { icon: <FiEdit3 size={22} className="flex-shrink-0 text-[var(--color-8)]" />, title: "Ongoing Support", desc: "Dedicated maintenance and updates post-launch." }
+                            ].map((feature, index) => (
+                                <div key={index} className="flex gap-[1rem] items-start">
+                                    <span className="p-[0.65rem] rounded-md h-[2.5rem] w-[2.5rem] border bg-[var(--color-26)] inline-flex items-center justify-center flex-shrink-0">
+                                        {feature.icon}
+                                    </span>
+                                    <div>
+                                        <h3 className="font-bold text-[1.05rem] mb-[0.2rem]">{feature.title}</h3>
+                                        <p className="text-[var(--color-20)] text-[0.9rem] leading-[1.4rem] font-light">{feature.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="space-y-[2rem]">
+                        {/* <div className="bg-[var(--color-26)] p-[1.8rem] rounded-xl border border-[var(--color-21)]">
+                            <div className="flex gap-[1rem] items-center mb-[0.8rem]">
+                                <div className="flex gap-[0.15rem] text-[var(--color-8)] text-[1.1rem]">
+                                    <IoStar />
+                                    <IoStar />
+                                    <IoStar />
+                                    <IoStar />
+                                    <IoStarHalf />
+                                </div>
                                 <div>
-                                    <h3 className="font-medium text-[1rem]">Speaker Recognition</h3>
-                                    <p className="text-[var(--color-20)] pt-[0.2rem] font-light text-[0.95rem] leading-[1.4rem]">Identifies each speaker and separates dialogue accordingly.</p>
+                                    <h4 className="font-bold text-[1.1rem]">4.9 <span className="font-light text-[0.85rem] text-[var(--color-20)]">(Client Rating)</span></h4>
                                 </div>
                             </div>
-
-                            <div className="flex gap-[0.8rem]">
-                                <span className="p-[7px] rounded-sm h-[2.3rem] border bg-[var(--color-26)] inline-block"><RiChatSearchLine size={22} className=" flex-shrink-0 text-[var(--color-8)]" /></span>
-                                <div>
-                                    <h3 className="font-medium text-[1rem]">Keyword Detection</h3>
-                                    <p className="text-[var(--color-20)] pt-[0.2rem] font-light text-[0.95rem] leading-[1.4rem]">Flags key terms like “budget” or “timeline” in real time.</p>
-                                </div>
+                            <p className="text-[var(--color-20)] font-light leading-[1.5rem] mb-[1.2rem] text-[0.95rem]">Avenstek delivered a robust web application that transformed our operations. Their team was professional, responsive, and exceeded our expectations in every way.</p>
+                            <div className="mb-[1.2rem]">
+                                <h3 className="font-bold text-[1.2rem] mb-[0.2rem]">Sarah Johnson</h3>
+                                <p className="font-light text-[0.9rem] text-[var(--color-20)]">CTO, Tech Innovations Ltd</p>
                             </div>
-                            <div className="flex gap-[0.8rem]">
-                                <span className="p-[7px] rounded-sm h-[2.3rem] border bg-[var(--color-26)] inline-block"><SlEmotsmile size={22} className=" flex-shrink-0 text-[var(--color-8)]" /></span>
-                                <div>
-                                    <h3 className="font-medium text-[1rem]">Sentiment Awareness</h3>
-                                    <p className="text-[var(--color-20)] pt-[0.2rem] font-light text-[0.95rem] leading-[1.4rem]">Recognizes tone shifts and high/low buying intent signals.</p>
-                                </div>
+                            <div className="w-full h-[14rem] bg-[var(--color-21)] rounded-lg overflow-hidden">
+                                <img src="https://delighted.com/wp-content/uploads/2019/08/customer-testimonial-example.png?w=1200" alt="Client testimonial" className="w-full h-full object-cover" />
                             </div>
-                            <div className="flex gap-[0.8rem]">
-                                <span className="p-[7px] rounded-sm h-[2.3rem] border bg-[var(--color-26)] inline-block"><FiEdit3 size={22} className=" flex-shrink-0 text-[var(--color-8)]" /></span>
-                                <div>
-                                    <h3 className="font-medium text-[1rem]">Live Highlighting</h3>
-                                    <p className="text-[var(--color-20)] pt-[0.2rem] font-light text-[0.95rem] leading-[1.4rem]">Key moments (e.g. objections, goals) are tagged as they happen.</p>
-                                </div>
+                        </div> */}
+                        <div className="bg-[var(--color-26)] p-[1.8rem] rounded-xl border border-[var(--color-21)]">
+                            <div className="flex gap-[0.8rem] items-center mb-[1rem]">
+                                <HiOutlineChip className="text-[var(--color-8)] text-[1.8rem]" />
+                                <h3 className="font-bold text-[1.5rem]">Project Success</h3>
+                            </div>
+                            <h4 className="text-[1.8rem] font-bold mb-[0.8rem] leading-[1.3]">98% <span className="text-[var(--color-20)] font-normal">On-Time Delivery</span></h4>
+                            <p className="text-[var(--color-20)] font-light leading-[1.5rem] mb-[1.2rem] text-[0.95rem]">Our commitment to deadlines and quality has earned us trust from clients across industries.</p>
+                            <div className="w-full h-[15rem] bg-[var(--color-21)] rounded-lg overflow-hidden">
+                                <img src="https://syhzhuelbxgnhopnwjgc.supabase.co/storage/v1/object/public/media/blog/why_does_a_software_company_need_a_professional_services_team_0.jpg" alt="Professional software development team" className="w-full h-full object-cover" />
                             </div>
                         </div>
                     </div>
-                    <div className="bg-[var(--color-26)] p-[1.5rem] rounded-md">
-                        <div className="flex gap-[1.4rem]">
-                            <div className="flex gap-[0.15rem] text-[var(--color-8)]">
-                                <IoStar className="" />
-                                <IoStar />
-                                <IoStar />
-                                <IoStar />
-                                <IoStarHalf />
-                            </div>
-                            <div>
-                                <h4 className="font-semibold">4.9  <span className="font-light text-[0.85rem] text-[var(--color-20)]">(Rating)</span></h4>
-                            </div>
-                        </div>
-                        <p className="text-[var(--color-20)] font-light leading-[1.3rem] my-[1rem] max-w-[27rem] w-full">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Veniam, corrupti optio? Repudiandae consequatur, molestiae placeat eius enim tempora id recusandae. Itaque numquam saepe, animi quasi atque delectus sed mollitia iste quisquam sequi nam </p>
-                        <h3 className="font-semibold text-[1.2rem]">Notalie D</h3>
-                        <p className="font-light text-[0.86rem] text-[var(--color-20)] mb-[0.6rem]">HR assistant</p>
-                        <div className="w-full h-[14rem] bg-[var(--color-21)] rounded-md">
-                            Image here
-                        </div>
-                    </div>
-                    <div className="bg-[var(--color-26)] p-[1.5rem] rounded-md">
-                        <div className="flex gap-[0.6rem] items-center"><LuUserSearch className="text-[var(--color-8)] text-[1.7rem]" /><h3 className="font-semibold text-[1.5rem]">Trendex</h3></div>
-                        <h4 className="text-[1.5rem] font-medium max-w-[14rem] w-full my-[0.8rem] leading-[1.8rem]">42% rise in sales <span className="text-[var(--color-20)]">follow up win rate</span></h4>
-                        <p className="text-[var(--color-20)] font-light leading-[1.4rem] mb-[1rem] max-w-[27rem] w-full">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Non voluptate exercitationem repellendus ea possimus eius vitae dolorem architecto illo quam!</p>
-                        <div className="w-full h-[15rem] bg-[var(--color-21)] rounded-md">
-                            Iamge here
-                        </div>
-                    </div>
-                    <div >
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-[2rem]">
-                            <div className="text-center bg-[var(--color-26)] p-[1.5rem] rounded-md">
-                                <h2 className="text-[var(--color-8)] text-[1.8rem] sm:text-[2rem] md:text-[2.4rem] font-semibold">39000+</h2>
-                                <h4 className="font-semibold capitalize text-[1rem] md:text-[1.3rem] my-[0.6rem]">Startups users</h4>
-                                <p className="text-[var(--color-20)] font-light">Lorem ipsum dolor sit amet.</p>
-                            </div>
-                            <div className="text-center bg-[var(--color-26)] p-[1.5rem] rounded-md">
-                                <h2 className="text-[var(--color-8)] text-[1.8rem] sm:text-[2rem] md:text-[2.4rem] font-semibold">180M+</h2>
-                                <h4 className="font-semibold capitalize text-[1rem] md:text-[1.3rem] my-[0.6rem]">Global clients</h4>
-                                <p className="text-[var(--color-20)] font-light">Lorem ipsum dolor sit amet.</p>
-                            </div>
-                            <div className="text-center bg-[var(--color-26)] p-[1.5rem] rounded-md">
-                                <h2 className="text-[var(--color-8)] text-[1.8rem] sm:text-[2rem] md:text-[2.4rem] font-semibold">5.00</h2>
-                                <h4 className="font-semibold capitalize ttext-[1rem] md:text-[1.3rem] my-[0.6rem]">10k+ rating</h4>
-                                <p className="text-[var(--color-20)] font-light">Lorem ipsum dolor sit amet.</p>
-                            </div>
-                            <div className="text-center bg-[var(--color-26)] p-[1.5rem] rounded-md">
-                                <h2 className="text-[var(--color-8)] text-[1.8rem] sm:text-[2rem] md:text-[2.4rem] font-semibold">3.2x</h2>
-                                <h4 className="font-semibold capitalize text-[1rem] md:text-[1.3rem] my-[0.6rem]">Pipeline visibility</h4>
-                                <p className="text-[var(--color-20)] font-light">Lorem ipsum dolor sit amet.</p>
-                            </div>
+                    <div className="lg:col-span-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[1.5rem]">
+                            {[
+                                { value: "50+", label: "Successful Projects", desc: "Delivered across various industries." },
+                                { value: "30+", label: "Happy Clients", desc: "Worldwide partnerships built on trust." },
+                                { value: "4.9", label: "Average Rating", desc: "From client feedback and reviews." },
+                                { value: "10+", label: "Years of Expertise", desc: "In software development and IT consulting." }
+                            ].map((stat, index) => (
+                                <div key={index} className="text-center bg-[var(--color-26)] p-[1.8rem] rounded-xl border border-[var(--color-21)] hover:shadow-lg transition-shadow duration-300">
+                                    <h2 className="text-[var(--color-8)] text-[2.5rem] md:text-[2.8rem] font-bold mb-[0.5rem]">{stat.value}</h2>
+                                    <h4 className="font-bold text-[1.2rem] mb-[0.6rem]">{stat.label}</h4>
+                                    <p className="text-[var(--color-20)] font-light text-[0.9rem]">{stat.desc}</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
             </section>
-            <section className="py-[3rem] px-[2rem] sm:px-[3rem] md:px-[4.5rem] lg:px-[6rem]">
-                <div className="flex flex-col items-center   justify-center">
-                    <div className="inline-block ">
-                        <div className="text-[var(--color-8)] font-semibold items-center text-center bg-[var(--color-13)] flex text-[0.85rem] py-[0.5rem] px-3 rounded-lg ">
-                            <TbStairsUp />
-                            <h2 className="ps-2 ">Built for Teams Who close</h2>
+            <section className="py-[4rem] px-[1rem] sm:px-[2rem] md:px-[3rem] lg:px-[5rem]">
+                <div className="flex flex-col items-center justify-center mb-[3rem]">
+                    <div className="inline-block mb-[1rem]">
+                        <div className="text-[var(--color-8)] font-semibold items-center text-center bg-[var(--color-13)] flex text-[0.85rem] py-[0.6rem] px-4 rounded-lg">
+                            <TbStairsUp className="flex-shrink-0" />
+                            <h2 className="ps-2 whitespace-nowrap">Proven Partnership Process</h2>
                         </div>
                     </div>
-                    <div className="text-center flex flex-col items-center mt-[2rem]">
-                        <h2 className="text-[2rem] sm:text-[2.3rem] md:text-[2.5rem] lg:text-[2.7rem] leading-[2.2rem] font-semibold ">Proven Process for <span className="text-[var(--color-20)]">Smarter HR</span></h2>
-                        <p className="max-w-[18rem] leading-[1.4rem] w-full text-center text-[var(--color-20)]">We simplify your HR journey, so you can focus on people, not paperwork</p>
+                    <div className="text-center max-w-[35rem]">
+                        <h2 className="text-[2rem] sm:text-[2.5rem] md:text-[2.8rem] font-bold leading-[1.2] mb-[1rem]">Your Journey to <span className="text-[var(--color-20)]">Digital Success</span></h2>
+                        <p className="text-[var(--color-20)] text-lg leading-[1.5] font-light">We guide you every step of the way, from consultation to deployment and beyond.</p>
                     </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[3rem] mt-[3rem]">
-                    <div className="flex flex-col border border-[var(--color-21)] p-[1.4rem] rounded-md  items-center">
-                        <div className="border border-[var(--color-21)] text-[var(--color-8)] inline-block p-[0.6rem] text-[1.7rem] rounded-md">
-                            < FaUserCircle />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[2rem]">
+                    {[
+                        { icon: <FaUserCircle />, title: "Initial Consultation", desc: "We discuss your requirements, goals, and challenges to understand your vision." },
+                        { icon: <HiMiniUserGroup />, title: "Planning & Design", desc: "Our team creates a tailored strategy, wireframes, and prototypes for approval." },
+                        { icon: <FiEdit3 />, title: "Development & Launch", desc: "We build, test, and deploy your solution with ongoing support and optimizations." }
+                    ].map((step, index) => (
+                        <div key={index} className="flex flex-col border border-[var(--color-21)] p-[2rem] rounded-xl items-center text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                            <div className="border border-[var(--color-21)] text-[var(--color-8)] inline-flex items-center justify-center p-[0.9rem] text-[2rem] rounded-xl mb-[1.2rem] bg-[var(--color-26)]">
+                                {step.icon}
+                            </div>
+                            <h2 className="text-[1.4rem] sm:text-[1.5rem] font-bold mb-[0.8rem]">{step.title}</h2>
+                            <p className="text-[var(--color-20)] font-light leading-[1.6] text-[0.95rem]">{step.desc}</p>
                         </div>
-                        <h2 className="text-[1.3rem] sm:text-[1.5rem] font-semibold mt-[0.6rem]">Create your account</h2>
-                        <p className="text-[var(--color-20)] font-light text-center leading-[1.5rem] mt-[0.6rem] ">Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias eaque optio a debitis fugit cum totam laudantium possimus neque eligendi officiis pariatur ab odit reprehenderit omnis commodi eos assumenda, explicabo maxime autem corrupti atque rerum!</p>
-                    </div>
-                    <div className="flex flex-col border border-[var(--color-21)] p-[1.4rem] rounded-md  items-center">
-                        <div className="border border-[var(--color-21)] text-[var(--color-8)] inline-block p-[0.6rem] text-[1.7rem] rounded-md">
-                            < HiMiniUserGroup />
-                        </div>
-                        <h2 className="text-[1.3rem] sm:text-[1.5rem] font-semibold mt-[0.6rem]">Initial Assessment</h2>
-                        <p className="text-[var(--color-20)] font-light text-center leading-[1.5rem] mt-[0.6rem] ">Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias eaque optio a debitis fugit cum totam laudantium possimus neque eligendi officiis pariatur ab odit reprehenderit omnis commodi eos assumenda, explicabo maxime autem corrupti atque rerum!</p>
-                    </div>
-                    <div className="flex flex-col border border-[var(--color-21)] p-[1.4rem] rounded-md  items-center">
-                        <div className="border border-[var(--color-21)] text-[var(--color-8)] inline-block p-[0.6rem] text-[1.7rem] rounded-md">
-                            < FiEdit3 />
-                        </div>
-                        <h2 className="text-[1.3rem] sm:text-[1.5rem] font-semibold mt-[0.6rem]">Customize plan</h2>
-                        <p className="text-[var(--color-20)] font-light text-center leading-[1.5rem] mt-[0.6rem] ">Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias eaque optio a debitis fugit cum totam laudantium possimus neque eligendi officiis pariatur ab odit reprehenderit omnis commodi eos assumenda, explicabo maxime autem corrupti atque rerum!</p>
-                    </div>
+                    ))}
                 </div>
             </section>
         </>
