@@ -61,28 +61,65 @@ const Career = () => {
           transition">
           View Open Roles
         </Link>
-        </div>
+        </div>   
         
-          <div className="parent max-w-7xl mx-auto">
-          <div className="div1">
-              <Image src={image1} alt="career-img-1" className="rounded-3xl object-cover h-full w-full p-2"/>
-          </div>
-          <div className="div2">
-              <Image src={image2} alt="career-img-2" className="rounded-3xl object-cover h-full w-full p-2"/>
-          </div>
-          <div className="div3">
-              <Image src={image3} alt="career-img-3" className="rounded-3xl object-cover h-full w-full p-2"/>
-          </div>
-          <div className="div4">
-              <Image src={image4} alt="career-img-4" className="rounded-3xl object-cover h-full w-full p-2"/>
-          </div>
-          <div className="div5">
-              <Image src={image5} alt="career-img-5" className="rounded-3xl object-cover h-full w-full p-2"/>
-          </div>
-          <div className="div6">
-              <Image src={image6} alt="career-img-6 "className="rounded-3xl object-cover h-full w-full p-2"/>
-          </div>
-        </div>
+         <div className="max-w-7xl mx-auto grid grid-cols-3 grid-rows-3 gap-[6px]">
+      
+      {/* div1 */}
+      <div className="col-span-2 row-span-2">
+        <Image
+          src={image1}
+          alt="career-img-1"
+          className="rounded-3xl object-cover h-full w-full p-2"
+        />
+      </div>
+
+      {/* div2 */}
+      <div className="col-start-3">
+        <Image
+          src={image2}
+          alt="career-img-2"
+          className="rounded-3xl object-cover h-full w-full p-2"
+        />
+      </div>
+
+      {/* div3 */}
+      <div className="col-start-3 row-start-2">
+        <Image
+          src={image3}
+          alt="career-img-3"
+          className="rounded-3xl object-cover h-full w-full p-2"
+        />
+      </div>
+
+      {/* div4 */}
+      <div className="row-start-3">
+        <Image
+          src={image4}
+          alt="career-img-4"
+          className="rounded-3xl object-cover h-full w-full p-2"
+        />
+      </div>
+
+      {/* div5 */}
+      <div className="row-start-3">
+        <Image
+          src={image5}
+          alt="career-img-5"
+          className="rounded-3xl object-cover h-full w-full p-2"
+        />
+      </div>
+
+      {/* div6 */}
+      <div className="row-start-3">
+        <Image
+          src={image6}
+          alt="career-img-6"
+          className="rounded-3xl object-cover h-full w-full p-2"
+        />
+      </div>
+
+    </div>
       </section>
       {/* Why hera */}
       <section>
@@ -92,23 +129,29 @@ const Career = () => {
             <BsStars className="text-[var(--color-7)] mr-2 h-5 w-5"/>
             <h3 className='text-[var(--color-7)]'>Why Hexa</h3>
           </div>
-            <div>
+            <div className="py-5">
             <h1 className='text-[var(--color-1)] text-2xl md:text-4xl lg:text-6xl font-bold max-w-xl md:max-w-xl lg:max-w-3xl mx-auto leading-tight' >Work on real problem with<span className='text-[var(--color-20)]'> a team that actually ship</span></h1>
             <p className='text-[var(--color-19)] 
             max-w-lg mx-auto text-[.90rem] md:text-lg 
             lg:text-xl tracking-wide mt-4 px-2'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis inventore natus suscipit fuga illum itaque similique cumque sapiente eos esse? Lorem ipsum dolor sit amet consectetur</p>
             </div>
 
-            <div className="px-4 sm:px-6 lg:p-9 max-w-7xl mx-auto">
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 place-items-center
-                  text-[0.85rem] sm:text-[0.90rem] md:text-[.95rem] lg:text-[1rem]">
+            <div className="px-4 md:px-6 lg:p-9 max-w-7xl mx-auto">
+  <div
+    className="
+      flex flex-wrap justify-center
+      gap-4 lg:gap-6
+      text-[0.85rem] sm:text-[0.90rem] md:text-[.95rem] lg:text-[1rem]
+    "
+  >
 
-    <div className="border border-2 border-[var(--color-23)] rounded-2xl 
-                    w-full sm:w-95 h-auto p-4 sm:p-5 bg-[var(--color-26)]">
+    {/* Card 1 */}
+    <div className="border border-2 border-[var(--color-23)] rounded-2xl
+                    w-full md:w-[48%] lg:w-[31%]
+                    p-4 sm:p-5 bg-[var(--color-26)]">
       <AiOutlineThunderbolt className="text-[var(--color-7)]
         h-7 w-7 sm:h-8 sm:w-8 lg:h-11 lg:w-11
         p-1 lg:p-2 border border-2 border-[var(--color-23)] rounded-lg"/>
-
       <div className="text-left py-3 sm:py-4">
         <h2 className="text-[var(--color-1)] font-bold">
           Clarity beats complexity
@@ -119,28 +162,30 @@ const Career = () => {
       </div>
     </div>
 
-    <div className="border border-2 border-[var(--color-23)] rounded-2xl 
-                    w-full sm:w-95 h-auto p-4 sm:p-5 bg-[var(--color-26)]">
+    {/* Card 2 */}
+    <div className="border border-2 border-[var(--color-23)] rounded-2xl
+                    w-full md:w-[48%] lg:w-[31%]
+                    p-4 sm:p-5 bg-[var(--color-26)]">
       <LuBrain className="text-[var(--color-7)]
         h-7 w-7 sm:h-8 sm:w-8 lg:h-11 lg:w-11
         p-1 lg:p-2 border border-2 border-[var(--color-23)] rounded-lg"/>
-
       <div className="text-left py-3 sm:py-4">
         <h2 className="text-[var(--color-1)] font-bold">
           Think in systems, not silos
         </h2>
         <p className="text-[var(--color-19)]">
-          Engineers, designers, and product sit side by side. We solve together.
+          Engineers, designers, and product sit side by side.
         </p>
       </div>
     </div>
 
-    <div className="border border-2 border-[var(--color-23)] rounded-2xl 
-                    w-full sm:w-95 h-auto p-4 sm:p-5 bg-[var(--color-26)]">
+    {/* Card 3 */}
+    <div className="border border-2 border-[var(--color-23)] rounded-2xl
+                    w-full md:w-[48%] lg:w-[31%]
+                    p-4 sm:p-5 bg-[var(--color-26)]">
       <LuPencilRuler className="text-[var(--color-7)]
         h-7 w-7 sm:h-8 sm:w-8 lg:h-11 lg:w-11
         p-1 lg:p-2 border border-2 border-[var(--color-23)] rounded-lg"/>
-
       <div className="text-left py-3 sm:py-4">
         <h2 className="text-[var(--color-1)] font-bold">
           Bias for building
@@ -151,62 +196,66 @@ const Career = () => {
       </div>
     </div>
 
-    <div className="border border-2 border-[var(--color-23)] rounded-2xl 
-                    w-full sm:w-95 h-auto p-4 sm:p-5 bg-[var(--color-26)]">
+    {/* Card 4 */}
+    <div className="border border-2 border-[var(--color-23)] rounded-2xl
+                    w-full md:w-[48%] lg:w-[31%]
+                    p-4 sm:p-5 bg-[var(--color-26)]">
       <TbDna className="text-[var(--color-7)]
         h-7 w-7 sm:h-8 sm:w-8 lg:h-11 lg:w-11
         p-1 lg:p-2 border border-2 border-[var(--color-23)] rounded-lg"/>
-
       <div className="text-left py-3 sm:py-4">
         <h2 className="text-[var(--color-1)] font-bold">
           Sales is human
         </h2>
         <p className="text-[var(--color-19)]">
-          We obsess over real workflows, not made-up personas or fake data.
+          We obsess over real workflows.
         </p>
       </div>
     </div>
 
-    <div className="border border-2 border-[var(--color-23)] rounded-2xl 
-                    w-full sm:w-95 h-auto p-4 sm:p-5 bg-[var(--color-26)]">
+    {/* Card 5 */}
+    <div className="border border-2 border-[var(--color-23)] rounded-2xl
+                    w-full md:w-[48%] lg:w-[31%]
+                    p-4 sm:p-5 bg-[var(--color-26)]">
       <LuGlobe className="text-[var(--color-7)]
         h-7 w-7 sm:h-8 sm:w-8 lg:h-11 lg:w-11
         p-1 lg:p-2 border border-2 border-[var(--color-23)] rounded-lg"/>
-
       <div className="text-left py-3 sm:py-4">
         <h2 className="text-[var(--color-1)] font-bold">
           Remote-native, async first
         </h2>
         <p className="text-[var(--color-19)]">
-          We work across time zones, trust autonomy, and default to clarity.
+          We work across time zones.
         </p>
       </div>
     </div>
 
-    <div className="border border-2 border-[var(--color-23)] rounded-2xl 
-                    w-full sm:w-95 h-auto p-4 sm:p-5 bg-[var(--color-26)]">
+    {/* Card 6 */}
+    <div className="border border-2 border-[var(--color-23)] rounded-2xl
+                    w-full md:w-[48%] lg:w-[31%]
+                    p-4 sm:p-5 bg-[var(--color-26)]">
       <LuCircleMinus className="text-[var(--color-7)]
         h-7 w-7 sm:h-8 sm:w-8 lg:h-11 lg:w-11
         p-1 lg:p-2 border border-2 border-[var(--color-23)] rounded-lg"/>
-
       <div className="text-left py-3 sm:py-4">
         <h2 className="text-[var(--color-1)] font-bold">
           Feedback is a feature
         </h2>
         <p className="text-[var(--color-19)]">
-          We don&apos;t fear criticism — every loop makes the product better.
+          We don&apos;t fear criticism.
         </p>
       </div>
-      </div>
+    </div>
 
-      </div>
-            </div>
+  </div>
+</div>
+
 
        </div>
       </section>
       {/* principles */}
        <section>
-          <div className=" text-center px-4 py-12 sm:py-16">
+          <div className=" text-center px-4 py-6 md:py-8">
               <div className="bg-[var(--color-13)] max-w-38 mx-auto text-center p-2 rounded-lg mb-6 flex text-[0.90rem] md:text-[0.95rem] lg:text-[1rem]">
               <LuNewspaper className="text-[var(--color-7)] mr-2 h-5 w-4"/>
               <h3 className='text-[var(--color-7)] '>Our Principles</h3>
@@ -215,7 +264,7 @@ const Career = () => {
             <h1 className='text-[var(--color-1)] text-2xl md:text-4xl lg:text-6xl font-bold max-w-4xl mx-auto leading-tight' >The principles that shape <span className='text-[var(--color-20)]'>everything we shape</span></h1>
             </div>
 
-            <div className="p-9 m-9 max-w-7xl mx-auto" >
+            <div className="p-9 max-w-7xl mx-auto" >
               <div className="grid sm:grid-cols-2 md:grid-cols-4  lg:grid-cols-4 gap-6 place-items-center text-[0.90rem] md:text-[.95rem] lg:text-[1rem]">             
                   <div className="h-42 w-65 p-5">
                     <AiOutlineThunderbolt  className="text-[var(--color-7)] md:h-8 md:w-8 lg:h-11 lg:w-11 h-7 w-7 md:p-1 lg:p-2 p-1 mx-auto border border-2 border-[var(--color-23)] rounded-lg"/>
@@ -266,7 +315,7 @@ const Career = () => {
         <div>
           <div>
 
-  <div className="px-4 sm:px-6 lg:px-9 max-w-7xl mx-auto">
+  <div className="px-4 sm:px-6 lg:px-9 max-w-7xl mx-auto py-4">
 
     <div className="mb-6 bg-[var(--color-23)] flex w-fit p-2 rounded-xl font-semibold text-[0.85rem] sm:text-[0.9rem] md:text-[.95rem] lg:text-[1rem]">
       <FaNfcSymbol className="mr-2 h-5 w-4 text-[var(--color-20)]"/>

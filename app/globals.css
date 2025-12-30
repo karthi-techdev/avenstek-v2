@@ -15,43 +15,43 @@
 }
 @font-face {
   font-family: 'Outfit';
-  src: url('/public/assets/fonts/Outfit-Light.ttf') format('truetype');
+  src: url('../public/assets/fonts/Outfit-Light.ttf') format('truetype');
   font-weight: 300;
   font-style: normal;
 }
 @font-face {
   font-family: 'Outfit';
-  src: url('/public/assets/fonts/Outfit-Regular.ttf') format('truetype');
+  src: url('../public/assets/fonts/Outfit-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
 }
 @font-face {
   font-family: 'Outfit';
-  src: url('/public/assets/fonts/Outfit-Medium.ttf') format('truetype');
+  src: url('../public/assets/fonts/Outfit-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
 }
 @font-face {
   font-family: 'Outfit';
-  src: url('/public/assets/fonts/Outfit-SemiBold.ttf') format('truetype');
+  src: url('../public/assets/fonts/Outfit-SemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
 }
 @font-face {
   font-family: 'Outfit';
-  src: url('/public/assets/fonts/Outfit-Bold.ttf') format('truetype');
+  src: url('../public/assets/fonts/Outfit-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
 }
 @font-face {
   font-family: 'Outfit';
-  src: url('/public/assets/fonts/Outfit-ExtraBold.ttf') format('truetype');
+  src: url('../public/assets/fonts/Outfit-ExtraBold.ttf') format('truetype');
   font-weight: 800;
   font-style: normal;
 }
 @font-face {
   font-family: 'Outfit';
-  src: url('/assets/fonts/Outfit-Black.ttf') format('truetype');
+  src: url('../public/assets/fonts/Outfit-Black.ttf') format('truetype');
   font-weight: 900;
   font-style: normal;
 }
@@ -90,4 +90,38 @@
 html, body {
   font-family: 'Outfit', sans-serif;
 }
+
+.parent {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 6px;
+}
+    
+.div1 {
+    grid-column: span 2 / span 2;
+    grid-row: span 2 / span 2;
+}
+
+.div2 {
+    grid-column-start: 3;
+}
+
+.div3 {
+    grid-column-start: 3;
+    grid-row-start: 2;
+}
+
+.div4 {
+    grid-row-start: 3;
+}
+
+.div5 {
+    grid-row-start: 3;
+}
+
+.div6 {
+    grid-row-start: 3;
+}
+        
 
