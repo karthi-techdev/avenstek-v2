@@ -2,16 +2,26 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
+import Image from "next/image";
+
+interface BlogPost {
+  id: number;
+  title: string;
+  category: string;
+  readTime: string;
+  author: string;
+  date: string;
+  image: string;
+  color: string;
+}
 
 export default function BlogPage() {
   const [activeFilter, setActiveFilter] = useState("All posts");
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-
-
   //blog data 
-  const blogPosts = [
+  const blogPosts: BlogPost[] = [
     {
       id: 1,
       title: "Why We're Building a CRM Without the CRM Baggage",
@@ -114,7 +124,6 @@ export default function BlogPage() {
     },
   ];
 
-
   const categories = ["All posts", "Founder Insights", "Sales Playbook", "AI & Workflow", "Engineering"];
 
   const filteredPosts = activeFilter === "All posts"
@@ -130,10 +139,11 @@ export default function BlogPage() {
       default: return "text-[var(--color-9)]";
     }
   };
+
   return (
     <div className="min-h-screen bg-[var(--color-2)]">
       {/* Section 1*/}
-      <section className="relative overflow-hidden  bg-gradient-to-b from-gray-50 to-white pt-30 pb-18">
+      <section className="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white pt-30 pb-18">
         <div className="container mx-auto px-3 sm:px-6 lg:px-10 max-w-2xl">
           <div className="text-center max-w-2xl mx-auto">
             <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-[var(--color-13)] text-[var(--color-9)] text-[14.5px] font-medium tracking-wide mb-6">
@@ -148,17 +158,13 @@ export default function BlogPage() {
                 Learn how modern teams are selling smarter with AI, working faster with structure,and thinking differently about sales tech — straight from the people building it.
               </p>
             </div>
-
           </div>
         </div>
-
-
       </section>
 
       {/*  Section 2*/}
       <section className="py-12 bg-[var(--color-24)] scroll-mt-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-
           <motion.div
             initial={{ opacity: 0, y: 60, scale: 0.95 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
@@ -173,9 +179,9 @@ export default function BlogPage() {
               y: -5,
               transition: { duration: 0.3 }
             }}
-            className="group cursor-pointer  rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 bg-[var(--color-24)] hover:bg-[var(--color-26)]" >
+            className="group cursor-pointer rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 bg-[var(--color-24)] hover:bg-[var(--color-26)]"
+          >
             <div className="md:flex">
-
               {/* Animated Image Container */}
               <div className="md:w-2/5 min-h-[300px] p-[1px] bg-[var(--color-gray-300)] overflow-hidden">
                 <div className="p-[3px] bg-white h-full w-full overflow-hidden">
@@ -184,17 +190,20 @@ export default function BlogPage() {
                     whileHover={{ scale: 1.03 }}
                     transition={{ duration: 0.4 }}
                   >
-                    <img
-                      src="/images/blog-img/landing-page.jpg"
-                      alt="Simple landing page design"
-                      className="w-full h-full object-cover"
-                    />
+                    <div className="relative h-full w-full">
+                      <Image
+                        src="/images/blog-img/landing-page.jpg"
+                        alt="Simple landing page design"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 40vw"
+                      />
+                    </div>
                   </motion.div>
                 </div>
               </div>
 
-
-              {/* Content Container  Animations */}
+              {/* Content Container Animations */}
               <div className="md:w-3/5 p-6 md:p-11">
                 <motion.div
                   className="flex items-center justify-between mb-4"
@@ -211,7 +220,7 @@ export default function BlogPage() {
                 </motion.div>
 
                 <motion.h2
-                  className="text-2xl md:text-3xl font-bold text-[var(--color-15)] mb-4  transition-colors"
+                  className="text-2xl md:text-3xl font-bold text-[var(--color-15)] mb-4 transition-colors"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -247,11 +256,15 @@ export default function BlogPage() {
                       whileHover={{ scale: 1.1, rotate: 3 }}
                       transition={{ type: "spring", stiffness: 200 }}
                     >
-                      <img
-                        src="/images/author-img/author1.jpg"
-                        alt="Jenna Marks"
-                        className="w-full h-full object-cover"
-                      />
+                      <div className="relative h-full w-full">
+                        <Image
+                          src="/images/author-img/author1.jpg"
+                          alt="Jenna Marks"
+                          fill
+                          className="object-cover"
+                          sizes="40px"
+                        />
+                      </div>
                     </motion.div>
 
                     <div className="flex items-center justify-between">
@@ -262,20 +275,16 @@ export default function BlogPage() {
                       </div>
                     </div>
                   </div>
-
                 </motion.div>
               </div>
             </div>
           </motion.div>
-
-
         </div>
       </section>
 
       {/* Section 3 */}
       <section className="py-12 md:py-20 px-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-
           <div className="mb-10 md:mb-16 relative">
             <div className="flex flex-wrap items-center justify-center gap-3">
               {/* Category Filters */}
@@ -378,7 +387,6 @@ export default function BlogPage() {
             </AnimatePresence>
           </div>
 
-
           {/* Blog Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 hover:bg-[var(--color-25)]">
             {filteredPosts.map((post, index) => (
@@ -400,24 +408,29 @@ export default function BlogPage() {
                 }}
               >
                 <Link href={`/blog/blog-view?id=${post.id}`} className="block h-full">
-                  <div className="group cursor-pointer h-full rounded-2xl  hover:shadow-xl transition-all duration-300 bg-[var(--color-2)]  hover:bg-[var(--color-25)]  flex flex-col">
-
+                  <div className="group cursor-pointer h-full rounded-2xl hover:shadow-xl transition-all duration-300 bg-[var(--color-2)] hover:bg-[var(--color-25)] flex flex-col">
                     {/* img */}
                     <div className="relative h-48 md:h-56 overflow-hidden rounded-lg p-[1px] bg-[var(--color-gray-300)]">
-                      <motion.img
-                        src={post.image}
-                        alt={post.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-lg border-4 border-white"
+                      <motion.div
+                        className="relative w-full h-full"
                         initial={{ scale: 1 }}
                         whileHover={{ scale: 1.05 }}
                         transition={{ duration: 0.4 }}
-                      />
+                      >
+                        <Image
+                          src={post.image}
+                          alt={post.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500 rounded-lg border-4 border-white"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                      </motion.div>
                     </div>
 
                     {/* Content */}
                     <div className="p-6 flex-1 flex flex-col">
                       <div className="flex items-center gap-3 mb-3">
-                        <span className={` py-1  font-medium ${getCategoryColor(post.category)}`}>{post.category}</span>
+                        <span className={`py-1 font-medium ${getCategoryColor(post.category)}`}>{post.category}</span>
                         <span className="text-[var(--color-20)]">•</span>
                         <span className="text-sm text-[var(--color-20)] font-medium">{post.readTime}</span>
                       </div>
@@ -426,12 +439,14 @@ export default function BlogPage() {
                         {post.title}
                       </h3>
 
-                      <div className="flex items-center gap-3 pt-4  mt-auto">
-                        <div className="h-8 w-8 rounded-full overflow-hidden flex-shrink-0">
-                          <img
+                      <div className="flex items-center gap-3 pt-4 mt-auto">
+                        <div className="h-8 w-8 rounded-full overflow-hidden flex-shrink-0 relative">
+                          <Image
                             src={`/images/author-img/author1.jpg`}
                             alt={post.author}
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
+                            sizes="32px"
                           />
                         </div>
                         <div className="flex items-center gap-2">
@@ -448,7 +463,6 @@ export default function BlogPage() {
           </div>
         </div>
       </section>
-
     </div>
-  )
+  );
 }
