@@ -1,10 +1,9 @@
 "use client";
-
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { ArrowLeft, BookOpen, GamepadDirectional } from "lucide-react";
 
 interface BlogSection {
@@ -690,7 +689,7 @@ const blogPosts: BlogPost[] = [
   },
 ];
 
-export default function BlogViewPage() {
+function BlogViewContent() {
   const searchParams = useSearchParams();
   const id = Number(searchParams.get("id"));
 
@@ -890,8 +889,8 @@ export default function BlogViewPage() {
                       <a
                         href={`#${section.id}`}
                         className={`block text-sm transition-colors ${activeId === section.id
-                            ? "text-[var(--color-9)] font-medium"
-                            : "text-[var(--color-20)] hover:text-[var(--color-9)]"
+                          ? "text-[var(--color-9)] font-medium"
+                          : "text-[var(--color-20)] hover:text-[var(--color-9)]"
                           }`}
                       >
                         {section.title}
@@ -1107,5 +1106,13 @@ export default function BlogViewPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function BlogViewPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BlogViewContent />
+    </Suspense>
   );
 }
