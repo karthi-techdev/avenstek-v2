@@ -62,18 +62,18 @@
 }
 
 :root {
-  --color-1: #000000;
+    --color-1: #000000;
   --color-2: #FFFFFF;
   --color-3: #102A56;
   --color-4: #194185;
   --color-5: #1849A9;
-  --color-6: #FE9603;
-  --color-7: #FE9603;
-  --color-8: #FE9603;
-  --color-9: #ffa62b;
+  --color-6: #175CD3;
+  --color-7: #1570EF;
+  --color-8: #2E90FA;
+  --color-9: #53B1FD;
   --color-10: #84CAFF;
   --color-11: #B2DDFF;
-  --color-12: #ffa72bcc;
+  --color-12: #D1E9FF;
   --color-13: #EFF8FF;
   --color-14: #F5FAFF;
   --color-15: #0A0D12;

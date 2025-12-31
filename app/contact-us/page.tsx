@@ -174,19 +174,19 @@ export default function Contact() {
             <div className="inline-flex items-center px-3 sm:px-4 py-2.5 bg-[var(--color-13)] rounded-lg gap-2 lg:px-3 lg:py-1.9">
               <FiVolume2 className="text-[var(--color-8)] text-sm sm:text-base" />
               <span className="text-xs sm:text-lg lg:text-sm font-medium text-[var(--color-8)]">
-                Talk to Sales
+                Talk to Us
               </span>
 
             </div>
           </div>
 
           <h1 className="text-4xl sm:text-5xl px-15  md:text-5xl lg:text-6xl font-medium text-[var(--color-1)]  mb-3 sm:mb-8 px-4 lg:px-5">
-            See how Hexa helps your team
+            See how Avenstek helps your team
             <span className="text-[var(--color-20)]"> close faster.</span>
           </h1>
 
           <p className="text-base sm:text-xl sm:px-10 text-[var(--color-19)] mb-8 sm:mb-10 px-4 md:px-10 lg:px-10">
-            Our team will walk you through the platform, answer your questions, and show you exactly how Hexa fits your workflow.
+            Our team will walk you through the platform, answer your questions, and show you exactly how Avenstek fits your workflow.
           </p>
 
 
@@ -197,7 +197,7 @@ export default function Contact() {
         </div>
       </section>
 
-      <section className="bg-[var(--color-2)] px-4 sm:px-0 mt-17 pt-0 sm:mt-12">
+      {/* <section className="bg-[var(--color-2)] px-4 sm:px-0 mt-17 pt-0 sm:mt-12">
         <div className="text-center max-w-5xl mx-auto pt-2 sm:pt-8 pb-14 sm:pb-20">
           <p className="text-base sm:text-lg font-semibold text-[var(--color-1)] mb-6 sm:mb-8 lg:font-medium lg:text-lg">
             Trusted by modern sales teams at
@@ -217,7 +217,7 @@ export default function Contact() {
           </div>
 
         </div>
-      </section>
+      </section> */}
 
       <section className="pt-6 sm:pt-10 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-5">
         <div className="max-w-2xl mx-auto bg-[var(--color-25)] rounded-2xl border border-[var(--color-23)] p-6 sm:p-5 lg:p-5">
@@ -449,11 +449,11 @@ export default function Contact() {
 
             <div className="pt-2">
               <div className="flex flex-col sm:flex-col md:flex-row justify-between items-center gap-6">
-                <p className="text-base text-[var(--color-19)]">You can also send us a{' '}<a href="mailto:sales@hexa.com" className="text-[var(--color-8)] underline underline-offset-4 font-medium">Sales email</a></p>
+                {/* <p className="text-base text-[var(--color-19)]">You can also send us a{' '}<a href="mailto:sales@hexa.com" className="text-[var(--color-8)] underline underline-offset-4 font-medium">Sales email</a></p> */}
                 <button
                   type="submit"
                   onClick={handleLogin}
-                  className="w-full sm:w-full md:w-auto px-10 py-3 bg-[var(--color-8)] text-white rounded-full hover:bg-[var(--color-6)] transition lg:px-4 lg:py-3">
+                  className="w-full px-10 py-3 bg-[var(--color-8)] text-white rounded-full hover:bg-[var(--color-6)] transition lg:px-4 lg:py-3">
                   Submit form
                 </button>
               </div>

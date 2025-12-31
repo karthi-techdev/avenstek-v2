@@ -43,6 +43,33 @@ import {
   SiMysql, SiPostgresql, SiFirebase, SiAdobexd
 } from "react-icons/si";
 
+import {
+  FaGitAlt,
+  FaJenkins,
+  FaPython,
+  FaRaspberryPi,
+  FaSass
+} from "react-icons/fa";
+
+import {
+  SiApachekafka,
+  SiRabbitmq,
+  SiRedis,
+  SiKubernetes,
+  SiTypescript,
+  SiRedux,
+  SiGraphql,
+  SiJest,
+  SiWebpack,
+  SiCypress,
+  SiGradle,
+  SiSwift,
+  SiScala,
+  SiElasticsearch,
+  SiTerraform,
+  SiJira
+} from "react-icons/si";
+
 
 
 export default function Home() {
@@ -162,10 +189,21 @@ const techStack = [
   FaHtml5, FaCss3Alt, FaJsSquare, FaReact, TbBrandNextjs, FaVuejs, FaAngular, SiTailwindcss, FaBootstrap, FaNodeJs,
   SiExpress, SiNestjs, FaPhp, FaJava, SiMongodb, SiMysql,
   SiPostgresql, FaAws, FaDocker, SiFirebase, FaGithub, FaFigma,
-  SiAdobexd
+  SiAdobexd, FaGitAlt, FaJenkins, FaPython, FaRaspberryPi, FaSass,
+  SiApachekafka, SiRabbitmq, SiRedis, SiKubernetes, SiTypescript,
+  SiRedux, SiGraphql, SiJest, SiWebpack, SiCypress,
+  SiGradle, SiSwift, SiScala, SiElasticsearch, SiTerraform, SiJira
 ];
 
-const shuffledStack = [...techStack].sort(() => Math.random() - 0.5);
+const shuffledTechStack = [...techStack].sort(() => Math.random() - 0.5);
+
+// Split into 5 equal columns
+const columnCount = 5;
+const itemsPerColumn = Math.ceil(shuffledTechStack.length / columnCount);
+const techColumns = Array.from({ length: columnCount }, (_, index) =>
+  shuffledTechStack.slice(index * itemsPerColumn, (index + 1) * itemsPerColumn)
+);
+
  
   return (
     <>
@@ -294,8 +332,8 @@ const shuffledStack = [...techStack].sort(() => Math.random() - 0.5);
 
       <section className="faq-section px-4">
       <div className="text-center mt-25">
-       <h3 className="bg-[var(--color-12)] text-sm py-1 w-70 mx-auto rounded-md font-bold text-[var(--color-2)] w-max px-2 flex items-center">
-        <BsExclamationOctagon className="inline font-md mr-1" /> Digital Challenges Businesses Still Face in 2025
+       <h3 className="bg-[var(--color-12)] text-sm py-1 w-70 mx-auto rounded-md font-medium text-[var(--color-7)] w-max px-2 flex items-center">
+        <BsExclamationOctagon className="inline font-md mr-1" /> Digital Challenges Businesses Still Face in 2026
       </h3>
         
         <h1 className="font-bold max-w-160 w-full mx-auto text-3xl md:text-4xl mt-10 md:mt-20 leading-tight md:leading-12">
@@ -324,7 +362,7 @@ const shuffledStack = [...techStack].sort(() => Math.random() - 0.5);
       <section className="Revenue px-4 md:px-0">
   
       <div className="text-center mt-16 md:mt-30">
-              <h3 className="bg-[var(--color-12)] text-sm py-1 px-2 w-max flex items-center mx-auto rounded-md font-bold text-[var(--color-7)] flex items-center justify-center gap-2">
+              <h3 className="bg-[var(--color-12)] text-sm py-1 px-2 w-max flex items-center mx-auto rounded-md font-medium text-[var(--color-7)] flex items-center justify-center gap-2">
                 <PiStepsDuotone className="font-md mr-1" /> Meet Avenstek
               </h3>
               <h1 className="font-bold max-w-160 w-full mx-auto text-3xl md:text-4xl mt-10 md:mt-20 leading-tight md:leading-12">
@@ -448,11 +486,11 @@ const shuffledStack = [...techStack].sort(() => Math.random() - 0.5);
 
       <section className="velocity px-4">
         <div className="text-center mt-16 md:mt-30">
-          <h3 className="bg-[var(--color-12)] text-sm py-1 w-40 mx-auto rounded-md font-bold text-[var(--color-2)] flex items-center justify-center gap-2">
-            <PiStepsDuotone className="font-md" /> Avenstek vs the Rest
-          </h3>
+         <h3 className="bg-[var(--color-12)] text-sm py-1 w-70 mx-auto rounded-md font-medium text-[var(--color-7)] w-max px-2 flex items-center">
+          <BsExclamationOctagon className="inline font-md mr-1" /> Avenstek vs the Rest
+        </h3>
           <h1 className="font-bold max-w-160 w-full mx-auto text-3xl md:text-4xl mt-10 md:mt-20 leading-tight md:leading-12">
-            The partner that delivers results <span className="text-[var(--color-19)] font-bold"> --not just code.</span>
+            The partner that delivers results <span className="text-[var(--color-19)] font-bold">not just code.</span>
           </h1>
           <p className="text-[var(--color-19)] mt-4 text-lg max-w-94 w-full mx-auto">
             See why forward-thinking businesses choose Avenstek over traditional agencies or freelancers.
@@ -609,7 +647,7 @@ const shuffledStack = [...techStack].sort(() => Math.random() - 0.5);
       <section className="real-teams-section">
         <div className="relative flex w-full flex-col items-center bg-[var(--color-2)] pt-8 pb-15">
           <div className="text-center mt-16 md:mt-30">
-            <h3 className="bg-[var(--color-12)] text-sm py-1 w-50 mx-auto rounded-md font-bold text-[var(--color-2)] flex items-center justify-center gap-2 px-2 w-max flex items-center">
+            <h3 className="bg-[var(--color-12)] text-sm py-1 w-50 mx-auto rounded-md font-medium text-[var(--color-7)] flex items-center justify-center gap-2 px-2 w-max flex items-center">
               <CiTrophy className="font-md" /> Real Feedback. Real Results
             </h3>
             <h1 className="font-bold max-w-160 w-full mx-auto text-3xl md:text-4xl mt-10 md:mt-20 leading-tight md:leading-12 text-[var(--color-16)]">
@@ -715,46 +753,51 @@ const shuffledStack = [...techStack].sort(() => Math.random() - 0.5);
         </div>
       </section>
 
-      <section className="favourite-tool-section px-4 md:px-0">
-        <div className="text-center mt-16 md:mt-30">
-          <h3 className="bg-[var(--color-12)] text-sm py-1 w-30 mx-auto rounded-md font-bold text-[var(--color-2)] flex items-center justify-center gap-2 px-2 w-max">
-            <PiStepsDuotone className="font-md" /> Our Technology Stack
-          </h3>
+   <section className="favourite-tool-section px-4 md:px-0">
+  <div className="text-center mt-16 md:mt-30">
+    <h3 className="bg-[var(--color-12)] text-sm py-1 w-max mx-auto rounded-md font-medium text-[var(--color-7)] flex items-center justify-center gap-2 px-2">
+      <PiStepsDuotone className="font-md" /> Our Technology Stack
+    </h3>
 
-          <h1 className="font-bold max-w-160 w-full mx-auto text-3xl md:text-4xl mt-10 md:mt-20 leading-tight md:leading-12">
-            Modern technologies for modern solutions: 
-            <span className="text-[var(--color-19)] font-bold"> Everything your project requires.</span>
-          </h1>
+    <h1 className="font-bold max-w-160 w-full mx-auto text-3xl md:text-4xl mt-10 md:mt-20 leading-tight md:leading-12">
+      Modern technologies for modern solutions:
+      <span className="text-[var(--color-19)] font-bold"> Everything your project requires.</span>
+    </h1>
 
-          <p className="text-[var(--color-19)] mt-4 text-lg max-w-94 w-full mx-auto">
-            We leverage cutting-edge technologies to build scalable, performant applications that drive business growth.
-          </p>
-        </div>
+    <p className="text-[var(--color-19)] mt-4 text-lg max-w-94 w-full mx-auto">
+      We leverage cutting-edge technologies to build scalable, performant applications that drive business growth.
+    </p>
+  </div>
 
-        <div className="relative h-130 w-full py-20 bg-[var(--color-25)] overflow-hidden no-scrollbar">
-          <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-[var(--color-25)] via-transparent to-[var(--color-25)]" />
+  <div className="relative h-130 w-full py-20 bg-[var(--color-25)] overflow-hidden no-scrollbar">
+    <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-[var(--color-25)] via-transparent to-[var(--color-25)]" />
 
-          <div className="flex justify-center items-center gap-4 md:gap-10 px-4 max-w-7xl mx-auto h-[600px] overflow-hidden">
-
-            {[...Array(5)].map((_, colIndex) => (
-              <div key={colIndex} className={`flex flex-col flex-shrink-0 h-full overflow-hidden ${colIndex % 2 === 0 ? "animate-scroll-up" : "animate-scroll-down"} ${colIndex === 0 || colIndex === 4 ? "hidden lg:flex" : ""}`}>
-                <div className="flex flex-col gap-6">
-                  {shuffledStack.map((Icon, i) => (
-                    <div key={i} className="w-20 h-20 border border-[var(--color-23)] rounded-2xl flex items-center justify-center bg-[var(--color-2)] shadow-sm flex-shrink-0">
-                      <Icon className="text-4xl text-[var(--color-19)]" />
-                    </div>
-                  ))}
-                </div>
+    <div className="flex justify-center items-center gap-4 md:gap-10 px-4 max-w-7xl mx-auto h-[600px] overflow-hidden">
+      {techColumns.map((columnStack, colIndex) => (
+        <div
+          key={colIndex}
+          className={`flex flex-col flex-shrink-0 h-full overflow-hidden ${
+            colIndex % 2 === 0 ? "animate-scroll-up" : "animate-scroll-down"
+          } ${colIndex === 0 || colIndex === 4 ? "hidden lg:flex" : ""}`}
+        >
+          <div className="flex flex-col gap-6">
+            {columnStack.map((Icon, i) => (
+              <div
+                key={i}
+                className="w-20 h-20 border border-[var(--color-23)] rounded-2xl flex items-center justify-center bg-[var(--color-2)] shadow-sm flex-shrink-0"
+              >
+                <Icon className="text-4xl text-[var(--color-19)]" />
               </div>
             ))}
-
           </div>
         </div>
-      </section>
-
-      <section className="budget px-4 md:px-0">
+      ))}
+    </div>
+  </div>
+</section>
+      {/* <section className="budget px-4 md:px-0">
         <div className="text-center mt-16 md:mt-30">
-          <h3 className="bg-[var(--color-12)] text-sm py-1 mx-auto rounded-md font-bold text-[var(--color-2)] flex items-center justify-center gap-2 px-2 w-max flex items-center">
+          <h3 className="bg-[var(--color-12)] text-sm py-1 mx-auto rounded-md font-medium text-[var(--color-7)] flex items-center justify-center gap-2 px-2 w-max flex items-center">
             <PiStepsDuotone className="font-md" /> Flexible Engagement Models
           </h3>
           <h1 className="font-bold max-w-160 w-full mx-auto text-3xl md:text-4xl mt-10 md:mt-20 leading-tight md:leading-12">
@@ -860,7 +903,7 @@ const shuffledStack = [...techStack].sort(() => Math.random() - 0.5);
             <TbUserCheck className="mr-2 text-[var(--color-8)] text-xl"/>95% client retention rate
           </p>
         </div>
-      </section>
+      </section> */}
 
       <section className="table-section">
         <div className="bg-[var(--color-2)] pt-20 pb-10 px-6 lg:px-40">
@@ -968,7 +1011,7 @@ const shuffledStack = [...techStack].sort(() => Math.random() - 0.5);
 
       <section className="budget px-4 md:px-0">
         <div className="text-center mt-16 md:mt-30">
-          <h3 className="bg-[var(--color-12)] text-sm py-1 w-max px-2 flex items-center mx-auto rounded-md font-bold text-[var(--color-2)] flex items-center justify-center gap-2">
+          <h3 className="bg-[var(--color-12)] text-sm py-1 w-max px-2 flex items-center mx-auto rounded-md font-medium text-[var(--color-7)] flex items-center justify-center gap-2">
             <PiStepsDuotone className="font-md" /> Frequently Asked Questions
           </h3>
           <h1 className="font-bold max-w-160 w-full mx-auto text-3xl md:text-4xl mt-10 md:mt-20 leading-tight md:leading-12">

@@ -5,7 +5,7 @@ import "./globals.css";
 import { GoChevronRight } from "react-icons/go";
 import { GoZap } from "react-icons/go";
 import { TbClick } from "react-icons/tb";
-import { FaInstagram } from "react-icons/fa";
+import { FaFacebook, FaFacebookF, FaInstagram } from "react-icons/fa";
 import { FaLinkedin } from "react-icons/fa";
 import { MdOutlineAlternateEmail } from "react-icons/md";
 import { RiYoutubeFill } from "react-icons/ri";
@@ -38,6 +38,7 @@ import {
 import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/react/20/solid'
 import Link from "next/link";
 import Image from "next/image";
+import { BsTwitterX } from "react-icons/bs";
 
 const products = [
   { name: 'AI Assist', description: 'Ask questions, get sales answers instantly', href: '#', icon: ChartPieIcon },
@@ -290,7 +291,7 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
               <div className="mt-6 flow-root">
                 <div className="-my-6 divide-y divide-gray-500/10 dark:divide-white/10">
                   <div className="space-y-2 py-6">
-                    <Disclosure as="div" className="-mx-3">
+                    {/* <Disclosure as="div" className="-mx-3">
                       <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5">
                        Product  
                         <ChevronDownIcon aria-hidden="true" className="size-5 flex-none group-data-open:rotate-180" />
@@ -405,23 +406,44 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
                           </DisclosureButton>
                         ))}
                       </DisclosurePanel>
-                    </Disclosure>
+                    </Disclosure> */}
 
-                    <a
-                      href="#"
+                    <Link
+                      href="/about-us"
                       className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
                     >
-                      Pricing
-                    </a>
+                      About us
+                    </Link>
+
+                     <Link
+                      href="/services"
+                      className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
+                    >
+                      Services
+                    </Link>
+
+                    <Link
+                      href="/blog"
+                      className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
+                    >
+                      Blog
+                    </Link>
+
+                    <Link
+                      href="/contact"
+                      className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
+                    >
+                      Contact us
+                    </Link>
 
                   </div>
                   <div className="py-6">
-                    <a
+                    {/* <a
                       href="#"
                       className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
                     >
                       <button className=" flex justify-center bg-[var(--color-8)] text-[var(--color-2)] text-sm  px-3 py-2 rounded-full font-semibold hover:bg-[var(--color-7)] transition w-[100%] md:w-[100%] lg:w-[0]">Purchase template<GoChevronRight className="text-xl text-[var(--color-2)] font-semibold" /></button>
-                    </a>
+                    </a> */}
                     <a
                       href="#"
                       className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5 "
@@ -439,9 +461,42 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
 
         <main className="mt-25">
           {children}
+
+       {/* CTA Section */}
+        <section className="bg-[var(--color-13)] p-10">
+          <div className="mb-24 max-w-7xl mx-auto px-6 text-center">
+            <div className="flex justify-center mb-8">
+              <span className="inline-flex items-center gap-3 rounded-lg px-6 py-3 min-h-[48px] text-sm text-[var(--color-blue-500)]">
+                <i className="fa-solid fa-bolt text-[var(--color-7)]"></i>
+                Transform Your Business
+              </span>
+            </div>
+            <h2 className="text-center text-4xl sm:text-5xl font-bold text-[var(--color-black)] mb-6">
+              Ready to elevate your digital presence? <br />
+              <span className="text-[var(--color-gray-400)]">Let's build something extraordinary together.</span>
+            </h2>
+            <p className="mx-auto max-w-xl text-base sm:text-lg text-[var(--color-zinc-400)] leading-relaxed mb-6">
+              Contact us for a free consultation. No obligations, just expert insights tailored to your needs.
+            </p>
+
+            <div className="flex flex-col items-center gap-4 mb-4">
+              <Link href="/contact-us" className="rounded-full flex items-center justify-center px-5 py-2 text-sm h-12 w-47 bg-[var(--color-7)] text-[var(--color-2)] font-bold hover:bg-[var(--color-8)] transition">
+                Start Your Project &gt;
+              </Link>
+              <Link
+                href="/services"
+                className="rounded-full border border-[var(--color-zinc-700)] px-6 py-3 text-sm font-semibold text-[var(--color-black)] transition hover:bg-[var(--color-zinc-900)] hover:text-[var(--color-white)]"
+              >
+                View Services
+              </Link>
+            </div>
+          </div>
+        </section>
         </main>
 
-        <footer className="bg-[var(--color-13)] h-auto">
+
+
+        {/* <footer className="bg-[var(--color-13)] h-auto">
 
           <div className="flex justify-center">
             <div className=" max-w-6xl px-6 grid grid-cols-1 md:gird-cols-2 gap-12">
@@ -483,10 +538,12 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
             <div className="p-5 flex">
               <ul>
                 <p className=" flex text-[var(--color-1)] font-bold text-2xl pb-6">
-                  <span className="rounded-full w-7 h-7 bg-[var(--color-8)] mr-2"><GoZap className="text-[var(--color-2)] text-3xl p-1" /></span> Hexa
+                  <Link href="/" className="-m-1.5 p-1.5">
+                   <Image src={logoImg} alt="logo" height="20" className="invert-70"/>
+                  </Link>
                 </p>
                 <p className="text-[var(--color-1)] tracking-normal text-md pb-3">
-                  Built for the teams shaping tomorrow.
+                  Building Excellence throu
                 </p>
                 <div className="flex gap-3 pb-5">
                   <div className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaXbox className="text-4xl p-2" /></div>
@@ -560,6 +617,93 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
             </ul>
           </div>
 
+        </footer> */}
+
+        <footer className="h-auto border-t-[1px]">
+          <div className="w-full flex md:flex-row flex-col justify-around items-start pt-20">
+            <div className="p-5 flex">
+              <ul>
+                <p className="flex text-[var(--color-1)] font-bold text-2xl pb-6">
+                  <Link href="/" className="-m-1.5 p-1.5">
+                    <Image src={logoImg} alt="logo" height="20" className="invert-70"/>
+                  </Link>
+                </p>
+                <p className="text-[var(--color-1)] tracking-normal text-md pb-3">
+                  Building Excellence Through Consistency in Innovation.
+                </p>
+                <div className="flex gap-3 pb-5">
+                  <Link href="https://www.instagram.com/avenstek/" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaInstagram className="text-4xl p-2" /></Link>
+                  <Link href="https://www.linkedin.com/company/avenstek" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaLinkedin className="text-4xl p-2" /></Link>
+                  <Link href="https://x.com/avenstek" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><BsTwitterX className="text-4xl p-2" /></Link>
+                  <Link href="https://www.facebook.com/avenstek" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaFacebookF className="text-4xl p-2" /></Link>
+                </div>
+              </ul>
+            </div>
+            
+            <div className="p-4 lg:pl-25">
+              <ul>
+                <p className="text-[var(--color-1)] font-bold text-xl pb-4">Quick Links</p>
+                <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                  <Link href="/">Home</Link>
+                </li>
+                <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                  <Link href="/about-us">About Us</Link>
+                </li>
+                {/* <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                  <Link href="/product">Product</Link>
+                </li> */}
+                <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                  <Link href="/services">Services</Link>
+                </li>
+              </ul>
+            </div>
+            
+            <div className="p-4">
+              <ul>
+                <p className="text-[var(--color-1)] font-bold text-xl pb-4">More Links</p>
+                <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                  <Link href="/contact-us">Contact Us</Link>
+                </li>
+                <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                  <Link href="/careers">Careers</Link>
+                </li>
+                <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                  <Link href="/blog">Blog</Link>
+                </li>
+              </ul>
+            </div>
+            
+            {/* Newsletter Subscription Section */}
+            <div className="p-4">
+              <ul>
+                <p className="text-[var(--color-1)] font-bold text-xl pb-4">Stay Updated</p>
+                <p className="text-[var(--color-20)] text-md pb-4 tracking-normal max-w-xs">
+                  Subscribe to our newsletter for the latest updates, news, and insights.
+                </p>
+                <div className="flex flex-col gap-3">
+                  <div className="relative">
+                    <input
+                      type="email"
+                      placeholder="Enter your email"
+                      className="w-full px-4 py-3 rounded-lg bg-[var(--color-2)] border border-[var(--color-19)] text-[var(--color-20)] placeholder-[var(--color-20)]/60 focus:outline-none focus:border-[var(--color-8)] focus:ring-1 focus:ring-[var(--color-8)]"
+                    />
+                  </div>
+                  <button className="px-6 py-3 rounded-lg bg-[var(--color-8)] text-[var(--color-2)] font-semibold hover:bg-[var(--color-13)] hover:text-[var(--color-8)] transition duration-300 border border-[var(--color-19)]">
+                    Subscribe
+                  </button>
+                </div>
+                <p className="text-[var(--color-20)] text-xs pt-3 opacity-70">
+                  We respect your privacy. Unsubscribe at any time.
+                </p>
+              </ul>
+            </div>
+          </div>
+          
+          <hr className="text-[var(--color-20)]"></hr>
+          
+          <div className="p-5 flex flex-col md:flex-col lg:flex-row lg:items-start justify-center lg:gap-8 gap-4 lg:px-[6rem] lg:w-[90%] lg:mx-auto">
+            <p className="text-left text-[var(--color-20)] text-md pb-2 tracking-normal">© 2026 Avenstek. All rights reserved.</p>
+          </div>
         </footer>
       </body>
     </html>
