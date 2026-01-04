@@ -50,7 +50,7 @@ const ApplyModal = ({ onClose, onSuccess }: ApplyModalProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-3 sm:px-4">
+    <div className="fixed inset-0 z-5000000 flex items-center justify-center backdrop-blur-sm px-3 sm:px-4">
       <div
         className="
           bg-[var(--color-2)]
@@ -60,6 +60,8 @@ const ApplyModal = ({ onClose, onSuccess }: ApplyModalProps) => {
           relative
           max-h-[90vh]
           overflow-y-auto
+          border-[1px]
+          shadow-2xl
         "
       >
         {/* Close */}
@@ -90,11 +92,9 @@ const ApplyModal = ({ onClose, onSuccess }: ApplyModalProps) => {
               placeholder="Your Name"
               className="w-full border rounded-lg px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base"
             />
-            {errors.name && (
-              <p className="text-[var(--color-27)] text-xs sm:text-sm text-left">
-                {errors.name}
-              </p>
-            )}
+            <p className={`text-[var(--color-27)] text-xs text-left ${errors.name ? 'visible' : 'invisible'}`}>
+              {errors.name || "Placeholder text"}
+            </p>
           </div>
 
           <div>
@@ -104,11 +104,9 @@ const ApplyModal = ({ onClose, onSuccess }: ApplyModalProps) => {
               placeholder="Email"
               className="w-full border rounded-lg px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base"
             />
-            {errors.email && (
-              <p className="text-[var(--color-27)] text-xs sm:text-sm text-left">
-                {errors.email}
-              </p>
-            )}
+            <p className={`text-[var(--color-27)] text-xs text-left ${errors.email ? 'visible' : 'invisible'}`}>
+              {errors.email || "Placeholder text"}
+            </p>
           </div>
 
           <div>
@@ -118,11 +116,9 @@ const ApplyModal = ({ onClose, onSuccess }: ApplyModalProps) => {
               placeholder="Phone"
               className="w-full border rounded-lg px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base"
             />
-            {errors.phone && (
-              <p className="text-[var(--color-27)] text-xs sm:text-sm text-left">
-                {errors.phone}
-              </p>
-            )}
+            <p className={`text-[var(--color-27)] text-xs text-left ${errors.phone ? 'visible' : 'invisible'}`}>
+              {errors.phone || "Placeholder text"}
+            </p>
           </div>
 
           <div>
@@ -132,11 +128,9 @@ const ApplyModal = ({ onClose, onSuccess }: ApplyModalProps) => {
               rows={3}
               className="w-full border rounded-lg px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base"
             />
-            {errors.about && (
-              <p className="text-[var(--color-27)] text-xs sm:text-sm text-left">
-                {errors.about}
-              </p>
-            )}
+            <p className={`text-[var(--color-27)] text-xs text-left ${errors.about ? 'visible' : 'invisible'}`}>
+              {errors.about || "Placeholder text"}
+            </p>
           </div>
 
           <div>
@@ -145,11 +139,9 @@ const ApplyModal = ({ onClose, onSuccess }: ApplyModalProps) => {
               type="file"
               className="w-full border rounded-lg px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base"
             />
-            {errors.resume && (
-              <p className="text-[var(--color-27)] text-xs sm:text-sm text-left">
-                {errors.resume}
-              </p>
-            )}
+            <p className={`text-[var(--color-27)] text-xs text-left ${errors.resume ? 'visible' : 'invisible'}`}>
+              {errors.resume || "Placeholder text"}
+            </p>
           </div>
 
           <button

@@ -1,3 +1,4 @@
+"use client";
 import { FaRegCalendarCheck } from "react-icons/fa";
 import { IoStar } from "react-icons/io5";
 import { IoStarHalf } from "react-icons/io5";
@@ -14,8 +15,13 @@ import { FaNetworkWired } from "react-icons/fa";
 import { BsGlobe } from "react-icons/bs";
 import { FiSmartphone } from "react-icons/fi";
 import { FiMonitor } from "react-icons/fi";
+import { usePageSEO } from '../hooks/usePageTitles';
 
-export default function Home() {
+export default function Services() {
+  usePageSEO(
+    "Services", 
+    "Avenstek delivers custom software solutions that drive growth. From Web & Mobile Apps to UI/UX and Cloud DevOps, we solve your scaling challenges with 95% on-time delivery."
+  );
     return (
         <>
             <main className="flex px-[1rem] pb-[3rem] sm:px-[2rem] md:px-[3rem] lg:px-[4rem]">

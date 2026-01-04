@@ -10,8 +10,13 @@ import Link from "next/link";
 import ApplyModal from "./applymodal/page";
 import { useState } from "react";
 import SuccessModal from "./successmodel/page";
+import { usePageSEO } from "@/app/hooks/usePageTitles";
 
 const JobDescription = () => {
+  usePageSEO(
+      "Job Decsription", 
+      "Build your future with Avenstek Solutions Pvt Ltd. Explore career opportunities in software engineering, AI, and UI/UX design. Join a team with 10+ years of innovation and a global impact."
+  );
      const [open, setOpen] = useState(false);
      const [showSuccess, setShowSuccess] = useState(false);
      const [showApply, setShowApply] = useState(false);

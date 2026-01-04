@@ -17,8 +17,13 @@ import { IoLocationOutline } from "react-icons/io5";
 import { RiMoneyDollarBoxLine } from "react-icons/ri";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { usePageSEO } from "../hooks/usePageTitles";
 
 const Career = () => {
+  usePageSEO(
+    "Careers", 
+    "Build your future with Avenstek Solutions Pvt Ltd. Explore career opportunities in software engineering, AI, and UI/UX design. Join a team with 10+ years of innovation and a global impact."
+  );
   const router = useRouter();
   return (
     <>

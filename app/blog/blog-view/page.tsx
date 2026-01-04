@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useEffect, useState, Suspense } from "react";
 import { ArrowLeft, BookOpen, GamepadDirectional } from "lucide-react";
+import { usePageSEO } from "@/app/hooks/usePageTitles";
 
 interface BlogSection {
   id: string;
@@ -695,6 +696,13 @@ function BlogViewContent() {
 
   const post = blogPosts.find((blog) => blog.id === id);
   const [activeId, setActiveId] = useState("");
+
+  const seoTitle = post ? post.title : "Blog Post";
+  const seoDescription = post && post.summary 
+    ? post.summary[0].substring(0, 155) + "..." 
+    : "Read the latest insights from Avenstek Solutions.";
+
+  usePageSEO(seoTitle, seoDescription);
 
   if (!post) {
     return (

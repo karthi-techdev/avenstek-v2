@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
+import { usePageSEO } from "../hooks/usePageTitles";
 
 interface BlogPost {
   id: number;
@@ -16,6 +17,10 @@ interface BlogPost {
 }
 
 export default function BlogPage() {
+  usePageSEO(
+    "Blog", 
+    "Stay updated with Avenstek's latest articles on AI, mobile app development, and enterprise IT strategy. Expert insights to help your business navigate the 2026 digital landscape."
+  );
   const [activeFilter, setActiveFilter] = useState("All posts");
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");

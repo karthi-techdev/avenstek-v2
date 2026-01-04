@@ -31,48 +31,31 @@ import { LuCalendarHeart, LuUnplug } from "react-icons/lu";
 import { ChevronDown } from "lucide-react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import {Accordion,AccordionItem,AccordionTrigger,AccordionContent,} from "../components/ui/accordion";
-import {
-  FaReact, FaNodeJs, FaHtml5, FaCss3Alt, FaJsSquare, FaAngular,
-  FaJava, FaVuejs, FaPhp, FaBootstrap, FaFigma, FaAws, FaDocker, FaGithub
-} from "react-icons/fa";
-import {
-  TbBrandNextjs
-} from "react-icons/tb";
-import {
-  SiExpress, SiNestjs, SiTailwindcss, SiMongodb,
-  SiMysql, SiPostgresql, SiFirebase, SiAdobexd
-} from "react-icons/si";
-
-import {
-  FaGitAlt,
-  FaJenkins,
-  FaPython,
-  FaRaspberryPi,
-  FaSass
-} from "react-icons/fa";
-
-import {
-  SiApachekafka,
-  SiRabbitmq,
-  SiRedis,
-  SiKubernetes,
-  SiTypescript,
-  SiRedux,
-  SiGraphql,
-  SiJest,
-  SiWebpack,
-  SiCypress,
-  SiGradle,
-  SiSwift,
-  SiScala,
-  SiElasticsearch,
-  SiTerraform,
-  SiJira
-} from "react-icons/si";
-
+import { FaReact, FaNode, FaPhp, FaLaravel, FaAws, FaJenkins, FaTrello, FaCloudflare, FaFigma, FaDocker, FaVuejs, FaJava, FaCss3, FaHtml5, FaAngular, FaCodeBranch, FaGitAlt, FaGithub, FaGitlab, FaBootstrap, FaPython} from "react-icons/fa";
+import { TbBrandNextjs, TbBrandAzure, TbBrandOauth } from "react-icons/tb";
+import { SiExpress,SiNestjs, SiMongodb, SiRedis, SiPostgresql, SiMocha, SiJest, SiSelenium, SiCypress, SiNetlify, SiVite, SiAstro, SiXampp, SiGraphql, SiMariadb, SiFlask, SiOracle, SiAmazondynamodb, SiFlutter, SiSocketdotio, SiAwslambda, SiJquery, SiTableau, SiPostman, SiInsomnia, SiTypescript, SiApachecassandra, SiCanva, SiKotlin, SiSpringboot, SiAdobephotoshop, SiKubernetes, SiRedux, SiJira, SiNuxtdotjs, SiMongoose, SiApachekafka, SiFirebase, SiStrapi } from "react-icons/si";
+import { GrMysql } from "react-icons/gr";
+import { FaGolang } from "react-icons/fa6";
+import { DiCodeigniter, DiOpenshift } from "react-icons/di";
+import { IoLogoJavascript } from "react-icons/io";
+import { RiTailwindCssFill, RiSupabaseFill } from "react-icons/ri";
+import { IoLogoVercel } from "react-icons/io5";
+import { VscVscode } from "react-icons/vsc";
+import { DiDjango } from "react-icons/di";
+import { AiOutlineDotNet } from "react-icons/ai";
 
 
 export default function Home() {
+
+  const techStack = [
+    FaReact, FaNode, TbBrandNextjs, SiExpress, SiNestjs, SiMongodb, GrMysql, FaPhp, FaLaravel, FaAws, FaJenkins, SiRedis,
+    SiPostgresql, TbBrandAzure, FaJava, IoLogoJavascript, RiTailwindCssFill, FaCss3, FaHtml5, SiMongoose, SiApachekafka,
+    FaAngular, FaGitAlt, FaGithub, FaGitlab, IoLogoVercel, VscVscode, FaBootstrap, SiFirebase, RiSupabaseFill, SiStrapi,
+    FaPython, DiCodeigniter, FaCodeBranch, SiNuxtdotjs, FaVuejs, SiKubernetes, FaDocker, SiRedux, SiJira, FaTrello, SiAdobephotoshop,
+    SiCanva, SiSpringboot, SiKotlin, SiApachecassandra, SiTypescript, SiPostman, SiInsomnia, SiFlutter, DiDjango, SiSocketdotio, SiAwslambda,
+    SiTableau, SiJquery, FaCloudflare, AiOutlineDotNet, SiXampp, DiOpenshift, SiGraphql, SiAmazondynamodb, SiOracle, FaFigma, SiMariadb,
+    SiFlask, SiMocha, SiJest, TbBrandOauth, FaGolang, SiAstro, SiVite, SiSelenium, SiCypress, SiNetlify
+  ];
 
   const Features = [
       { title: "Secure by Default", desc: "Your applications are encrypted, audited, and enterprise-grade protected." },
@@ -185,15 +168,6 @@ const items = [
   { text: "Support issues piling up?", icon: <FiUsers /> },
 ];
 
-const techStack = [
-  FaHtml5, FaCss3Alt, FaJsSquare, FaReact, TbBrandNextjs, FaVuejs, FaAngular, SiTailwindcss, FaBootstrap, FaNodeJs,
-  SiExpress, SiNestjs, FaPhp, FaJava, SiMongodb, SiMysql,
-  SiPostgresql, FaAws, FaDocker, SiFirebase, FaGithub, FaFigma,
-  SiAdobexd, FaGitAlt, FaJenkins, FaPython, FaRaspberryPi, FaSass,
-  SiApachekafka, SiRabbitmq, SiRedis, SiKubernetes, SiTypescript,
-  SiRedux, SiGraphql, SiJest, SiWebpack, SiCypress,
-  SiGradle, SiSwift, SiScala, SiElasticsearch, SiTerraform, SiJira
-];
 
 const shuffledTechStack = [...techStack].sort(() => Math.random() - 0.5);
 

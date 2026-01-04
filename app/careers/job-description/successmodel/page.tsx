@@ -8,7 +8,7 @@ interface SuccessModalProps {
 
 const SuccessModal = ({ onClose }: SuccessModalProps) => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-3 sm:px-4">
+    <div className="fixed inset-0 z-500000000 flex items-center justify-center backdrop-blur-sm px-3 sm:px-4">
       <div
         className="
           bg-[var(--color-2)]
@@ -17,17 +17,15 @@ const SuccessModal = ({ onClose }: SuccessModalProps) => {
           text-center
           w-full sm:w-[90%]
           max-w-sm
+          border-[1px]
+          shadow-2xl
         "
       >
-        <FaCheckCircle
-          className="
-            mx-auto
-            text-4xl sm:text-5xl
-            text-[var(--color-8)]
-            mb-3 sm:mb-4
-          "
-        />
-
+       <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+        </div>
         <h3 className="text-base sm:text-lg font-semibold mb-2">
           Form Submitted Successfully
         </h3>

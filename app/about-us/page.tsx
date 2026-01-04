@@ -20,8 +20,15 @@ import ashmithaImg from '../../public/images/team/ashmitha.jpg'
 import venkatImg from '../../public/images/team/venkatesan.png'
 import karthiImg from '../../public/images/team/karthi.jpg'
 import sasithraImg from '../../public/images/team/sasithra.jpg'
+import { usePageSEO } from '../hooks/usePageTitles';
 
 export default function About() {
+
+  usePageSEO(
+    "About us", 
+    "Avenstek Solutions Pvt Ltd: 10+ years of expertise in bridging technology and business. Discover our mission to deliver customized, scalable IT solutions worldwide."
+  );
+
   const router = useRouter();
 
   const teamMembers = [

@@ -61,6 +61,17 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Expressa Serial';
+  src: url('../public/assets/fonts/Expressa-Serial-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+.expressa-font {
+  font-family: 'Expressa Serial', sans-serif;
+}
+
 :root {
     --color-1: #000000;
   --color-2: #FFFFFF;
