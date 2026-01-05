@@ -153,13 +153,13 @@ const freelanceSteps = [
 
         {/* LEFT CONTENT */}
         <div className="lg:col-span-2">
-          {/* Why Hexa Exists */}
+          {/* Why Avenstek Exists */}
           <section className="mb-6">
             <h2 className="text-4xl font-semibold text-[var(--color-1)] mb-4">
-              Why Hexa Exists
+              Why Avenstek Exists
             </h2>
             <p className="text-[var(--color-19)] lg-text-lg md:text-lg text-[1rem] leading-relaxed">
-              Hexa is building the next generation of sales tools — fast,
+              Avenstek is building the next generation of sales tools — fast,
               focused, and powered by AI. Our mission is to help teams sell
               smarter, follow up faster, and stay focused on what actually
               closes deals. We don&apos;t ship bloat. We ship clarity. We&apos;re a lean,
@@ -175,7 +175,7 @@ const freelanceSteps = [
               Role overview
             </h2>
             <p className="text-[var(--color-19)] lg-text-lg md:text-lg text-[1rem] leading-relaxed">
-              Hexa helps modern sales teams move faster by automating follow-ups,
+              Avenstek helps modern sales teams move faster by automating follow-ups,
               forecasting pipeline, and summarizing meetings with clarity. As a
               Backend Engineer, you&apos;ll help us scale our AI features, optimize
               data pipelines, and ensure the system is lean, reliable, and

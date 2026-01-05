@@ -44,7 +44,7 @@ const Career = () => {
           <p className="text-[var(--color-19)] 
             max-w-lg mx-auto text-[.90rem] md:text-lg 
             lg:text-xl tracking-wide mt-4 px-2">
-              Hexa is on a mission to make sales faster, clearer, and more human. If you&apos;t tired of bloated tools and love building sharp, focused products — join us.
+              Avenstek is on a mission to make sales faster, clearer, and more human. If you&apos;t tired of bloated tools and love building sharp, focused products — join us.
           </p>
         </div>
 
@@ -128,13 +128,15 @@ const Career = () => {
           <div className="bg-[var(--color-13)] inline-flex items-center justify-center 
           mx-auto text-center px-4 py-2 rounded-lg mb-6 text-[0.90rem] md:text-[0.95rem] lg:text-[1rem]">
             <BsStars className="text-[var(--color-7)] mr-2 h-5 w-5"/>
-            <h3 className='text-[var(--color-7)]'>Why Hexa</h3>
+            <h3 className='text-[var(--color-7)]'>Why Avenstek</h3>
           </div>
             <div className="py-5">
             <h1 className='text-[var(--color-1)] text-2xl md:text-4xl lg:text-6xl font-bold max-w-xl md:max-w-xl lg:max-w-3xl mx-auto leading-tight' >Work on real problem with<span className='text-[var(--color-20)]'> a team that actually ship</span></h1>
             <p className='text-[var(--color-19)] 
             max-w-lg mx-auto text-[.90rem] md:text-lg 
-            lg:text-xl tracking-wide mt-4 px-2'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis inventore natus suscipit fuga illum itaque similique cumque sapiente eos esse? Lorem ipsum dolor sit amet consectetur</p>
+            lg:text-xl tracking-wide mt-4 px-2'>At Avenstek, you won&rsquo;t just &ldquo;support&rdquo; projects, you&rsquo;ll own them.
+From idea to deployment, you&rsquo;ll collaborate with a hands-on team that ships fast, learns constantly, and builds software that matters.
+</p>
             </div>
 
             <div className="px-4 md:px-6 lg:p-9 max-w-7xl mx-auto">

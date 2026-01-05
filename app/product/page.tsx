@@ -50,7 +50,7 @@ export default function Home() {
 
                     </div>
                     <div className="max-w-[24.5rem] w-[100%]  text-center pt-[1rem]">
-                        <p className="text-[var(--color-20)]  text-[1.15rem]">Hexa automatically listens, transcribes, and summarizes your calls — highlighting questions, objections, and next steps with zero effort.</p>
+                        <p className="text-[var(--color-20)]  text-[1.15rem]">Avenstek automatically listens, transcribes, and summarizes your calls — highlighting questions, objections, and next steps with zero effort.</p>
                         <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row justify-center gap-[0.6rem] sm:gap-[0.6rem] items-center pt-[1.2rem]">
                             <div className="inline-block">
                                 <button className="flex justify-between duration-500 transition-all items-center bg-[var(--color-9)] text-white px-[0.95rem] py-[0.6rem] rounded-full font-medium mr-[0.6rem] hover:bg-[var(--color-7)] gap-1"><a href="" className="text-[0.9rem]  inline-block">Try It Free</a><IoIosArrowForward /></button>
@@ -146,7 +146,7 @@ export default function Home() {
                                     <tr className="border-b border-gray-200 ">
                                         <td className="ps-[0.7rem] md:ps-[1.4rem] py-[0.7rem]">
                                             <p className="text-[0.7rem] sm:text-[0.8rem] md:text-[0.95rem] font-light">Ryan Chen</p>
-                                            <p className="text-[var(--color-20)] text-[0.7rem] sm:text-[0.8rem] md:text-[1rem] pt-[4px] font-extralight">ryan@hexatech.com</p>
+                                            <p className="text-[var(--color-20)] text-[0.7rem] sm:text-[0.8rem] md:text-[1rem] pt-[4px] font-extralight">ryan@Avenstektech.com</p>
                                         </td>
                                         <td ><span className="flex items-center text-[0.7rem] sm:text-[0.8rem] md:text-[0.9rem]"><TbMailUp className="me-[5px]" />Outbound – Q2 Promo<BsBoxArrowUpRight className="ms-[5px]" /></span></td>
                                         <td className="text-[0.9rem]  ps-[0.6rem]">24</td>
@@ -200,7 +200,7 @@ export default function Home() {
                                                 showBorder={false}
                                                 className="custom-class"
                                             >
-                                                Hexa AI
+                                                Avenstek AI
                                             </GradientText>
                                         </h3>
 
@@ -299,7 +299,7 @@ export default function Home() {
                                     <span className="p-[7px] rounded-sm h-[2.3rem] border bg-[var(--color-26)] inline-block"><TbMessage2Star size={22} className=" flex-shrink-0 text-[var(--color-8)]" /></span>
                                     <div>
                                         <h3 className="font-medium text-[1rem]">Summary Feedback Loop</h3>
-                                        <p className="text-[var(--color-20)] pt-[0.2rem] font-light text-[0.95rem] leading-[1.4rem]">Rate summary quality so Hexa improves over time with your data.</p>
+                                        <p className="text-[var(--color-20)] pt-[0.2rem] font-light text-[0.95rem] leading-[1.4rem]">Rate summary quality so Avenstek improves over time with your data.</p>
                                     </div>
                                 </div>
                             </div>
@@ -314,7 +314,7 @@ export default function Home() {
                             <h4 className="mt-[0.6rem] font-semibold text-[0.95rem]">Key Highlights</h4>
                             <ul className="list-disc text-[var(--color-20)] font-light ps-[20px] text-[0.9rem]">
                                 <li className="mt-[0.6rem]"><p>Prospect is struggling with manual follow-ups and missed handoffs.</p></li>
-                                <li className="mt-[0.6rem]"><p>Expressed intent to test Hexa next quarter if budget fits.</p></li>
+                                <li className="mt-[0.6rem]"><p>Expressed intent to test Avenstek next quarter if budget fits.</p></li>
                                 <li className="mt-[0.6rem]"><p>Potential blocker: procurement/legal timeline.</p></li>
                             </ul>
                             <h4 className="mt-[0.6rem] font-semibold text-[0.95rem]">Action Items</h4>
@@ -337,12 +337,12 @@ export default function Home() {
                     </div>
                     <div className="max-w-[50rem] w-[100%] text-center">
                         <h2 className="text-[1.5rem] sm:text-[2rem] md:text-[2.4rem] lg:text-[2.8rem] font-semibold leading-[2rem] sm:leading-[2.3rem] md:leading-[2.8rem] lg:leading-[3.2rem] mt-[1.4rem]">AI Call Summaries that make <span className="text-[var(--color-20)]">reps faster</span> — and managers <span className="text-[var(--color-20)]">sleep better.</span></h2>
-                        <p className="max-w-[23.8rem] inline-block w-[100%] text-[var(--color-20)] mt-[1.4rem]">Hexa automates follow-ups, tracks deals, and keeps your pipeline moving — minus the bloat.</p>
+                        <p className="max-w-[23.8rem] inline-block w-[100%] text-[var(--color-20)] mt-[1.4rem]">Avenstek automates follow-ups, tracks deals, and keeps your pipeline moving — minus the bloat.</p>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3   my-[5rem] gap-[1.9rem] ">
                     <div className="border flex flex-col gap-[3rem] sm:gap-[4rem] md:gap-[4.8rem] lg:gap-[5.9rem] justify-between rounded-md p-[1.4rem]">
-                        <p className="font-semibold text-[1rem]  md:text-[1.2rem]">“Hexa’s summaries feel like having a ghostwriter for every deal. Follow-ups are instant now.”</p>
+                        <p className="font-semibold text-[1rem]  md:text-[1.2rem]">“Avenstek’s summaries feel like having a ghostwriter for every deal. Follow-ups are instant now.”</p>
                         <div className="flex justify-between ">
                             <div className="flex items-center">
                                 <img src={team1.src} className="w-9 h-9 rounded-full object-cover" />
@@ -390,7 +390,7 @@ export default function Home() {
                     </div>
                     <div className="max-w-[31.5rem] w-[100%] text-center">
                         <h2 className="text-[1.5rem] sm:text-[2rem] md:text-[2.4rem] lg:text-[2.8rem] font-semibold leading-[2rem] sm:leading-[2.3rem] md:leading-[2.8rem] lg:leading-[3.2rem] mt-[1.4rem]">Still have questions? <span className="text-[var(--color-20)]">We’ve got you covered.</span></h2>
-                        <p className="max-w-[18.8rem] inline-block w-[100%] text-[1.1rem] font-extalight text-[var(--color-20)] mt-[1.4rem]">If it’s not covered here, reach out — or just try Hexa free and see for yourself.</p>
+                        <p className="max-w-[18.8rem] inline-block w-[100%] text-[1.1rem] font-extalight text-[var(--color-20)] mt-[1.4rem]">If it’s not covered here, reach out — or just try Avenstek free and see for yourself.</p>
                     </div>
                 </div>
                 <div className="flex justify-center mt-[6rem]">
@@ -405,7 +405,7 @@ export default function Home() {
                                 <AccordionTrigger className="cursor-pointer hover:no-underline text-[1rem]   font-semibold [&>svg]:h-6 [&>svg]:w-6 [&>svg]:stroke-[1.5] data-[state=open]:text-[var(--color-8)]">1. Do I need to manually start the recording?</AccordionTrigger >
                                 <AccordionContent className="flex flex-col cursor-pointer  ">
                                     <p className="text-[1rem] text-[var(--color-20)]">
-                                        <span className="text-[var(--color-18)] font-semibold">No.</span> Hexa automatically detects your sales meetings through calendar sync and joins the call silently in the background. You don’t need to click, record, or even think about it.
+                                        <span className="text-[var(--color-18)] font-semibold">No.</span> Avenstek automatically detects your sales meetings through calendar sync and joins the call silently in the background. You don’t need to click, record, or even think about it.
                                     </p>
                                 </AccordionContent>
                             </AccordionItem>
@@ -421,7 +421,7 @@ export default function Home() {
                                 <AccordionTrigger className="cursor-pointer hover:no-underline text-[1rem]   font-semibold [&>svg]:h-6 [&>svg]:w-6 [&>svg]:stroke-[1.5] data-[state=open]:text-[var(--color-8)]">3. Where are summaries stored?</AccordionTrigger >
                                 <AccordionContent className="flex flex-col cursor-pointer  ">
                                     <p className="hover:no-underline text-[1rem]">
-                                        Each summary is <span className="text-[var(--color-18)] font-semibold">automatically attached to the relevant deal, contact, or pipeline stage</span> inside Hexa. You’ll never dig through your inbox or Notion again.
+                                        Each summary is <span className="text-[var(--color-18)] font-semibold">automatically attached to the relevant deal, contact, or pipeline stage</span> inside Avenstek. You’ll never dig through your inbox or Notion again.
                                     </p>
                                 </AccordionContent>
                             </AccordionItem>
@@ -429,7 +429,7 @@ export default function Home() {
                                 <AccordionTrigger className="cursor-pointer hover:no-underline text-[1rem]   font-semibold [&>svg]:h-6 [&>svg]:w-6 [&>svg]:stroke-[1.5] data-[state=open]:text-[var(--color-8)]">4. Can I control what’s recorded?</AccordionTrigger >
                                 <AccordionContent className="flex flex-col cursor-pointer  ">
                                     <p className="hover:no-underline text-[1rem]">
-                                        Yes. You have full control over when summaries happen. Admins can configure <span className="text-[var(--color-18)] font-semibold">rules by user, domain, calendar tag, or platform,</span> and Hexa always respects participant visibility.
+                                        Yes. You have full control over when summaries happen. Admins can configure <span className="text-[var(--color-18)] font-semibold">rules by user, domain, calendar tag, or platform,</span> and Avenstek always respects participant visibility.
                                     </p>
                                 </AccordionContent>
                             </AccordionItem>
@@ -437,7 +437,7 @@ export default function Home() {
                                 <AccordionTrigger className="cursor-pointer hover:no-underline text-[1rem]   font-semibold [&>svg]:h-6 [&>svg]:w-6 [&>svg]:stroke-[1.5] data-[state=open]:text-[var(--color-8)]">5. Does it work with Zoom or Google Meet?</AccordionTrigger >
                                 <AccordionContent className="flex flex-col cursor-pointer  ">
                                     <p className="hover:no-underline text-[1rem]">
-                                        Hexa works seamlessly with  <span className="text-[var(--color-18)] font-semibold">Zoom, Google Meet,</span> and soon <span className="text-[var(--color-18)] font-semibold">Microsoft Teams</span>. If it’s in your calendar, Hexa’s ready to go.
+                                        Avenstek works seamlessly with  <span className="text-[var(--color-18)] font-semibold">Zoom, Google Meet,</span> and soon <span className="text-[var(--color-18)] font-semibold">Microsoft Teams</span>. If it’s in your calendar, Avenstek’s ready to go.
                                     </p>
                                 </AccordionContent>
                             </AccordionItem>

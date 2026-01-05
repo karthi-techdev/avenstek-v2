@@ -37,14 +37,14 @@ const blogPosts: BlogPost[] = [
     date: "Jul 7, 2025",
     image: "/images/blog-img/card1.jpg",
     summary: [
-      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Hexa doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
+      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Avenstek doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
     ],
     sections: [
       {
         id: "assumption",
         title: "The assumption we started with",
         content: [
-          "When we started building Hexa, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
+          "When we started building Avenstek, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
           "We questioned why sales tools feel heavy and slow.",
           "So the question became What would a sales platform look like if it was built for the rep first — not the dashboard?"
         ]
@@ -66,7 +66,7 @@ const blogPosts: BlogPost[] = [
         id: "different",
         title: "What we're doing differently",
         content: [
-          "Hexa is built with one idea at its core: context over control.",
+          "Avenstek is built with one idea at its core: context over control.",
           "We don't want to control reps. We want to capture what actually happened — and turn it into structure that helps them move forward. That's why:"
         ],
         list: [
@@ -82,7 +82,7 @@ const blogPosts: BlogPost[] = [
         title: "What's next",
         content: [
           "We're not stopping at AI summaries. We're building toward a CRM that disappears into the workflow: one that knows when to speak up, when to stay out of the way, and when to remind you what matters.",
-          "Hexa isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
+          "Avenstek isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
         ]
       },
       {
@@ -103,14 +103,14 @@ const blogPosts: BlogPost[] = [
     date: "Jul 7, 2025",
     image: "/images/blog-img/card2.jpg",
     summary: [
-      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Hexa doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
+      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Avenstek doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
     ],
     sections: [
       {
         id: "assumption",
         title: "The assumption we started with",
         content: [
-          "When we started building Hexa, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
+          "When we started building Avenstek, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
           "We questioned why sales tools feel heavy and slow.",
           "So the question became What would a sales platform look like if it was built for the rep first — not the dashboard?"
         ]
@@ -132,7 +132,7 @@ const blogPosts: BlogPost[] = [
         id: "different",
         title: "What we're doing differently",
         content: [
-          "Hexa is built with one idea at its core: context over control.",
+          "Avenstek is built with one idea at its core: context over control.",
           "We don't want to control reps. We want to capture what actually happened — and turn it into structure that helps them move forward. That's why:"
         ],
         list: [
@@ -148,7 +148,7 @@ const blogPosts: BlogPost[] = [
         title: "What's next",
         content: [
           "We're not stopping at AI summaries. We're building toward a CRM that disappears into the workflow: one that knows when to speak up, when to stay out of the way, and when to remind you what matters.",
-          "Hexa isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
+          "Avenstek isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
         ]
       },
       {
@@ -169,14 +169,14 @@ const blogPosts: BlogPost[] = [
     date: "Jul 7, 2025",
     image: "/images/blog-img/card3.jpg",
     summary: [
-      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Hexa doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
+      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Avenstek doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
     ],
     sections: [
       {
         id: "assumption",
         title: "The assumption we started with",
         content: [
-          "When we started building Hexa, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
+          "When we started building Avenstek, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
           "We questioned why sales tools feel heavy and slow.",
           "So the question became What would a sales platform look like if it was built for the rep first — not the dashboard?"
         ]
@@ -198,7 +198,7 @@ const blogPosts: BlogPost[] = [
         id: "different",
         title: "What we're doing differently",
         content: [
-          "Hexa is built with one idea at its core: context over control.",
+          "Avenstek is built with one idea at its core: context over control.",
           "We don't want to control reps. We want to capture what actually happened — and turn it into structure that helps them move forward. That's why:"
         ],
         list: [
@@ -214,7 +214,7 @@ const blogPosts: BlogPost[] = [
         title: "What's next",
         content: [
           "We're not stopping at AI summaries. We're building toward a CRM that disappears into the workflow: one that knows when to speak up, when to stay out of the way, and when to remind you what matters.",
-          "Hexa isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
+          "Avenstek isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
         ]
       },
       {
@@ -235,14 +235,14 @@ const blogPosts: BlogPost[] = [
     date: "Jul 7, 2025",
     image: "/images/blog-img/card4.jpg",
     summary: [
-      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Hexa doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
+      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Avenstek doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
     ],
     sections: [
       {
         id: "assumption",
         title: "The assumption we started with",
         content: [
-          "When we started building Hexa, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
+          "When we started building Avenstek, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
           "We questioned why sales tools feel heavy and slow.",
           "So the question became What would a sales platform look like if it was built for the rep first — not the dashboard?"
         ]
@@ -264,7 +264,7 @@ const blogPosts: BlogPost[] = [
         id: "different",
         title: "What we're doing differently",
         content: [
-          "Hexa is built with one idea at its core: context over control.",
+          "Avenstek is built with one idea at its core: context over control.",
           "We don't want to control reps. We want to capture what actually happened — and turn it into structure that helps them move forward. That's why:"
         ],
         list: [
@@ -280,7 +280,7 @@ const blogPosts: BlogPost[] = [
         title: "What's next",
         content: [
           "We're not stopping at AI summaries. We're building toward a CRM that disappears into the workflow: one that knows when to speak up, when to stay out of the way, and when to remind you what matters.",
-          "Hexa isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
+          "Avenstek isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
         ]
       },
       {
@@ -301,14 +301,14 @@ const blogPosts: BlogPost[] = [
     date: "Jul 6, 2025",
     image: "/images/blog-img/card5.jpg",
     summary: [
-      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Hexa doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
+      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Avenstek doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
     ],
     sections: [
       {
         id: "assumption",
         title: "The assumption we started with",
         content: [
-          "When we started building Hexa, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
+          "When we started building Avenstek, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
           "We questioned why sales tools feel heavy and slow.",
           "So the question became What would a sales platform look like if it was built for the rep first — not the dashboard?"
         ]
@@ -330,7 +330,7 @@ const blogPosts: BlogPost[] = [
         id: "different",
         title: "What we're doing differently",
         content: [
-          "Hexa is built with one idea at its core: context over control.",
+          "Avenstek is built with one idea at its core: context over control.",
           "We don't want to control reps. We want to capture what actually happened — and turn it into structure that helps them move forward. That's why:"
         ],
         list: [
@@ -346,7 +346,7 @@ const blogPosts: BlogPost[] = [
         title: "What's next",
         content: [
           "We're not stopping at AI summaries. We're building toward a CRM that disappears into the workflow: one that knows when to speak up, when to stay out of the way, and when to remind you what matters.",
-          "Hexa isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
+          "Avenstek isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
         ]
       },
       {
@@ -367,14 +367,14 @@ const blogPosts: BlogPost[] = [
     date: "Jul 5, 2025",
     image: "/images/blog-img/card6.jpg",
     summary: [
-      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Hexa doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
+      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Avenstek doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
     ],
     sections: [
       {
         id: "assumption",
         title: "The assumption we started with",
         content: [
-          "When we started building Hexa, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
+          "When we started building Avenstek, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
           "We questioned why sales tools feel heavy and slow.",
           "So the question became What would a sales platform look like if it was built for the rep first — not the dashboard?"
         ]
@@ -396,7 +396,7 @@ const blogPosts: BlogPost[] = [
         id: "different",
         title: "What we're doing differently",
         content: [
-          "Hexa is built with one idea at its core: context over control.",
+          "Avenstek is built with one idea at its core: context over control.",
           "We don't want to control reps. We want to capture what actually happened — and turn it into structure that helps them move forward. That's why:"
         ],
         list: [
@@ -412,7 +412,7 @@ const blogPosts: BlogPost[] = [
         title: "What's next",
         content: [
           "We're not stopping at AI summaries. We're building toward a CRM that disappears into the workflow: one that knows when to speak up, when to stay out of the way, and when to remind you what matters.",
-          "Hexa isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
+          "Avenstek isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
         ]
       },
       {
@@ -433,14 +433,14 @@ const blogPosts: BlogPost[] = [
     date: "Jul 4, 2025",
     image: "/images/blog-img/card7.jpg",
     summary: [
-      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Hexa doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
+      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Avenstek doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
     ],
     sections: [
       {
         id: "assumption",
         title: "The assumption we started with",
         content: [
-          "When we started building Hexa, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
+          "When we started building Avenstek, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
           "We questioned why sales tools feel heavy and slow.",
           "So the question became What would a sales platform look like if it was built for the rep first — not the dashboard?"
         ]
@@ -462,7 +462,7 @@ const blogPosts: BlogPost[] = [
         id: "different",
         title: "What we're doing differently",
         content: [
-          "Hexa is built with one idea at its core: context over control.",
+          "Avenstek is built with one idea at its core: context over control.",
           "We don't want to control reps. We want to capture what actually happened — and turn it into structure that helps them move forward. That's why:"
         ],
         list: [
@@ -478,7 +478,7 @@ const blogPosts: BlogPost[] = [
         title: "What's next",
         content: [
           "We're not stopping at AI summaries. We're building toward a CRM that disappears into the workflow: one that knows when to speak up, when to stay out of the way, and when to remind you what matters.",
-          "Hexa isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
+          "Avenstek isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
         ]
       },
       {
@@ -499,14 +499,14 @@ const blogPosts: BlogPost[] = [
     date: "Jul 3, 2025",
     image: "/images/blog-img/card8.jpg",
     summary: [
-      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Hexa doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
+      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Avenstek doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
     ],
     sections: [
       {
         id: "assumption",
         title: "The assumption we started with",
         content: [
-          "When we started building Hexa, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
+          "When we started building Avenstek, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
           "We questioned why sales tools feel heavy and slow.",
           "So the question became What would a sales platform look like if it was built for the rep first — not the dashboard?"
         ]
@@ -528,7 +528,7 @@ const blogPosts: BlogPost[] = [
         id: "different",
         title: "What we're doing differently",
         content: [
-          "Hexa is built with one idea at its core: context over control.",
+          "Avenstek is built with one idea at its core: context over control.",
           "We don't want to control reps. We want to capture what actually happened — and turn it into structure that helps them move forward. That's why:"
         ],
         list: [
@@ -544,7 +544,7 @@ const blogPosts: BlogPost[] = [
         title: "What's next",
         content: [
           "We're not stopping at AI summaries. We're building toward a CRM that disappears into the workflow: one that knows when to speak up, when to stay out of the way, and when to remind you what matters.",
-          "Hexa isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
+          "Avenstek isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
         ]
       },
       {
@@ -565,14 +565,14 @@ const blogPosts: BlogPost[] = [
     date: "Jul 2, 2025",
     image: "/images/blog-img/card9.jpg",
     summary: [
-      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Hexa doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
+      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Avenstek doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
     ],
     sections: [
       {
         id: "assumption",
         title: "The assumption we started with",
         content: [
-          "When we started building Hexa, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
+          "When we started building Avenstek, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
           "We questioned why sales tools feel heavy and slow.",
           "So the question became What would a sales platform look like if it was built for the rep first — not the dashboard?"
         ]
@@ -594,7 +594,7 @@ const blogPosts: BlogPost[] = [
         id: "different",
         title: "What we're doing differently",
         content: [
-          "Hexa is built with one idea at its core: context over control.",
+          "Avenstek is built with one idea at its core: context over control.",
           "We don't want to control reps. We want to capture what actually happened — and turn it into structure that helps them move forward. That's why:"
         ],
         list: [
@@ -610,7 +610,7 @@ const blogPosts: BlogPost[] = [
         title: "What's next",
         content: [
           "We're not stopping at AI summaries. We're building toward a CRM that disappears into the workflow: one that knows when to speak up, when to stay out of the way, and when to remind you what matters.",
-          "Hexa isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
+          "Avenstek isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
         ]
       },
       {
@@ -624,21 +624,21 @@ const blogPosts: BlogPost[] = [
   },
   {
     id: 10,
-    title: "Why Fast, Then Right Is How We Build at Hexa",
+    title: "Why Fast, Then Right Is How We Build at Avenstek",
     category: "Founder Insights",
     readTime: "5 mins read",
     author: "Jenna Marks",
     date: "Jul 1, 2025",
     image: "/images/blog-img/card10.jpg",
     summary: [
-      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Hexa doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
+      "CRMs were built for a version of sales that no longer exists: static, repetitive, manager-driven. Today's sales workflows are async, fast-moving, and human. In this piece, I share why Avenstek doesn't look or feel like a traditional CRM — and why we believe that's exactly what modern teams need."
     ],
     sections: [
       {
         id: "assumption",
         title: "The assumption we started with",
         content: [
-          "When we started building Hexa, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
+          "When we started building Avenstek, we weren't just trying to 'make CRM better.' We were trying to question whether CRM, as it exists today, even makes sense anymore.",
           "We questioned why sales tools feel heavy and slow.",
           "So the question became What would a sales platform look like if it was built for the rep first — not the dashboard?"
         ]
@@ -660,7 +660,7 @@ const blogPosts: BlogPost[] = [
         id: "different",
         title: "What we're doing differently",
         content: [
-          "Hexa is built with one idea at its core: context over control.",
+          "Avenstek is built with one idea at its core: context over control.",
           "We don't want to control reps. We want to capture what actually happened — and turn it into structure that helps them move forward. That's why:"
         ],
         list: [
@@ -676,7 +676,7 @@ const blogPosts: BlogPost[] = [
         title: "What's next",
         content: [
           "We're not stopping at AI summaries. We're building toward a CRM that disappears into the workflow: one that knows when to speak up, when to stay out of the way, and when to remind you what matters.",
-          "Hexa isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
+          "Avenstek isn't trying to be Salesforce with a nicer skin. It's trying to be the tool that makes sales feel like sales again."
         ]
       },
       {

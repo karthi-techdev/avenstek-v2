@@ -62,7 +62,7 @@ const resources = [
   { name: 'Customers', description: 'Stories from SaaS teams scaling smarter', href: '#', icon: FingerPrintIcon },
 ]
 const company = [
-  { name: 'About', description: 'Whos behind Hexa', href: '#', icon: ChartPieIcon },
+  { name: 'About', description: 'Whos behind Avenstek', href: '#', icon: ChartPieIcon },
   { name: 'Careers', description: 'Join the team', href: '#', icon: CursorArrowRaysIcon },
   { name: 'Get help', description: 'Need a hand? We`ve got you', href: '#', icon: FingerPrintIcon },
 
@@ -286,198 +286,107 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
           <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
             <div className="fixed inset-0 z-50" />
             <DialogPanel className="fixed inset-y-0 right-0 z-100000 w-full overflow-y-auto bg-white p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 dark:bg-gray-900 dark:sm:ring-gray-100/10">
-              <div className="flex items-center justify-between">
-                 <Link href="/" className="-m-1.5 p-1.5">
-                  <Image src={logoImg} alt="logo" height="20" className="invert-70"/>
-                 </Link>
-                <button
-                  type="button"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="-m-2.5 rounded-md p-2.5 text-gray-700 dark:text-gray-400"
-                >
-                  <span className="sr-only">Close menu</span>
-                  <XMarkIcon aria-hidden="true" className="size-6" />
-                </button>
-              </div>
-              <div className="mt-6 flow-root">
-                <div className="-my-6 divide-y divide-gray-500/10 dark:divide-white/10">
-                  <div className="space-y-2 py-6">
-                    <Disclosure as="div" className="-mx-3">
-                      <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5">
-                       Product  
-                        <ChevronDownIcon aria-hidden="true" className="size-5 flex-none group-data-open:rotate-180" />
-                      </DisclosureButton>
-                      <DisclosurePanel className="mt-2 space-y-2">
-                          <DisclosureButton
-                            as="a"
-                            className="block rounded-lg text-sm/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
-                          >
-                           <div className="p-0">
-                              <div className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm/6 hover:bg-[var(--color-13)] dark:hover:bg-white/5">
-                                <div className="flex size-11 flex-none items-center justify-center rounded-lg bg-[var(--color-13)] group-hover:bg-white dark:bg-gray-700/50 dark:group-hover:bg-gray-700">
-                                  <Image src={bazLogo} alt="bazLogo" className="rounded" />
-                                </div>
-
-                                <div className="flex-auto">
-                                  <Link
-                                    href="https://bookadzone.com"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={() => close()}
-                                    className="expressa-font tracking-wider text-[1rem] block font-semibold text-gray-700 dark:text-white"
-                                  >
-                                    bookadzone
-                                    <span className="absolute inset-0" />
-                                  </Link>
-
-                                  <p className="text-gray-600 dark:text-gray-400">
-                                    Your Outdoor Advertising AI Powerhouse.
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </DisclosureButton>
-                      </DisclosurePanel>
-                    </Disclosure>
-
-                    {/* <Disclosure as="div" className="-mx-3">
-                      <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5">
-                        Solution
-                        <ChevronDownIcon aria-hidden="true" className="size-5 flex-none group-data-open:rotate-180" />
-                      </DisclosureButton>
-                      <DisclosurePanel className="mt-2 space-y-2">
-                        {solutions.map((item) => (
-                          <DisclosureButton
-                            key={item.name}
-                            as="a"
-                            href={item.href}
-                            className="block rounded-lg py-2 pr-3 pl-6 text-sm/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
-                          >
-                            <div className="flex gap-3xl ">
-                              <div className="flex size-11 flex-none items-center justify-center  dark:bg-gray-700/50 dark:group-hover:bg-gray-700">
-                                <item.icon
-                                  aria-hidden="true"
-                                  className="size-6 text-[var(--color-6)]  dark:text-gray-400 dark:group-hover:text-white"
-                                />
-                              </div>
-                              <div className="pt-2 pl-4 text-md text-[var(--color-20)]">
-                                {item.name}
-                              </div>
-                            </div>
-                          </DisclosureButton>
-                        ))}
-                      </DisclosurePanel>
-                    </Disclosure> */}
-
-                    {/* <Disclosure as="div" className="-mx-3">
-                      <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5">
-                        Resources
-                        <ChevronDownIcon aria-hidden="true" className="size-5 flex-none group-data-open:rotate-180" />
-                      </DisclosureButton>
-                      <DisclosurePanel className="mt-2 space-y-2">
-                        {resources.map((item) => (
-                          <DisclosureButton
-                            key={item.name}
-                            as="a"
-                            href={item.href}
-                            className="block rounded-lg py-2 pr-3 pl-6 text-sm/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
-                          >
-                            <div className="flex gap-3xl ">
-                              <div className="flex size-11 flex-none items-center justify-center  dark:bg-gray-700/50 dark:group-hover:bg-gray-700">
-                                <item.icon
-                                  aria-hidden="true"
-                                  className="size-6 text-[var(--color-6)]  dark:text-gray-400 dark:group-hover:text-white"
-                                />
-                              </div>
-                              <div className="pt-2 pl-4 text-md text-[var(--color-20)]">
-                                {item.name}
-                              </div>
-                            </div>
-                          </DisclosureButton>
-                        ))}
-                      </DisclosurePanel>
-                    </Disclosure> */}
-
-                    {/* <Disclosure as="div" className="-mx-3">
-                      <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5">
-                        Company
-                        <ChevronDownIcon aria-hidden="true" className="size-5 flex-none group-data-open:rotate-180" />
-                      </DisclosureButton>
-                      <DisclosurePanel className="mt-2 space-y-2">
-                        {company.map((item) => (
-                          <DisclosureButton
-                            key={item.name}
-                            as="a"
-                            href={item.href}
-                            className="block rounded-lg py-2 pr-3 pl-6 text-sm/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
-                          >
-                            <div className="flex gap-3xl ">
-                              <div className="flex size-11 flex-none items-center justify-center  dark:bg-gray-700/50 dark:group-hover:bg-gray-700">
-                                <item.icon
-                                  aria-hidden="true"
-                                  className="size-6 text-[var(--color-6)]  dark:text-gray-400 dark:group-hover:text-white"
-                                />
-                              </div>
-                              <div className="pt-2 pl-4 text-md text-[var(--color-20)]">
-                                {item.name}
-                              </div>
+            <div className="flex items-center justify-between">
+              <Link href="/" className="-m-1.5 p-1.5" onClick={() => close()}>
+                <Image src={logoImg} alt="logo" height="20" className="invert-70"/>
+              </Link>
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(false)}
+                className="-m-2.5 rounded-md p-2.5 text-gray-700 dark:text-gray-400"
+              >
+                <span className="sr-only">Close menu</span>
+                <XMarkIcon aria-hidden="true" className="size-6" />
+              </button>
+            </div>
+            <div className="mt-6 flow-root">
+              <div className="-my-6 divide-y divide-gray-500/10 dark:divide-white/10">
+                <div className="space-y-2 py-6">
+                  <Disclosure as="div" className="-mx-3">
+                    <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5">
+                      Product  
+                      <ChevronDownIcon aria-hidden="true" className="size-5 flex-none group-data-open:rotate-180" />
+                    </DisclosureButton>
+                    <DisclosurePanel className="mt-2 space-y-2">
+                      <DisclosureButton
+                        as="a"
+                        className="block rounded-lg text-sm/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
+                      >
+                        <div className="p-0">
+                          <div className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm/6 hover:bg-[var(--color-13)] dark:hover:bg-white/5">
+                            <div className="flex size-11 flex-none items-center justify-center rounded-lg bg-[var(--color-13)] group-hover:bg-white dark:bg-gray-700/50 dark:group-hover:bg-gray-700">
+                              <Image src={bazLogo} alt="bazLogo" className="rounded" />
                             </div>
 
-                          </DisclosureButton>
-                        ))}
-                      </DisclosurePanel>
-                    </Disclosure> */}
+                            <div className="flex-auto">
+                              <Link
+                                href="https://bookadzone.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="expressa-font tracking-wider text-[1rem] block font-semibold text-gray-700 dark:text-white"
+                              >
+                                bookadzone
+                                <span className="absolute inset-0" />
+                              </Link>
 
-                    
+                              <p className="text-gray-600 dark:text-gray-400">
+                                Your Outdoor Advertising AI Powerhouse.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </DisclosureButton>
+                    </DisclosurePanel>
+                  </Disclosure>
 
-                    <Link
-                      href="/about-us"
-                      className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
-                    >
-                      About us
-                    </Link>
+                  <Link
+                    href="/about-us"
+                    className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    About us
+                  </Link>
 
-                     <Link
-                      href="/services"
-                      className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
-                    >
-                      Services
-                    </Link>
+                  <Link
+                    href="/services"
+                    className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Services
+                  </Link>
 
-                    <Link
-                      href="/blog"
-                      className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
-                    >
-                      Blog
-                    </Link>
+                  <Link
+                    href="/blog"
+                    className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Blog
+                  </Link>
 
-                    <Link
-                      href="/contact-us"
-                      className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
-                    >
-                      Contact us
-                    </Link>
+                  <Link
+                    href="/contact-us"
+                    className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Contact us
+                  </Link>
 
-                  </div>
-                  <div className="py-6">
-                    {/* <a
-                      href="#"
-                      className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
-                    >
-                      <button className=" flex justify-center bg-[var(--color-8)] text-[var(--color-2)] text-sm  px-3 py-2 rounded-full font-semibold hover:bg-[var(--color-7)] transition w-[100%] md:w-[100%] lg:w-[0]">Purchase template<GoChevronRight className="text-xl text-[var(--color-2)] font-semibold" /></button>
-                    </a> */}
-                    <Link
-                      href="/contact-us"
-                      className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5 "
-                    >
-                      <button className="sm:ml-0 md:ml-0 lg:ml-3 flex justify-center rounded-full bg-[var(--color-2)] text-sm font-semibold px-3 py-2 text-[var(--color-1)] border border-[var(--color-21)]  hover:bg-[var(--color-13)] transition sm:w-full w-[100%] md:w-[100%] lg:w-[0]">
-                        Book a demo <TbClick className=" pl-1 pt-1 text-2xl text-[var(--color-20)]" />
-                      </button>
-                    </Link>
-                  </div>
+                </div>
+                <div className="py-6">
+                  <Link
+                    href="/contact-us"
+                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <button className="sm:ml-0 md:ml-0 lg:ml-3 flex justify-center rounded-full bg-[var(--color-2)] text-sm font-semibold px-3 py-2 text-[var(--color-1)] border border-[var(--color-21)]  hover:bg-[var(--color-13)] transition sm:w-full w-[100%] md:w-[100%] lg:w-[0]">
+                      Book a demo <TbClick className=" pl-1 pt-1 text-2xl text-[var(--color-20)]" />
+                    </button>
+                  </Link>
                 </div>
               </div>
-            </DialogPanel>
+            </div>
+          </DialogPanel>
           </Dialog>
         </header>
 
@@ -623,7 +532,7 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
           </div>
           <hr className="text-[var(--color-20)]"></hr>
           <div className=" p-5 flex flex-col md:flex-col lg:flex-row lg:items-start lg:gap-8 gap-4 lg:px-[6rem]  lg:w-[90%] lg:mx-auto ">
-            <p className="text-left text-[var(--color-20)] text-md pb-2 tracking-normal">© 2025 Hexa. All rights reserved.</p>
+            <p className="text-left text-[var(--color-20)] text-md pb-2 tracking-normal">© 2025 Avenstek. All rights reserved.</p>
             <ul className="flex flex-col md:flex-col lg:flex-row gap-3 lg:gap-6 ml-0 lg:ml-[20rem]">
               <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">AI Disclosure</li>
               <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hidden lg:block hover:text-[var(--color-8)] cursor-pointer">AUP</li>

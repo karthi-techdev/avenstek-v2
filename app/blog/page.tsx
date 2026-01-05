@@ -119,7 +119,7 @@ export default function BlogPage() {
     },
     {
       id: 10,
-      title: "Why Fast, Then Right Is How We Build at Hexa ",
+      title: "Why Fast, Then Right Is How We Build at Avenstek ",
       category: "Founder Insights",
       readTime: "5 mins read",
       author: "Jenna Marks",
@@ -245,7 +245,7 @@ export default function BlogPage() {
                   scroll hijacking, and oversized gradients — but actual users? They want clarity,
                   speed, and a reason to click. This article explores why simpler, content-focused
                   landing pages consistently outperform flashy ones, backed by conversion data,
-                  user behavior insights, and our own approach to designing the Hexa template.
+                  user behavior insights, and our own approach to designing the Avenstek template.
                 </motion.p>
 
                 <motion.div

@@ -36,7 +36,7 @@ export default function StoryPage() {
                 <div className="max-w-3xl mx-auto text-center px-4 mt-10">
                   <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 leading-tight">
                     How Kanba Streamlined <br />
-                    RevOps Across 5 Teams Using Hexa
+                    RevOps Across 5 Teams Using Avenstek
                   </h1>
                 </div>
 
@@ -94,9 +94,9 @@ export default function StoryPage() {
                       </ul>
                     </div>
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">What Changed with Hexa</h3>
+                      <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">What Changed with Avenstek</h3>
                       <p className="text-gray-700 leading-relaxed">
-                        Hexa’s Enterprise Plan gave Kanba a single workspace with AI-powered follow-ups, 
+                        Avenstek’s Enterprise Plan gave Kanba a single workspace with AI-powered follow-ups, 
                         timeline-based deal views, and real-time coaching summaries. RevOps rolled it 
                         out org-wide in under 48 hours.
                       </p>
@@ -104,7 +104,7 @@ export default function StoryPage() {
                     <div>
                       <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">Favorite Feature</h3>
                       <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-700">
-                        “The AI-generated deal summaries gave us instant insight. Before Hexa, I needed 4 tools 
+                        “The AI-generated deal summaries gave us instant insight. Before Avenstek, I needed 4 tools 
                         and a spreadsheet to do what I can now do in 3 clicks.”
                       </blockquote>
                     </div>
@@ -254,9 +254,9 @@ export default function StoryPage() {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-500 uppercase mb-3">What Changed with Hexa</h3>
+              <h3 className="text-sm font-semibold text-gray-500 uppercase mb-3">What Changed with Avenstek</h3>
               <p className="leading-relaxed text-gray-700">
-                Hexa’s Enterprise Plan gave Kanba a single workspace with AI-powered follow-ups...
+                Avenstek’s Enterprise Plan gave Kanba a single workspace with AI-powered follow-ups...
               </p>
             </div>
 
@@ -341,7 +341,7 @@ export default function StoryPage() {
               <div className="bg-white border border-zinc-200 rounded-2xl p-8 shadow-sm w-full">
                 <img src="/images/img13.svg" alt="Kanba" className="w-30 h-12 mb-6" />
                 <p className="text-zinc-700 mb-8">
-                  “Hexa made our RevOps stack feel like a single product...”
+                  “Avenstek made our RevOps stack feel like a single product...”
                 </p>
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">

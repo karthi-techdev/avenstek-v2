@@ -30,12 +30,12 @@ export default function CustomersPage() {
               <h1 className="leading-tight text-2xl sm:text-4xl lg:text-6xl font-bold text-[var(--color-black)] tracking-tight">
                 Sales team that <br />
                 <span className="text-[var(--color-zinc-500)] text-6px"> real</span>
-                <span className="text-[var(--color-zinc-500)]"> move faster with Hexa </span>
+                <span className="text-[var(--color-zinc-500)]"> move faster with Avenstek </span>
               </h1>
 
               <p className="sm:mt-6 mx-auto max-w-xl sm:max-w-2xl text-base sm:text-lg text-[var(--color-zinc-600)]">
                 From solo founders to fast-moving sales orgs, see how teams use<br />
-                Hexa to close faster, follow up smarter, and win more with less.
+                Avenstek to close faster, follow up smarter, and win more with less.
               </p>
 
               <div className="mt-6 sm:mt-10 flex justify-center">
@@ -158,7 +158,7 @@ export default function CustomersPage() {
                       <img src="/images/img13.svg" alt="Kanba" className="w-24 sm:w-30 h-10 sm:h-12 object-contain" />
                     </div>
                     <p className="text-zinc-700 text-sm sm:text-base mb-6 sm:mb-8 text-center sm:text-left lg:text-left">
-                      “Hexa made our RevOps stack feel like a single product. We went from 5 tools to 1 for tracking, coaching, and follow-ups. Pipeline visibility improved overnight — and our AE ramp time dropped by over 40%.”
+                      “Avenstek made our RevOps stack feel like a single product. We went from 5 tools to 1 for tracking, coaching, and follow-ups. Pipeline visibility improved overnight — and our AE ramp time dropped by over 40%.”
                     </p>
                     <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-3 px-0 sm:px-7">
                       <div className="flex items-center gap-3">
@@ -183,7 +183,7 @@ export default function CustomersPage() {
                       <img src="/images/img14.svg" alt="Codelab" className="w-24 sm:w-30 h-10 sm:h-12 object-contain" />
                     </div>
                     <p className="text-zinc-700 text-sm sm:text-base mb-6 sm:mb-8 text-center sm:text-left lg:text-left">
-                      “Hexa made our RevOps stack feel like a single product. We went from 5 tools to 1 for tracking, coaching, and follow-ups. Pipeline visibility improved overnight — and our AE ramp time dropped by over 40%.”
+                      “Avenstek made our RevOps stack feel like a single product. We went from 5 tools to 1 for tracking, coaching, and follow-ups. Pipeline visibility improved overnight — and our AE ramp time dropped by over 40%.”
                     </p>
                     <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-3 px-0 sm:px-7">
                       <div className="flex items-center gap-3">
