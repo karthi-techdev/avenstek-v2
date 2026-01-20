@@ -2,11 +2,12 @@
 import { FiVolume2 } from 'react-icons/fi';
 import { useState } from "react";
 import { usePageSEO } from '../hooks/usePageTitles';
+import api from '@/lib/api';
 
 export default function Contact() {
-  
+
   usePageSEO(
-    "Contact us", 
+    "Contact us",
     "Ready to elevate your digital presence? Contact Avenstek Solutions Pvt Ltd for expert software development, AI consulting, and cloud strategy. Let's build your next project together."
   );
 
@@ -20,23 +21,26 @@ export default function Contact() {
   const [number, setNumber] = useState("");
   const [numberError, setNumberError] = useState(false);
 
+  const [source, setSource] = useState("");
+  const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-  const handleName = (event: any) => {
+  const handleName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
   };
-  
-  const handleEmail = (event: any) => {
+
+  const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
   };
-  
-  const handleNumber = (event: any) => {
+
+  const handleNumber = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNumber(event.target.value);
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Reset errors
     setNameError(false);
     setEmailError(false);
@@ -67,18 +71,36 @@ export default function Contact() {
       hasError = true;
     }
 
-    // If no errors, show success popup
+    // If no errors, submit form
     if (!hasError) {
-      setShowSuccessPopup(true);
-      // Optionally reset form
-      setName("");
-      setEmail("");
-      setNumber("");
-      
-      // Hide popup after 3 seconds
-      setTimeout(() => {
-        setShowSuccessPopup(false);
-      }, 3000);
+      setIsSubmitting(true);
+      try {
+        await api.post('/content/contacts', {
+          name,
+          email,
+          phone: number,
+          source: source || 'Direct',
+          message: message || 'Requested a demo/consultation'
+        });
+
+        setShowSuccessPopup(true);
+        // Reset form
+        setName("");
+        setEmail("");
+        setNumber("");
+        setSource("");
+        setMessage("");
+
+        // Hide popup after 3 seconds
+        setTimeout(() => {
+          setShowSuccessPopup(false);
+        }, 3000);
+      } catch (err) {
+        console.error("Submission failed", err);
+        alert('Failed to submit form. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -86,7 +108,7 @@ export default function Contact() {
     <>
       {showSuccessPopup && (
         <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-5000000">
-          <div className="bg-white rounded-2xl p-8 max-w-sm mx-4 shadow-2xl">
+          <div className="bg-white rounded-2xl p-8 max-w-sm mx-4 shadow-2xl animate-in zoom-in duration-300">
             <div className="text-center">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -178,17 +200,19 @@ export default function Contact() {
                   How did you hear about us?
                 </label>
                 <select
+                  value={source}
+                  onChange={(e) => setSource(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg
                     focus:ring-2 focus:ring-[var(--color-8)]
                     focus:border-transparent outline-none transition
                     bg-[var(--color-2)]"
                 >
                   <option value="" disabled>Select...</option>
-                  <option value="search">Web Search</option>
-                  <option value="social">Word of Mouth</option>
-                  <option value="search">Linkedin</option>
-                  <option value="social">Instagram</option>
-                  <option value="search">X</option>
+                  <option value="Web Search">Web Search</option>
+                  <option value="Word of Mouth">Word of Mouth</option>
+                  <option value="Linkedin">Linkedin</option>
+                  <option value="Instagram">Instagram</option>
+                  <option value="X">X (Twitter)</option>
                 </select>
               </div>
             </div>
@@ -199,6 +223,8 @@ export default function Contact() {
               </label>
               <textarea
                 rows={4}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
                 placeholder="What would you like to explore during the demo?"
                 className="text-base placeholder:text-[var(--color-20)] font-normal w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-8)] focus:border-transparent outline-none transition resize-none bg-[var(--color-2)] lg:px-4 lg:py-4"
               />
@@ -208,9 +234,15 @@ export default function Contact() {
               <div className="flex flex-col sm:flex-col md:flex-row justify-between items-center gap-6">
                 <button
                   type="submit"
-                  className="w-full px-10 py-3 bg-[var(--color-8)] text-white rounded-full hover:bg-[var(--color-6)] transition lg:px-4 lg:py-3"
+                  disabled={isSubmitting}
+                  className="w-full px-10 py-3 bg-[var(--color-8)] text-white rounded-full hover:bg-[var(--color-6)] transition lg:px-4 lg:py-3 disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  Submit form
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Submitting...
+                    </>
+                  ) : 'Submit form'}
                 </button>
               </div>
             </div>

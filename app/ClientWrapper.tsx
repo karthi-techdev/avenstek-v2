@@ -612,16 +612,53 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
                   Subscribe to our newsletter for the latest updates, news, and insights.
                 </p>
                 <div className="flex flex-col gap-3">
-                  <div className="relative">
-                    <input
-                      type="email"
-                      placeholder="Enter your email"
-                      className="w-full px-4 py-3 rounded-lg bg-[var(--color-2)] border border-[var(--color-19)] text-[var(--color-20)] placeholder-[var(--color-20)]/60 focus:outline-none focus:border-[var(--color-8)] focus:ring-1 focus:ring-[var(--color-8)]"
-                    />
-                  </div>
-                  <button className="px-6 py-3 rounded-lg bg-[var(--color-8)] text-[var(--color-2)] font-semibold hover:bg-[var(--color-13)] hover:text-[var(--color-8)] transition duration-300 border border-[var(--color-19)]">
-                    Subscribe
-                  </button>
+                  <form 
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      const form = e.target as HTMLFormElement;
+                      const emailInput = form.querySelector('input') as HTMLInputElement;
+                      const email = emailInput.value;
+                      
+                      if (!email) return;
+                      
+                      const submitBtn = form.querySelector('button') as HTMLButtonElement;
+                      const originalText = submitBtn.innerText;
+                      submitBtn.disabled = true;
+                      submitBtn.innerText = 'Subscribing...';
+
+                      try {
+                        const api = (await import('@/lib/api')).default;
+                        await api.post('/content/subscribers', { email });
+                        alert('Thank you for subscribing!');
+                        emailInput.value = '';
+                      } catch (err: any) {
+                        if (err.response?.status === 400 || err.response?.data?.message?.includes('duplicate')) {
+                          alert('This email is already subscribed.');
+                        } else {
+                          alert('Something went wrong. Please try again.');
+                        }
+                      } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = originalText;
+                      }
+                    }} 
+                    className="flex flex-col gap-3"
+                  >
+                    <div className="relative">
+                      <input
+                        type="email"
+                        required
+                        placeholder="Enter your email"
+                        className="w-full px-4 py-3 rounded-lg bg-[var(--color-2)] border border-[var(--color-19)] text-[var(--color-20)] placeholder-[var(--color-20)]/60 focus:outline-none focus:border-[var(--color-8)] focus:ring-1 focus:ring-[var(--color-8)]"
+                      />
+                    </div>
+                    <button 
+                      type="submit"
+                      className="px-6 py-3 rounded-lg bg-[var(--color-8)] text-[var(--color-2)] font-semibold hover:bg-[var(--color-7)] transition duration-300 border border-[var(--color-19)] disabled:opacity-50"
+                    >
+                      Subscribe
+                    </button>
+                  </form>
                 </div>
                 <p className="text-[var(--color-20)] text-xs pt-3 opacity-70">
                   We respect your privacy. Unsubscribe at any time.

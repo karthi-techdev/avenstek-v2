@@ -1,11 +1,11 @@
 "use client"
 import React, { useState } from 'react';
-import { 
-  HiOutlineSave, 
-  HiOutlinePhotograph, 
-  HiOutlineGlobe, 
-  HiOutlineMail, 
-  HiOutlinePhone, 
+import {
+  HiOutlineSave,
+  HiOutlinePhotograph,
+  HiOutlineGlobe,
+  HiOutlineMail,
+  HiOutlinePhone,
   HiOutlineLink,
   HiOutlineShieldCheck,
   HiOutlineColorSwatch,
@@ -30,30 +30,60 @@ interface GeneralSettings {
   };
 }
 
+import api from '@/lib/api';
+
 const Settings: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [settings, setSettings] = useState<GeneralSettings>({
-    companyName: 'Lumina Digital',
-    companyTagline: 'Engineering the next generation of web experiences',
-    companyEmail: 'hello@lumina.io',
-    companyPhone: '+1 (555) 0123-4567',
+    companyName: '',
+    companyTagline: '',
+    companyEmail: '',
+    companyPhone: '',
     themeColor: '#1570EF',
-    logoUrl: 'https://picsum.photos/seed/logo/200/200',
-    faviconUrl: 'https://picsum.photos/seed/favicon/64/64',
+    logoUrl: '',
+    faviconUrl: '',
     isMaintenanceMode: false,
     socials: {
-      linkedin: 'linkedin.com/company/lumina',
-      twitter: 'twitter.com/lumina_tech',
-      instagram: 'instagram.com/lumina.digital',
-      facebook: 'facebook.com/lumina'
+      linkedin: '',
+      twitter: '',
+      instagram: '',
+      facebook: ''
     }
   });
 
+  React.useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const { data } = await api.get('/content/settings');
+        if (data && Object.keys(data).length > 0) {
+          // Ensure nested objects are merged correctly to avoid overwrites if backend returns partials
+          setSettings(prev => ({
+            ...prev,
+            ...data,
+            socials: { ...prev.socials, ...(data.socials || {}) }
+          }));
+        }
+      } catch (err) {
+        console.error("Failed to fetch settings", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
+
   const handleSave = async () => {
     setIsSaving(true);
-    await new Promise(r => setTimeout(r, 1000));
-    setIsSaving(false);
-    alert('Global settings updated and cached!');
+    try {
+      await api.post('/content/settings', settings);
+      alert('Global settings updated and cached!');
+    } catch (err) {
+      console.error("Error saving settings", err);
+      alert('Failed to update settings.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const updateSettings = (key: keyof GeneralSettings, value: any) => {
@@ -61,11 +91,38 @@ const Settings: React.FC = () => {
   };
 
   const updateSocial = (key: keyof GeneralSettings['socials'], value: string) => {
-    setSettings(prev => ({ 
-      ...prev, 
-      socials: { ...prev.socials, [key]: value } 
+    setSettings(prev => ({
+      ...prev,
+      socials: { ...prev.socials, [key]: value }
     }));
   };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, key: 'logoUrl' | 'faviconUrl') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const { data } = await api.post('/content/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      updateSettings(key, data.url);
+    } catch (err) {
+      console.error("Upload failed", err);
+      alert("Failed to upload image. Please try again.");
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <div className="w-12 h-12 border-4 border-[var(--color-7)]/20 border-t-[var(--color-7)] rounded-full animate-spin"></div>
+        <p className="text-[var(--color-21)] font-bold animate-pulse uppercase tracking-widest text-xs">Loading Configuration...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-in pb-20">
@@ -74,7 +131,7 @@ const Settings: React.FC = () => {
           <h1 className="text-3xl font-black text-[var(--color-16)] tracking-tight">General Settings</h1>
           <p className="text-[var(--color-20)] font-medium">Configure global identity, contact channels, and system status.</p>
         </div>
-        <button 
+        <button
           onClick={handleSave}
           disabled={isSaving}
           className="flex items-center gap-2 bg-[var(--color-7)] text-white px-8 py-3 rounded-2xl font-black shadow-xl shadow-[var(--color-7)]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
@@ -91,12 +148,12 @@ const Settings: React.FC = () => {
             <h3 className="text-xl font-black text-[var(--color-16)] flex items-center gap-3">
               <HiOutlineAdjustments className="text-[var(--color-7)]" /> Brand Identity
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-[var(--color-21)] uppercase tracking-[0.2em] px-1">Company Name</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={settings.companyName}
                   onChange={e => updateSettings('companyName', e.target.value)}
                   className="w-full px-5 py-4 bg-[var(--color-24)] rounded-2xl border border-[var(--color-23)] text-sm font-bold text-[var(--color-16)] outline-none focus:ring-2 focus:ring-[var(--color-11)] transition-all"
@@ -104,8 +161,8 @@ const Settings: React.FC = () => {
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-[var(--color-21)] uppercase tracking-[0.2em] px-1">Company Tagline</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={settings.companyTagline}
                   onChange={e => updateSettings('companyTagline', e.target.value)}
                   className="w-full px-5 py-4 bg-[var(--color-24)] rounded-2xl border border-[var(--color-23)] text-sm font-bold text-[var(--color-16)] outline-none focus:ring-2 focus:ring-[var(--color-11)] transition-all"
@@ -115,8 +172,8 @@ const Settings: React.FC = () => {
                 <label className="text-[10px] font-black text-[var(--color-21)] uppercase tracking-[0.2em] px-1">Theme Brand Color</label>
                 <div className="flex gap-2">
                   <div className="w-14 h-14 rounded-2xl shadow-inner border border-[var(--color-23)]" style={{ backgroundColor: settings.themeColor }}></div>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={settings.themeColor}
                     onChange={e => updateSettings('themeColor', e.target.value)}
                     className="flex-1 px-5 py-4 bg-[var(--color-24)] rounded-2xl border border-[var(--color-23)] text-sm font-bold text-[var(--color-16)] outline-none"
@@ -142,8 +199,8 @@ const Settings: React.FC = () => {
                 <label className="text-[10px] font-black text-[var(--color-21)] uppercase tracking-[0.2em] px-1">Support Email</label>
                 <div className="flex items-center gap-3 bg-[var(--color-24)] px-5 py-4 rounded-2xl border border-[var(--color-23)]">
                   <HiOutlineMail className="text-[var(--color-21)]" />
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     value={settings.companyEmail}
                     onChange={e => updateSettings('companyEmail', e.target.value)}
                     className="bg-transparent border-none w-full text-sm font-bold text-[var(--color-16)] focus:ring-0 outline-none p-0"
@@ -154,8 +211,8 @@ const Settings: React.FC = () => {
                 <label className="text-[10px] font-black text-[var(--color-21)] uppercase tracking-[0.2em] px-1">Business Phone</label>
                 <div className="flex items-center gap-3 bg-[var(--color-24)] px-5 py-4 rounded-2xl border border-[var(--color-23)]">
                   <HiOutlinePhone className="text-[var(--color-21)]" />
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={settings.companyPhone}
                     onChange={e => updateSettings('companyPhone', e.target.value)}
                     className="bg-transparent border-none w-full text-sm font-bold text-[var(--color-16)] focus:ring-0 outline-none p-0"
@@ -175,8 +232,8 @@ const Settings: React.FC = () => {
                   <label className="text-[10px] font-black text-[var(--color-21)] uppercase tracking-[0.2em] px-1 capitalize">{key}</label>
                   <div className="flex items-center gap-3 bg-[var(--color-24)] px-5 py-4 rounded-2xl border border-[var(--color-23)]">
                     <HiOutlineLink className="text-[var(--color-21)]" />
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={(settings.socials as any)[key]}
                       onChange={e => updateSocial(key as any, e.target.value)}
                       className="bg-transparent border-none w-full text-sm font-bold text-[var(--color-16)] focus:ring-0 outline-none p-0"
@@ -195,45 +252,59 @@ const Settings: React.FC = () => {
             <div className="space-y-6">
               <div className="space-y-3">
                 <label className="text-[10px] font-black text-[var(--color-21)] uppercase">Primary Logo</label>
-                <div className="relative group overflow-hidden rounded-[2rem] aspect-video bg-[var(--color-24)] border border-[var(--color-23)] flex items-center justify-center p-8">
+                <label className="relative group overflow-hidden rounded-[2rem] aspect-video bg-[var(--color-24)] border border-[var(--color-23)] flex items-center justify-center p-8 cursor-pointer">
                   <img src={settings.logoUrl} className="max-h-full object-contain group-hover:scale-105 transition-transform duration-500" alt="Logo" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-bold pointer-events-none">
                     <HiOutlinePhotograph size={20} /> Update Logo
                   </div>
-                </div>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, 'logoUrl')}
+                  />
+                </label>
               </div>
               <div className="space-y-3">
                 <label className="text-[10px] font-black text-[var(--color-21)] uppercase">Site Favicon</label>
                 <div className="flex items-center gap-4 p-4 bg-[var(--color-24)] rounded-2xl border border-[var(--color-23)]">
-                   <img src={settings.faviconUrl} className="w-10 h-10 rounded-lg shadow-sm" alt="Favicon" />
-                   <button className="text-[10px] font-black text-[var(--color-7)] uppercase">Change Asset</button>
+                  <img src={settings.faviconUrl} className="w-10 h-10 rounded-lg shadow-sm" alt="Favicon" />
+                  <label className="text-[10px] font-black text-[var(--color-7)] uppercase cursor-pointer hover:underline">
+                    Change Asset
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(e, 'faviconUrl')}
+                    />
+                  </label>
                 </div>
               </div>
             </div>
           </section>
 
           <section className="bg-[var(--color-16)] p-8 rounded-[2.5rem] text-white space-y-6">
-             <div className="flex items-center justify-between">
-                <h3 className="text-lg font-black uppercase tracking-wider flex items-center gap-3">
-                  <HiOutlineShieldCheck /> System Status
-                </h3>
-                <div className={`w-3 h-3 rounded-full ${settings.isMaintenanceMode ? 'bg-[var(--color-27)] animate-pulse shadow-[0_0_8px_var(--color-27)]' : 'bg-[var(--color-28)] shadow-[0_0_8px_var(--color-28)]'}`}></div>
-             </div>
-             <p className="text-xs text-[var(--color-21)] leading-relaxed">Maintenance mode restricts website access to administrators only while performing updates.</p>
-             <button 
-                onClick={() => updateSettings('isMaintenanceMode', !settings.isMaintenanceMode)}
-                className={`w-full py-4 rounded-2xl text-xs font-black uppercase transition-all duration-300 border
-                  ${settings.isMaintenanceMode 
-                    ? 'bg-[var(--color-27)] text-white border-transparent shadow-lg shadow-red-500/20' 
-                    : 'bg-transparent text-white border-white/20 hover:bg-white/10'}`}
-             >
-                {settings.isMaintenanceMode ? 'Deactivate Maintenance' : 'Go Into Maintenance'}
-             </button>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-black uppercase tracking-wider flex items-center gap-3">
+                <HiOutlineShieldCheck /> System Status
+              </h3>
+              <div className={`w-3 h-3 rounded-full ${settings.isMaintenanceMode ? 'bg-[var(--color-27)] animate-pulse shadow-[0_0_8px_var(--color-27)]' : 'bg-[var(--color-28)] shadow-[0_0_8px_var(--color-28)]'}`}></div>
+            </div>
+            <p className="text-xs text-[var(--color-21)] leading-relaxed">Maintenance mode restricts website access to administrators only while performing updates.</p>
+            <button
+              onClick={() => updateSettings('isMaintenanceMode', !settings.isMaintenanceMode)}
+              className={`w-full py-4 rounded-2xl text-xs font-black uppercase transition-all duration-300 border
+                  ${settings.isMaintenanceMode
+                  ? 'bg-[var(--color-27)] text-white border-transparent shadow-lg shadow-red-500/20'
+                  : 'bg-transparent text-white border-white/20 hover:bg-white/10'}`}
+            >
+              {settings.isMaintenanceMode ? 'Deactivate Maintenance' : 'Go Into Maintenance'}
+            </button>
           </section>
 
           <div className="bg-blue-50 border border-blue-100 p-8 rounded-[2.5rem] text-blue-800 space-y-4 shadow-sm">
-             <h4 className="text-xs font-black uppercase tracking-widest flex items-center gap-2"><HiOutlineColorSwatch /> Global Theme</h4>
-             <p className="text-[11px] leading-relaxed font-medium">Lumina Admin allows you to globally control the visual fingerprint of your public-facing website through these brand settings.</p>
+            <h4 className="text-xs font-black uppercase tracking-widest flex items-center gap-2"><HiOutlineColorSwatch /> Global Theme</h4>
+            <p className="text-[11px] leading-relaxed font-medium">Lumina Admin allows you to globally control the visual fingerprint of your public-facing website through these brand settings.</p>
           </div>
         </div>
       </div>

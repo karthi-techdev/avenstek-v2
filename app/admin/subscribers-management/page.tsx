@@ -1,41 +1,69 @@
 "use client";
-import React, { useState } from 'react';
-import { 
-  HiOutlineUsers, 
-  HiOutlineTrash, 
-  HiOutlineSearch, 
+
+import React, { useState, useEffect } from 'react';
+import api from '@/lib/api';
+import {
+  HiOutlineUsers,
+  HiOutlineTrash,
+  HiOutlineSearch,
   HiOutlineDownload,
   HiOutlineMailOpen,
   HiOutlineBan
 } from 'react-icons/hi';
 
 interface Subscriber {
-  id: string;
+  _id?: string;
+  id?: string;
   email: string;
   source: string;
-  subscribedAt: string;
   status: 'Active' | 'Unsubscribed' | 'Bounced';
+  createdAt?: string;
+  subscribedAt?: string;
 }
 
 const SubscribersManagement: React.FC = () => {
-  const [subscribers, setSubscribers] = useState<Subscriber[]>([
-    { id: '1', email: 'alex@startup.io', source: 'Blog Footer', subscribedAt: 'Oct 15, 2024', status: 'Active' },
-    { id: '2', email: 'sarah@design.co', source: 'Home Modal', subscribedAt: 'Oct 16, 2024', status: 'Active' },
-    { id: '3', email: 'mark@enterprise.net', source: 'Contact Form Opt-in', subscribedAt: 'Oct 12, 2024', status: 'Unsubscribed' },
-    { id: '4', email: 'invalid@bounce.me', source: 'Landing Page', subscribedAt: 'Oct 10, 2024', status: 'Bounced' },
-  ]);
-
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const deleteSubscriber = (id: string) => {
+  useEffect(() => {
+    const fetchSubscribers = async () => {
+      try {
+        const { data } = await api.get('/content/subscribers');
+        setSubscribers(data);
+      } catch (err) {
+        console.error("Error fetching subscribers", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchSubscribers();
+  }, []);
+
+  const deleteSubscriber = async (id: string) => {
     if (window.confirm('Remove this subscriber permanently?')) {
-      setSubscribers(prev => prev.filter(s => s.id !== id));
+      try {
+        await api.delete(`/content/subscribers/${id}`);
+        setSubscribers(prev => prev.filter(s => (s._id || s.id) !== id));
+      } catch (err) {
+        console.error("Error deleting subscriber", err);
+        alert('Failed to remove subscriber.');
+      }
     }
   };
 
-  const filteredSubscribers = subscribers.filter(s => 
-    s.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredSubscribers = subscribers.filter(s =>
+    s.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <div className="w-12 h-12 border-4 border-[var(--color-7)]/20 border-t-[var(--color-7)] rounded-full animate-spin"></div>
+        <p className="text-[var(--color-21)] font-bold animate-pulse uppercase tracking-widest text-xs">Syncing Audience...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-10">
@@ -51,9 +79,9 @@ const SubscribersManagement: React.FC = () => {
 
       <div className="bg-white p-4 rounded-2xl border border-[var(--color-23)] shadow-sm flex items-center gap-3">
         <HiOutlineSearch className="text-[var(--color-21)]" size={20} />
-        <input 
-          type="text" 
-          placeholder="Filter by email address..." 
+        <input
+          type="text"
+          placeholder="Filter by email address..."
           className="bg-transparent border-none outline-none text-sm w-full font-medium"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -73,41 +101,46 @@ const SubscribersManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--color-23)]">
-              {filteredSubscribers.map((sub) => (
-                <tr key={sub.id} className="hover:bg-[var(--color-14)] transition-colors group">
-                  <td className="px-8 py-5">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[var(--color-24)] flex items-center justify-center text-[var(--color-21)] font-black text-[10px]">
-                        {sub.email.charAt(0).toUpperCase()}
+              {filteredSubscribers.map((sub) => {
+                const subId = (sub._id || sub.id)!;
+                return (
+                  <tr key={subId} className="hover:bg-[var(--color-14)] transition-colors group">
+                    <td className="px-8 py-5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-[var(--color-24)] flex items-center justify-center text-[var(--color-21)] font-black text-[10px]">
+                          {sub.email?.charAt(0).toUpperCase() || '?'}
+                        </div>
+                        <span className="text-sm font-bold text-[var(--color-16)]">{sub.email}</span>
                       </div>
-                      <span className="text-sm font-bold text-[var(--color-16)]">{sub.email}</span>
-                    </div>
-                  </td>
-                  <td className="px-8 py-5 text-xs font-semibold text-[var(--color-19)]">{sub.source}</td>
-                  <td className="px-8 py-5 text-xs font-bold text-[var(--color-20)]">{sub.subscribedAt}</td>
-                  <td className="px-8 py-5">
-                    <span className={`px-3 py-1 rounded-xl text-[9px] font-black uppercase shadow-sm border
-                      ${sub.status === 'Active' ? 'bg-green-50 text-green-600 border-green-100' : 
-                        sub.status === 'Unsubscribed' ? 'bg-amber-50 text-amber-600 border-amber-100' : 
-                        'bg-red-50 text-red-600 border-red-100'}`}>
-                      {sub.status}
-                    </span>
-                  </td>
-                  <td className="px-8 py-5 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button className="p-2 text-[var(--color-21)] hover:text-[var(--color-7)] transition-colors">
-                        <HiOutlineMailOpen size={18} />
-                      </button>
-                      <button 
-                        onClick={() => deleteSubscriber(sub.id)}
-                        className="p-2 text-[var(--color-21)] hover:text-red-500 transition-colors"
-                      >
-                        <HiOutlineTrash size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-8 py-5 text-xs font-semibold text-[var(--color-19)]">{sub.source || 'Website Footer'}</td>
+                    <td className="px-8 py-5 text-xs font-bold text-[var(--color-20)]">
+                      {sub.createdAt ? new Date(sub.createdAt).toLocaleDateString() : sub.subscribedAt}
+                    </td>
+                    <td className="px-8 py-5">
+                      <span className={`px-3 py-1 rounded-xl text-[9px] font-black uppercase shadow-sm border
+                        ${sub.status === 'Active' ? 'bg-green-50 text-green-600 border-green-100' :
+                          sub.status === 'Unsubscribed' ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                            'bg-red-50 text-red-600 border-red-100'}`}>
+                        {sub.status || 'Active'}
+                      </span>
+                    </td>
+                    <td className="px-8 py-5 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button className="p-2 text-[var(--color-21)] hover:text-[var(--color-7)] transition-colors">
+                          <HiOutlineMailOpen size={18} />
+                        </button>
+                        <button
+                          onClick={() => deleteSubscriber(subId)}
+                          className="p-2 text-[var(--color-21)] hover:text-red-500 transition-colors"
+                        >
+                          <HiOutlineTrash size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -121,7 +154,7 @@ const SubscribersManagement: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-        <div className="bg-[var(--color-16)] p-8 rounded-[2.5rem] text-white flex items-center gap-6 shadow-xl border border-white/5">
+        <div className="bg-[var(--color-16)] p-8 rounded-[2.5rem] text-white flex items-center gap-6 shadow-xl border border-white/5 cursor-pointer hover:bg-[var(--color-16)]/90 transition-all">
           <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center border border-white/10">
             <HiOutlineMailOpen size={24} className="text-[var(--color-8)]" />
           </div>
@@ -130,7 +163,7 @@ const SubscribersManagement: React.FC = () => {
             <p className="text-xs text-[var(--color-21)] font-medium">Draft a new newsletter to send to all active members.</p>
           </div>
         </div>
-        <div className="bg-white p-8 rounded-[2.5rem] border border-[var(--color-23)] flex items-center gap-6 shadow-sm">
+        <div className="bg-white p-8 rounded-[2.5rem] border border-[var(--color-23)] flex items-center gap-6 shadow-sm cursor-pointer hover:bg-[var(--color-24)] transition-all">
           <div className="w-14 h-14 bg-[var(--color-13)] rounded-2xl flex items-center justify-center border border-[var(--color-11)]">
             <HiOutlineBan size={24} className="text-[var(--color-27)]" />
           </div>

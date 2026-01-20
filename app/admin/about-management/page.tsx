@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   HiOutlineSave, 
   HiOutlinePlus, 
@@ -11,6 +11,7 @@ import {
   HiOutlineLink,
   HiOutlineArrowsExpand
 } from 'react-icons/hi';
+import api from '@/lib/api';
 
 interface HeroSection {
   heroTitle: string;
@@ -24,7 +25,8 @@ interface HeroSection {
 }
 
 interface TeamMember {
-  id: string;
+  id?: string;
+  _id?: string;
   name: string;
   position: string;
   photo: string;
@@ -41,29 +43,42 @@ interface SEOData {
 const AboutUsManagement: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'hero' | 'team' | 'seo'>('hero');
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [hero, setHero] = useState<HeroSection>({
-    heroTitle: "Meet the Team Driving",
-    highlightedText: "Digital Innovation",
-    heroSubtitle: "We are a collective of thinkers and builders dedicated to solving the world's most complex engineering problems.",
-    bannerImage: "https://picsum.photos/seed/about/1200/600",
-    primaryBtnText: "Explore Our Services",
-    primaryBtnUrl: "/services",
-    secondaryBtnText: "Get in Touch",
-    secondaryBtnUrl: "/contact"
+    heroTitle: "",
+    highlightedText: "",
+    heroSubtitle: "",
+    bannerImage: "",
+    primaryBtnText: "",
+    primaryBtnUrl: "",
+    secondaryBtnText: "",
+    secondaryBtnUrl: ""
   });
 
-  const [team, setTeam] = useState<TeamMember[]>([
-    { id: '1', name: 'Sarah Jenkins', position: 'CEO & Founder', photo: 'https://i.pravatar.cc/150?u=sarah', order: 1, status: true },
-    { id: '2', name: 'David Chen', position: 'Head of Design', photo: 'https://i.pravatar.cc/150?u=david', order: 2, status: true },
-    { id: '3', name: 'James Wilson', position: 'CTO', photo: 'https://i.pravatar.cc/150?u=james', order: 3, status: true },
-  ]);
+  const [team, setTeam] = useState<TeamMember[]>([]);
 
   const [seo, setSeo] = useState<SEOData>({
-    title: "About Us | Lumina CMS - Engineering the Future",
-    description: "Learn about the mission, team, and values behind Lumina engineering.",
-    keywords: "team, mission, values, about lumina"
+    title: "",
+    description: "",
+    keywords: ""
   });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await api.get('/content/about');
+        if (data.hero) setHero(data.hero);
+        if (data.team) setTeam(data.team);
+        if (data.seo) setSeo(data.seo);
+      } catch (err) {
+        console.error("Error fetching about data", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const handleHeroChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setHero(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -74,7 +89,7 @@ const AboutUsManagement: React.FC = () => {
   };
 
   const updateMember = (id: string, updates: Partial<TeamMember>) => {
-    setTeam(prev => prev.map(m => m.id === id ? { ...m, ...updates } : m));
+    setTeam(prev => prev.map(m => (m._id === id || m.id === id) ? { ...m, ...updates } : m));
   };
 
   const addMember = () => {
@@ -90,14 +105,42 @@ const AboutUsManagement: React.FC = () => {
 
   const handleSave = async () => {
     setIsSaving(true);
-    await new Promise(r => setTimeout(r, 600));
-    setIsSaving(false);
-    alert('About Us page updated successfully!');
+    try {
+      await api.post('/content/about', { hero, team, seo });
+      alert('About Us page updated successfully!');
+    } catch (err) {
+      console.error("Error saving about data", err);
+      alert('Failed to update About Us Page.');
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: string, memberId?: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const { data } = await api.post('/content/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (memberId) {
+        updateMember(memberId, { photo: data.url });
+      } else {
+        setHero(prev => ({ ...prev, [field]: data.url }));
+      }
+    } catch (err) {
+      console.error("Upload failed", err);
+    }
+  };
+
+  if (isLoading) return <div className="p-10 text-center">Loading About Us data...</div>;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-10">
-      {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[var(--color-16)]">About Us Page</h1>
@@ -113,7 +156,6 @@ const AboutUsManagement: React.FC = () => {
         </button>
       </div>
 
-      {/* Tabs */}
       <div className="flex border-b border-[var(--color-23)] overflow-x-auto">
         {(['hero', 'team', 'seo'] as const).map(tab => (
           <button 
@@ -130,7 +172,6 @@ const AboutUsManagement: React.FC = () => {
         ))}
       </div>
 
-      {/* Tab Content: Hero */}
       {activeTab === 'hero' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <div className="bg-white p-6 rounded-3xl border border-[var(--color-23)] space-y-5 shadow-sm">
@@ -153,10 +194,13 @@ const AboutUsManagement: React.FC = () => {
               </div>
               
               <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-[var(--color-21)] uppercase mb-1.5 tracking-wider">Banner Image URL</label>
+                <label className="block text-xs font-bold text-[var(--color-21)] uppercase mb-1.5 tracking-wider">Banner Image</label>
                 <div className="flex gap-2">
                   <input type="text" name="bannerImage" value={hero.bannerImage} onChange={handleHeroChange} className="flex-1 px-4 py-2.5 rounded-xl border border-[var(--color-23)] bg-[var(--color-24)] text-[10px] outline-none" />
-                  <button className="bg-[var(--color-23)] p-2.5 rounded-xl text-[var(--color-19)] hover:bg-[var(--color-22)] transition-colors"><HiOutlineArrowsExpand /></button>
+                  <label className="bg-[var(--color-23)] p-2.5 rounded-xl text-[var(--color-19)] hover:bg-[var(--color-22)] transition-colors cursor-pointer">
+                    <HiOutlineArrowsExpand />
+                    <input type="file" className="hidden" onChange={(e) => handleImageUpload(e, 'bannerImage')} />
+                  </label>
                 </div>
               </div>
 
@@ -175,10 +219,9 @@ const AboutUsManagement: React.FC = () => {
             </div>
           </div>
           
-          {/* Live Preview Card */}
           <div className="space-y-6 sticky top-6">
             <div className="bg-[var(--color-16)] p-8 rounded-3xl text-white flex flex-col justify-center text-center space-y-4 h-[350px] relative overflow-hidden group shadow-xl">
-              <img src={hero.bannerImage} className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:scale-110 transition-transform duration-700" alt="Preview Banner" />
+              <img src={hero.bannerImage.startsWith('/') ? `http://localhost:5000${hero.bannerImage}` : hero.bannerImage} className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:scale-110 transition-transform duration-700" alt="Preview Banner" />
               <div className="relative z-10 space-y-4">
                 <h2 className="text-3xl font-bold leading-tight">
                   {hero.heroTitle} <span className="text-[var(--color-8)]">{hero.highlightedText}</span>
@@ -191,15 +234,10 @@ const AboutUsManagement: React.FC = () => {
               </div>
               <div className="absolute top-6 left-6 text-[var(--color-20)] text-[10px] font-bold tracking-widest uppercase">Live View Preview</div>
             </div>
-            <div className="bg-[var(--color-13)] p-6 rounded-3xl border border-[var(--color-11)] text-[var(--color-7)]">
-              <p className="text-xs font-bold uppercase tracking-widest flex items-center gap-2"><HiOutlinePhotograph /> Layout Tip</p>
-              <p className="text-[10px] text-[var(--color-19)] mt-1 leading-relaxed">Use high-resolution images with a landscape aspect ratio for the banner to ensure the best cross-device experience.</p>
-            </div>
           </div>
         </div>
       )}
 
-      {/* Tab Content: Team */}
       {activeTab === 'team' && (
         <div className="bg-white p-6 rounded-3xl border border-[var(--color-23)] shadow-sm">
           <div className="flex justify-between items-center mb-8 border-b border-[var(--color-23)] pb-4">
@@ -210,21 +248,22 @@ const AboutUsManagement: React.FC = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {team.sort((a,b) => a.order - b.order).map(member => (
-              <div key={member.id} className="p-6 border border-[var(--color-23)] rounded-3xl bg-[var(--color-25)] flex flex-col items-center text-center space-y-4 relative group hover:border-[var(--color-7)] transition-all">
+              <div key={member._id || member.id} className="p-6 border border-[var(--color-23)] rounded-3xl bg-[var(--color-25)] flex flex-col items-center text-center space-y-4 relative group hover:border-[var(--color-7)] transition-all">
                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                   <button onClick={() => setTeam(prev => prev.filter(m => m.id !== member.id))} className="text-[var(--color-27)] p-2 bg-white rounded-lg shadow-md hover:bg-red-50 transition-colors">
+                   <button onClick={() => setTeam(prev => prev.filter(m => (m._id || m.id) !== (member._id || member.id)))} className="text-[var(--color-27)] p-2 bg-white rounded-lg shadow-md hover:bg-red-50 transition-colors">
                       <HiOutlineTrash size={16} />
                    </button>
                 </div>
                 <div className="relative">
-                  <img src={member.photo} className="w-24 h-24 rounded-full object-cover ring-4 ring-white shadow-md" alt={member.name} />
-                  <button className="absolute bottom-0 right-0 p-2 bg-[var(--color-7)] text-white rounded-full shadow-lg hover:scale-110 transition-transform">
+                  <img src={member.photo.startsWith('/') ? `http://localhost:5000${member.photo}` : member.photo} className="w-24 h-24 rounded-full object-cover ring-4 ring-white shadow-md" alt={member.name} />
+                  <label className="absolute bottom-0 right-0 p-2 bg-[var(--color-7)] text-white rounded-full shadow-lg hover:scale-110 transition-transform cursor-pointer">
                     <HiOutlinePhotograph size={12} />
-                  </button>
+                    <input type="file" className="hidden" onChange={(e) => handleImageUpload(e, 'photo', (member._id || member.id)!)} />
+                  </label>
                 </div>
                 <div className="w-full space-y-1">
-                  <input type="text" value={member.name} onChange={e => updateMember(member.id, { name: e.target.value })} className="w-full text-center bg-transparent border-none font-bold text-[var(--color-16)] p-0 text-sm outline-none focus:ring-0" />
-                  <input type="text" value={member.position} onChange={e => updateMember(member.id, { position: e.target.value })} className="w-full text-center bg-transparent border-none text-[10px] text-[var(--color-21)] font-bold uppercase p-0 outline-none focus:ring-0" />
+                  <input type="text" value={member.name} onChange={e => updateMember((member._id || member.id)!, { name: e.target.value })} className="w-full text-center bg-transparent border-none font-bold text-[var(--color-16)] p-0 text-sm outline-none focus:ring-0" />
+                  <input type="text" value={member.position} onChange={e => updateMember((member._id || member.id)!, { position: e.target.value })} className="w-full text-center bg-transparent border-none text-[10px] text-[var(--color-21)] font-bold uppercase p-0 outline-none focus:ring-0" />
                 </div>
                 <div className="flex items-center gap-3 pt-4 border-t border-[var(--color-23)] w-full justify-between">
                   <div className="flex items-center gap-1.5">
@@ -232,12 +271,12 @@ const AboutUsManagement: React.FC = () => {
                     <input 
                       type="number" 
                       value={member.order} 
-                      onChange={e => updateMember(member.id, { order: parseInt(e.target.value) })}
+                      onChange={e => updateMember((member._id || member.id)!, { order: parseInt(e.target.value) })}
                       className="w-8 bg-transparent text-[10px] font-bold text-[var(--color-20)] outline-none"
                     />
                   </div>
                   <button 
-                    onClick={() => updateMember(member.id, { status: !member.status })}
+                    onClick={() => updateMember((member._id || member.id)!, { status: !member.status })}
                     className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase transition-colors ${member.status ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-500'}`}
                   >
                     {member.status ? 'Active' : 'Hidden'}
@@ -249,7 +288,6 @@ const AboutUsManagement: React.FC = () => {
         </div>
       )}
 
-      {/* Tab Content: SEO */}
       {activeTab === 'seo' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <div className="bg-white p-8 rounded-3xl border border-[var(--color-23)] space-y-6 shadow-sm">
@@ -267,19 +305,6 @@ const AboutUsManagement: React.FC = () => {
                 <label className="block text-xs font-bold text-[var(--color-21)] uppercase mb-2 tracking-widest">Focus Keywords</label>
                 <input type="text" name="keywords" value={seo.keywords} onChange={handleSeoChange} className="w-full px-4 py-3 rounded-2xl border border-[var(--color-23)] bg-[var(--color-24)] text-sm focus:ring-2 focus:ring-[var(--color-11)] outline-none transition-all" />
               </div>
-            </div>
-          </div>
-          
-          <div className="bg-white p-8 rounded-3xl border border-[var(--color-23)] space-y-6 shadow-sm sticky top-6">
-            <h4 className="text-xs font-bold text-[var(--color-21)] uppercase flex items-center gap-2"><HiOutlineSearch /> Google SERP Preview</h4>
-            <div className="space-y-1.5 p-6 bg-[var(--color-25)] rounded-2xl border border-[var(--color-23)]">
-              <p className="text-xs text-[#202124] flex items-center gap-1"><HiOutlineGlobe size={14} className="text-[var(--color-20)]" /> lumina.com › about</p>
-              <h3 className="text-xl text-[#1a0dab] font-medium hover:underline cursor-pointer line-clamp-1">{seo.title}</h3>
-              <p className="text-sm text-[#4d5156] line-clamp-3 leading-relaxed">{seo.description}</p>
-            </div>
-            <div className="flex items-center gap-3 p-4 bg-[var(--color-13)] rounded-2xl text-[var(--color-7)] border border-[var(--color-11)]">
-              <HiOutlineLink size={20} className="shrink-0" />
-              <p className="text-[10px] font-bold leading-relaxed">Search engine crawlers typically index this content within 24-48 hours after publication.</p>
             </div>
           </div>
         </div>

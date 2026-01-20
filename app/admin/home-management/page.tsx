@@ -1,10 +1,11 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as HiIcons from 'react-icons/hi';
-import { 
-  HiOutlineSave, HiOutlinePlus, HiOutlineTrash, HiOutlineCheckCircle, 
+import {
+  HiOutlineSave, HiOutlinePlus, HiOutlineTrash, HiOutlineCheckCircle,
   HiOutlineSearch, HiOutlineGlobe, HiOutlineCube
 } from 'react-icons/hi';
+import api from '@/lib/api';
 
 interface HeroData {
   heroTitle: string;
@@ -13,7 +14,8 @@ interface HeroData {
 }
 
 interface Specialization {
-  id: string;
+  id?: string;
+  _id?: string;
   title: string;
   iconName: string;
   order: number;
@@ -26,32 +28,43 @@ interface SEOData {
   keywords: string;
 }
 
-const IconRenderer = ({ name, size = 24 }: { name: string; size?: number }) => {
-  const IconComponent = (HiIcons as any)[name] || HiOutlineCube;
-  return <IconComponent size={size} />;
-};
+import { IconRenderer, IconPickerModal } from '../components/IconPicker';
 
 const HomeManagement: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'hero' | 'specializations' | 'seo'>('hero');
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [iconPickerTargetId, setIconPickerTargetId] = useState<string | number | null>(null);
 
   const [hero, setHero] = useState<HeroData>({
-    heroTitle: "Building Digital Experiences",
-    highlightedText: "Faster than ever",
-    heroSubtitle: "We provide top-tier engineering solutions that scale your business to new heights with modern stacks."
+    heroTitle: "",
+    highlightedText: "",
+    heroSubtitle: ""
   });
 
-  const [specializations, setSpecializations] = useState<Specialization[]>([
-    { id: '1', title: 'Cloud Infrastructure', iconName: 'HiOutlineCloud', order: 1, isActive: true },
-    { id: '2', title: 'Full-Stack Apps', iconName: 'HiOutlineTerminal', order: 2, isActive: true },
-    { id: '3', title: 'AI Integration', iconName: 'HiOutlineChip', order: 3, isActive: true },
-  ]);
+  const [specializations, setSpecializations] = useState<Specialization[]>([]);
 
   const [seo, setSeo] = useState<SEOData>({
-    title: "Lumina | Modern Digital Engineering Solutions",
-    description: "Lumina provides top-tier engineering solutions that scale your business to new heights with modern stacks.",
-    keywords: "web development, cloud solutions"
+    title: "",
+    description: "",
+    keywords: ""
   });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await api.get('/content/home');
+        if (data.hero) setHero(data.hero);
+        if (data.specializations) setSpecializations(data.specializations);
+        if (data.seo) setSeo(data.seo);
+      } catch (err) {
+        console.error("Error fetching home data", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const handleHeroChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setHero(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -62,7 +75,7 @@ const HomeManagement: React.FC = () => {
   };
 
   const updateSpec = (id: string, updates: Partial<Specialization>) => {
-    setSpecializations(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+    setSpecializations(prev => prev.map(s => (s._id === id || s.id === id) ? { ...s, ...updates } : s));
   };
 
   const addSpec = () => {
@@ -78,10 +91,18 @@ const HomeManagement: React.FC = () => {
 
   const handleSave = async () => {
     setIsSaving(true);
-    await new Promise(r => setTimeout(r, 600));
-    setIsSaving(false);
-    alert('Home Page updated!');
+    try {
+      await api.post('/content/home', { hero, specializations, seo });
+      alert('Home Page updated successfully!');
+    } catch (err) {
+      console.error("Error saving home data", err);
+      alert('Failed to update Home Page.');
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  if (isLoading) return <div className="p-10 text-center">Loading content...</div>;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-10">
@@ -136,24 +157,23 @@ const HomeManagement: React.FC = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {specializations.map(spec => (
-              <div key={spec.id} className="p-5 border border-[var(--color-23)] rounded-2xl bg-[var(--color-25)] space-y-4">
+              <div key={spec._id || spec.id} className="p-5 border border-[var(--color-23)] rounded-2xl bg-[var(--color-25)] space-y-4">
                 <div className="flex justify-between items-start">
-                  <div className="p-3 bg-white rounded-xl border border-[var(--color-23)] text-[var(--color-7)]">
+                  <button
+                    onClick={() => setIconPickerTargetId(spec._id || spec.id || null)}
+                    className="p-3 bg-white rounded-xl border border-[var(--color-23)] text-[var(--color-7)] hover:scale-105 transition-transform cursor-pointer relative group/icon"
+                  >
                     <IconRenderer name={spec.iconName} />
-                  </div>
-                  <button onClick={() => updateSpec(spec.id, { isActive: !spec.isActive })} className={`text-[10px] font-black uppercase px-2 py-1 rounded-lg ${spec.isActive ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-500'}`}>
+                  </button>
+                  <button onClick={() => updateSpec((spec._id || spec.id)!, { isActive: !spec.isActive })} className={`text-[10px] font-black uppercase px-2 py-1 rounded-lg ${spec.isActive ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-500'}`}>
                     {spec.isActive ? 'Active' : 'Hidden'}
                   </button>
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-[var(--color-21)] uppercase">Icon Name (HiOutline...)</label>
-                  <input type="text" value={spec.iconName} onChange={e => updateSpec(spec.id, { iconName: e.target.value })} className="w-full bg-white border border-[var(--color-23)] rounded-lg px-3 py-1.5 text-xs font-medium outline-none" />
-                </div>
-                <div>
                   <label className="text-[10px] font-bold text-[var(--color-21)] uppercase">Display Title</label>
-                  <input type="text" value={spec.title} onChange={e => updateSpec(spec.id, { title: e.target.value })} className="w-full bg-transparent border-none font-bold text-[var(--color-16)] focus:ring-0 p-0" />
+                  <input type="text" value={spec.title} onChange={e => updateSpec((spec._id || spec.id)!, { title: e.target.value })} className="w-full bg-transparent border-none font-bold text-[var(--color-16)] focus:ring-0 p-0" />
                 </div>
-                <button onClick={() => setSpecializations(prev => prev.filter(s => s.id !== spec.id))} className="text-[var(--color-27)] hover:underline text-xs font-bold pt-2 border-t w-full flex items-center gap-1 justify-center">
+                <button onClick={() => setSpecializations(prev => prev.filter(s => (s._id || s.id) !== (spec._id || spec.id)))} className="text-[var(--color-27)] hover:underline text-xs font-bold pt-2 border-t w-full flex items-center gap-1 justify-center">
                   <HiOutlineTrash /> Remove
                 </button>
               </div>
@@ -180,15 +200,25 @@ const HomeManagement: React.FC = () => {
           <div className="bg-white p-6 rounded-2xl border border-[var(--color-23)] space-y-2">
             <h4 className="text-xs font-bold text-[var(--color-21)] uppercase flex items-center gap-2"><HiOutlineSearch /> Google Preview</h4>
             <div className="space-y-1">
-              <p className="text-xs text-[#202124] flex items-center gap-1"><HiOutlineGlobe size={14} /> lumina.com › home</p>
+              <p className="text-xs text-[#202124] flex items-center gap-1"><HiOutlineGlobe size={14} /> avenstek.com › home</p>
               <h3 className="text-xl text-[#1a0dab] font-medium truncate">{seo.title}</h3>
               <p className="text-sm text-[#4d5156] line-clamp-3">{seo.description}</p>
             </div>
           </div>
         </div>
       )}
+      <IconPickerModal
+        isOpen={!!iconPickerTargetId}
+        onClose={() => setIconPickerTargetId(null)}
+        onSelect={(iconName) => {
+          if (iconPickerTargetId) {
+            updateSpec(iconPickerTargetId as string, { iconName });
+          }
+        }}
+      />
     </div>
   );
 };
 
 export default HomeManagement;
+

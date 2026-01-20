@@ -1,23 +1,24 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { ApexOptions } from 'apexcharts';
-import { 
-  HiOutlineGlobeAlt, 
-  HiOutlineChatAlt, 
-  HiOutlineDocumentText, 
-  HiOutlineCursorClick 
+import {
+  HiOutlineGlobeAlt,
+  HiOutlineChatAlt,
+  HiOutlineDocumentText,
+  HiOutlineCursorClick
 } from 'react-icons/hi';
+import api from '@/lib/api';
 
 // Dynamically import Chart to prevent SSR issues
-const Chart = dynamic(() => import('react-apexcharts'), { 
+const Chart = dynamic(() => import('react-apexcharts'), {
   ssr: false,
   loading: () => <div className="h-[320px] w-full animate-pulse bg-gray-100 rounded-lg" />
 });
 
-const StatCard: React.FC<{ title: string; value: string; trend: string; icon: any; isPositive: boolean }> = ({ 
-  title, value, trend, icon: Icon, isPositive 
+const StatCard: React.FC<{ title: string; value: string | number; trend: string; icon: any; isPositive: boolean }> = ({
+  title, value, trend, icon: Icon, isPositive
 }) => (
   <div className="bg-[var(--color-2)] p-6 rounded-2xl border border-[var(--color-23)] shadow-sm">
     <div className="flex items-start justify-between">
@@ -36,6 +37,23 @@ const StatCard: React.FC<{ title: string; value: string; trend: string; icon: an
 );
 
 const Dashboard: React.FC = () => {
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const { data } = await api.get('/content/dashboard-stats');
+        setStats(data);
+      } catch (err) {
+        console.error("Error fetching stats", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
   // Area Chart Config: Website Visitors
   const visitorOptions: ApexOptions = {
     chart: { type: 'area', toolbar: { show: false }, zoom: { enabled: false }, fontFamily: 'Outfit' },
@@ -44,7 +62,7 @@ const Dashboard: React.FC = () => {
     dataLabels: { enabled: false },
     stroke: { curve: 'smooth', width: 3 },
     grid: { borderColor: '#E9EAEB', strokeDashArray: 4 },
-    xaxis: { 
+    xaxis: {
       categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
       axisBorder: { show: false },
       axisTicks: { show: false },
@@ -87,6 +105,8 @@ const Dashboard: React.FC = () => {
 
   const sourceSeries = [6420, 4210, 770];
 
+  if (loading) return <div className="p-10 text-center text-sm font-bold text-[var(--color-20)]">Analyzing Dashboard Metrics...</div>;
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-10">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -101,10 +121,10 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard title="Website Visitors" value="11,400" trend="14.2%" icon={HiOutlineGlobeAlt} isPositive={true} />
-        <StatCard title="Total Blogs" value="156" trend="5.1%" icon={HiOutlineDocumentText} isPositive={true} />
-        <StatCard title="Total Enquiries" value="482" trend="12.5%" icon={HiOutlineChatAlt} isPositive={true} />
-        <StatCard title="Click Rate" value="3.42%" trend="0.8%" icon={HiOutlineCursorClick} isPositive={false} />
+        <StatCard title="Website Visitors" value={stats?.visitors?.toLocaleString() || '0'} trend="14.2%" icon={HiOutlineGlobeAlt} isPositive={true} />
+        <StatCard title="Total Blogs" value={stats?.blogs || '0'} trend="5.1%" icon={HiOutlineDocumentText} isPositive={true} />
+        <StatCard title="Total Enquiries" value={stats?.enquiries || '0'} trend="12.5%" icon={HiOutlineChatAlt} isPositive={true} />
+        <StatCard title="Click Rate" value={stats?.clickRate || '0%'} trend="0.8%" icon={HiOutlineCursorClick} isPositive={false} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

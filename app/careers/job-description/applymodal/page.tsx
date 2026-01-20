@@ -1,15 +1,18 @@
 "use client";
 import { useState } from "react";
+import api from "@/lib/api";
 
 interface ApplyModalProps {
   onClose: () => void;
   onSuccess: () => void;
+  jobId?: string;
 }
 
-const ApplyModal = ({ onClose, onSuccess }: ApplyModalProps) => {
+const ApplyModal = ({ onClose, onSuccess, jobId }: ApplyModalProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const form = e.currentTarget;
@@ -19,33 +22,53 @@ const ApplyModal = ({ onClose, onSuccess }: ApplyModalProps) => {
     const email = (formData.get("email") as string)?.trim();
     const phone = (formData.get("phone") as string)?.trim();
     const about = (formData.get("about") as string)?.trim();
-    const resume = formData.get("resume");
+    const resume = formData.get("resume") as File;
 
     const newErrors: Record<string, string> = {};
 
     if (!name) newErrors.name = "Name is required";
-    else if (name.length < 3) newErrors.name = "Name must be at least 3 characters";
-
     if (!email) newErrors.email = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       newErrors.email = "Enter a valid email address";
 
     if (!phone) newErrors.phone = "Phone number is required";
-    else if (!/^\d{10}$/.test(phone))
-      newErrors.phone = "Phone number must be 10 digits";
+    if (!about) newErrors.about = "Tell us a bit about yourself";
 
-    if (!about) newErrors.about = "Required";
-    else if (about.length < 20)
-      newErrors.about = "Minimum 10 characters required";
-
-    if (!resume || (resume as File).size === 0)
+    if (!resume || resume.size === 0) {
       newErrors.resume = "Resume is required";
+    } else {
+      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (!allowedTypes.includes(resume.type)) {
+        newErrors.resume = "PDF and Word documents only (.pdf, .doc, .docx)";
+      }
+    }
 
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      onSuccess();
-      form.reset();
+      setIsSubmitting(true);
+      try {
+        const submissionData = new FormData();
+        submissionData.append("name", name);
+        submissionData.append("email", email);
+        submissionData.append("phone", phone);
+        submissionData.append("aboutYourself", about);
+        submissionData.append("resume", resume);
+        if (jobId) submissionData.append("jobId", jobId);
+
+        await api.post('/content/applications', submissionData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        onSuccess();
+        form.reset();
+      } catch (err: any) {
+        console.error("Application error:", err);
+        const serverMessage = err.response?.data?.message || "Failed to submit application. Please try again.";
+        alert(serverMessage);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -134,9 +157,11 @@ const ApplyModal = ({ onClose, onSuccess }: ApplyModalProps) => {
           </div>
 
           <div>
+            <label className="text-xs font-bold text-[var(--color-20)] mb-1 block">Upload Resume (PDF/Word)</label>
             <input
               name="resume"
               type="file"
+              accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
               className="w-full border rounded-lg px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base"
             />
             <p className={`text-[var(--color-27)] text-xs text-left ${errors.resume ? 'visible' : 'invisible'}`}>

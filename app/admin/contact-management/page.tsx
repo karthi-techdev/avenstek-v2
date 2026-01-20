@@ -1,5 +1,7 @@
 "use client";
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
+import api from '@/lib/api';
 import { 
   HiOutlineMail, 
   HiOutlineTrash, 
@@ -10,55 +12,46 @@ import {
 } from 'react-icons/hi';
 
 interface ContactEnquiry {
-  id: string;
+  _id?: string;
+  id?: string;
   name: string;
   email: string;
   phone: string;
-  source: 'Web Search' | 'Referral' | 'Social Media' | 'Other';
+  source: string;
   message: string;
-  submittedAt: string;
+  createdAt?: string;
+  submittedAt?: string;
   status: 'New' | 'Read' | 'Responded';
 }
 
 const ContactManagement: React.FC = () => {
-  const [enquiries, setEnquiries] = useState<ContactEnquiry[]>([
-    { 
-      id: '1', 
-      name: 'Johnathan Archer', 
-      email: 'john@enterprise.io', 
-      phone: '+1 555-0101', 
-      source: 'Web Search', 
-      message: 'Looking for enterprise-grade cloud solutions for our deep space exploration fleet.',
-      submittedAt: 'Oct 20, 2024, 10:45 AM',
-      status: 'New'
-    },
-    { 
-      id: '2', 
-      name: "T'Pol Vulcan", 
-      email: 'science@highcommand.gov', 
-      phone: '+1 555-0102', 
-      source: 'Referral', 
-      message: 'The logic of your AI integration is impressive. Requesting a technical consultation.',
-      submittedAt: 'Oct 19, 2024, 02:15 PM',
-      status: 'Read'
-    },
-    { 
-      id: '3', 
-      name: 'Charles Tucker', 
-      email: 'trip@engine.room', 
-      phone: '+1 555-0103', 
-      source: 'Social Media', 
-      message: 'I heard you guys have the best cloud infrastructure tools. Want to try it out.',
-      submittedAt: 'Oct 18, 2024, 09:30 AM',
-      status: 'Responded'
-    }
-  ]);
-
+  const [enquiries, setEnquiries] = useState<ContactEnquiry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const deleteEnquiry = (id: string) => {
+  useEffect(() => {
+    const fetchEnquiries = async () => {
+      try {
+        const { data } = await api.get('/content/contacts');
+        setEnquiries(data);
+      } catch (err) {
+        console.error("Error fetching enquiries", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchEnquiries();
+  }, []);
+
+  const deleteEnquiry = async (id: string) => {
     if (window.confirm('Delete this inquiry?')) {
-      setEnquiries(prev => prev.filter(e => e.id !== id));
+      try {
+        await api.delete(`/content/contacts/${id}`);
+        setEnquiries(prev => prev.filter(e => (e._id || e.id) !== id));
+      } catch (err) {
+        console.error("Error deleting enquiry", err);
+        alert('Failed to delete enquiry.');
+      }
     }
   };
 
@@ -66,6 +59,15 @@ const ContactManagement: React.FC = () => {
     e.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     e.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <div className="w-12 h-12 border-4 border-[var(--color-7)]/20 border-t-[var(--color-7)] rounded-full animate-spin"></div>
+        <p className="text-[var(--color-21)] font-bold animate-pulse uppercase tracking-widest text-xs">Loading Enquiries...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-10">
@@ -108,48 +110,51 @@ const ContactManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--color-23)]">
-              {filteredEnquiries.map((enq) => (
-                <tr key={enq.id} className="hover:bg-[var(--color-14)] transition-colors group">
-                  <td className="px-8 py-5">
-                    <div className="flex flex-col">
-                      <span className="text-sm font-black text-[var(--color-16)]">{enq.name}</span>
-                      <span className="text-xs text-[var(--color-21)] font-medium">{enq.email}</span>
-                      <span className="text-[10px] text-[var(--color-20)] mt-0.5">{enq.phone}</span>
-                    </div>
-                  </td>
-                  <td className="px-8 py-5">
-                    <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase border
-                      ${enq.source === 'Web Search' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                        enq.source === 'Referral' ? 'bg-purple-50 text-purple-600 border-purple-100' :
-                        enq.source === 'Social Media' ? 'bg-pink-50 text-pink-600 border-pink-100' :
-                        'bg-gray-50 text-gray-600 border-gray-100'}`}>
-                      {enq.source}
-                    </span>
-                  </td>
-                  <td className="px-8 py-5 max-w-xs">
-                    <p className="text-xs text-[var(--color-19)] line-clamp-2 italic leading-relaxed">"{enq.message}"</p>
-                  </td>
-                  <td className="px-8 py-5">
-                    <div className="flex items-center gap-2 text-xs font-bold text-[var(--color-20)]">
-                      <HiOutlineCalendar />
-                      {enq.submittedAt}
-                    </div>
-                  </td>
-                  <td className="px-8 py-5 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button className="p-2.5 bg-white border border-[var(--color-23)] rounded-xl text-[var(--color-20)] hover:text-[var(--color-7)] hover:border-[var(--color-11)] transition-all">
-                        <HiOutlineAnnotation size={18} />
-                      </button>
-                      <button 
-                        onClick={() => deleteEnquiry(enq.id)}
-                        className="p-2.5 bg-white border border-[var(--color-23)] rounded-xl text-[var(--color-20)] hover:text-red-500 hover:border-red-100 transition-all"
-                      >
-                        <HiOutlineTrash size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {filteredEnquiries.map((enq) => {
+                const enqId = (enq._id || enq.id)!;
+                return (
+                  <tr key={enqId} className="hover:bg-[var(--color-14)] transition-colors group">
+                    <td className="px-8 py-5">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-black text-[var(--color-16)]">{enq.name}</span>
+                        <span className="text-xs text-[var(--color-21)] font-medium">{enq.email}</span>
+                        <span className="text-[10px] text-[var(--color-20)] mt-0.5">{enq.phone}</span>
+                      </div>
+                    </td>
+                    <td className="px-8 py-5">
+                      <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase border
+                        ${enq.source === 'Web Search' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                          enq.source === 'Referral' ? 'bg-purple-50 text-purple-600 border-purple-100' :
+                          enq.source === 'Social Media' ? 'bg-pink-50 text-pink-600 border-pink-100' :
+                          'bg-gray-50 text-gray-600 border-gray-100'}`}>
+                        {enq.source}
+                      </span>
+                    </td>
+                    <td className="px-8 py-5 max-w-xs">
+                      <p className="text-xs text-[var(--color-19)] line-clamp-2 italic leading-relaxed">"{enq.message}"</p>
+                    </td>
+                    <td className="px-8 py-5">
+                      <div className="flex items-center gap-2 text-xs font-bold text-[var(--color-20)]">
+                        <HiOutlineCalendar />
+                        {enq.createdAt ? new Date(enq.createdAt).toLocaleString() : enq.submittedAt}
+                      </div>
+                    </td>
+                    <td className="px-8 py-5 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button className="p-2.5 bg-white border border-[var(--color-23)] rounded-xl text-[var(--color-20)] hover:text-[var(--color-7)] hover:border-[var(--color-11)] transition-all">
+                          <HiOutlineAnnotation size={18} />
+                        </button>
+                        <button 
+                          onClick={() => deleteEnquiry(enqId)}
+                          className="p-2.5 bg-white border border-[var(--color-23)] rounded-xl text-[var(--color-20)] hover:text-red-500 hover:border-red-100 transition-all"
+                        >
+                          <HiOutlineTrash size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

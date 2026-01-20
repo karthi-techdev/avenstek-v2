@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   HiOutlinePlus, 
   HiOutlineTrash, 
@@ -8,9 +8,11 @@ import {
   HiOutlinePhotograph,
   HiSelector
 } from 'react-icons/hi';
+import api from '@/lib/api';
 
 interface Product {
-  id: string;
+  id?: string;
+  _id?: string;
   title: string;
   description: string;
   logo: string;
@@ -20,18 +22,27 @@ interface Product {
 }
 
 const ProductsManagement: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([
-    { id: '1', title: 'Lumina Cloud', description: 'Enterprise-grade cloud hosting and edge network.', logo: 'https://picsum.photos/seed/p1/100/100', redirectUrl: '/products/cloud', order: 1, status: true },
-    { id: '2', title: 'Flow Engine', description: 'Automate business logic with our no-code builder.', logo: 'https://picsum.photos/seed/p2/100/100', redirectUrl: '/products/flow', order: 2, status: true },
-    { id: '3', title: 'Secure Vault', description: 'Managed secrets and encryption for modern apps.', logo: 'https://picsum.photos/seed/p3/100/100', redirectUrl: '/products/vault', order: 3, status: false },
-  ]);
-
+  const [products, setProducts] = useState<Product[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const dragNode = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data } = await api.get('/content/products');
+        setProducts(data);
+      } catch (err) {
+        console.error("Error fetching products", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const updateProduct = (id: string, updates: Partial<Product>) => {
-    setProducts(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
+    setProducts(prev => prev.map(p => (p._id === id || p.id === id) ? { ...p, ...updates } : p));
   };
 
   const addProduct = () => {
@@ -48,10 +59,34 @@ const ProductsManagement: React.FC = () => {
 
   const handleSave = async () => {
     setIsSaving(true);
-    // Simulate API call
-    await new Promise(r => setTimeout(r, 600));
-    setIsSaving(false);
-    alert('Navbar Products dropdown updated and published!');
+    try {
+      await api.post('/content/products', products);
+      alert('Navbar Products dropdown updated and published!');
+      const { data } = await api.get('/content/products');
+      setProducts(data);
+    } catch (err) {
+      console.error("Error saving products", err);
+      alert('Failed to save products.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const { data } = await api.post('/content/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      updateProduct(id, { logo: data.url });
+    } catch (err) {
+      console.error("Upload failed", err);
+    }
   };
 
   // Drag and Drop Logic
@@ -67,7 +102,6 @@ const ProductsManagement: React.FC = () => {
     newList.splice(draggedIndex, 1);
     newList.splice(index, 0, itemToMove);
     
-    // Update the internal order property to match new array positions
     const updatedOrderList = newList.map((item, idx) => ({
       ...item,
       order: idx + 1
@@ -80,6 +114,8 @@ const ProductsManagement: React.FC = () => {
   const handleDragEnd = () => {
     setDraggedIndex(null);
   };
+
+  if (isLoading) return <div className="p-10 text-center text-sm font-bold text-[var(--color-20)]">Loading Products...</div>;
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4 duration-500 pb-10">
@@ -113,7 +149,7 @@ const ProductsManagement: React.FC = () => {
         >
           {products.map((product, index) => (
             <div 
-              key={product.id} 
+              key={product._id || product.id} 
               draggable
               onDragStart={() => handleDragStart(index)}
               onDragEnter={() => handleDragEnter(index)}
@@ -124,18 +160,17 @@ const ProductsManagement: React.FC = () => {
                 ${!product.status && draggedIndex !== index && 'opacity-60'}
               `}
             >
-              {/* Drag Handle */}
               <div className="flex lg:flex-col items-center justify-center cursor-grab active:cursor-grabbing text-[var(--color-21)] group-hover:text-[var(--color-7)] transition-colors pr-2">
                 <HiSelector size={24} />
               </div>
 
-              {/* Logo & Content */}
               <div className="flex-shrink-0 flex items-start justify-center pt-2">
                 <div className="relative">
-                  <img src={product.logo} alt="" className="w-16 h-16 rounded-2xl object-cover ring-4 ring-[var(--color-24)]" />
-                  <button className="absolute -bottom-1 -right-1 p-1.5 bg-white border border-[var(--color-23)] rounded-lg text-[var(--color-21)] hover:text-[var(--color-7)] shadow-sm">
+                  <img src={product.logo.startsWith('/') ? `http://localhost:5000${product.logo}` : product.logo} alt="" className="w-16 h-16 rounded-2xl object-cover ring-4 ring-[var(--color-24)]" />
+                  <label className="absolute -bottom-1 -right-1 p-1.5 bg-white border border-[var(--color-23)] rounded-lg text-[var(--color-21)] hover:text-[var(--color-7)] shadow-sm cursor-pointer">
                     <HiOutlinePhotograph size={14} />
-                  </button>
+                    <input type="file" className="hidden" onChange={(e) => handleImageUpload(e, (product._id || product.id)!)} />
+                  </label>
                 </div>
               </div>
 
@@ -146,7 +181,7 @@ const ProductsManagement: React.FC = () => {
                     <input 
                       type="text" 
                       value={product.title} 
-                      onChange={e => updateProduct(product.id, { title: e.target.value })} 
+                      onChange={e => updateProduct((product._id || product.id)!, { title: e.target.value })} 
                       className="w-full bg-transparent border-none font-bold text-[var(--color-16)] p-0 text-lg outline-none focus:ring-0" 
                     />
                   </div>
@@ -154,7 +189,7 @@ const ProductsManagement: React.FC = () => {
                     <label className="text-[10px] font-bold text-[var(--color-21)] uppercase tracking-wider">Description</label>
                     <textarea 
                       value={product.description} 
-                      onChange={e => updateProduct(product.id, { description: e.target.value })} 
+                      onChange={e => updateProduct((product._id || product.id)!, { description: e.target.value })} 
                       className="w-full bg-transparent border-none text-sm text-[var(--color-20)] p-0 outline-none resize-none leading-relaxed focus:ring-0" 
                       rows={2}
                     />
@@ -169,7 +204,7 @@ const ProductsManagement: React.FC = () => {
                       <input 
                         type="text" 
                         value={product.redirectUrl} 
-                        onChange={e => updateProduct(product.id, { redirectUrl: e.target.value })} 
+                        onChange={e => updateProduct((product._id || product.id)!, { redirectUrl: e.target.value })} 
                         className="bg-transparent border-none text-xs w-full outline-none focus:ring-0 p-0 text-[var(--color-18)] font-medium" 
                       />
                     </div>
@@ -177,7 +212,7 @@ const ProductsManagement: React.FC = () => {
                   <div className="flex items-center justify-between pt-2">
                     <div className="flex items-center gap-3">
                       <button 
-                        onClick={() => updateProduct(product.id, { status: !product.status })}
+                        onClick={() => updateProduct((product._id || product.id)!, { status: !product.status })}
                         className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all shadow-sm ${product.status ? 'bg-[var(--color-13)] text-[var(--color-7)]' : 'bg-[var(--color-24)] text-[var(--color-21)]'}`}
                       >
                         {product.status ? 'Active' : 'Inactive'}
@@ -187,7 +222,7 @@ const ProductsManagement: React.FC = () => {
                       </span>
                     </div>
                     <button 
-                      onClick={() => setProducts(prev => prev.filter(p => p.id !== product.id))}
+                      onClick={() => setProducts(prev => prev.filter(p => (p._id || p.id) !== (product._id || product.id)))}
                       className="text-xs font-bold text-[var(--color-27)] hover:underline flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <HiOutlineTrash /> Delete
@@ -209,3 +244,4 @@ const ProductsManagement: React.FC = () => {
 };
 
 export default ProductsManagement;
+
