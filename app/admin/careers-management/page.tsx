@@ -336,7 +336,7 @@ const CareersManagement: React.FC = () => {
                       className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <HiOutlineTrash size={12} />
-                    </button>
+                    </button> 
                   </div>
                 ))}
               </div>
