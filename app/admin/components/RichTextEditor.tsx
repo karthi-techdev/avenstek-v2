@@ -1,67 +1,56 @@
 "use client";
-import React, { useEffect, useRef } from 'react';
+
+import React, { useMemo, useRef } from 'react';
+import dynamic from 'next/dynamic';
+
+// Dynamically import JoditEditor to prevent SSR issues with 'window'
+const JoditEditor = dynamic(() => import('jodit-react'), { ssr: false });
 
 interface Props {
   data: string;
   onChange: (data: string) => void;
-  // Unique identifier for each instance
   id?: string;
 }
 
 const RichTextEditor: React.FC<Props> = ({ data, onChange, id = "editor" }) => {
-  const editorRef = useRef<any>(null);
-  const isInitializing = useRef(false);
-  const isDestroying = useRef(false);
+  const editor = useRef(null);
 
-  // Ensure each instance has a truly unique DOM ID
-  const containerId = `ck-editor-${id.replace(/[^a-zA-Z0-9]/g, '-')}`;
+  const config = useMemo(() => ({
+    readonly: false,
+    height: 400,
+    width: '100%',
+    enableDragAndDropFileToEditor: true,
+    buttons: [
+      'bold', 'italic', 'underline', 'strikethrough', '|',
+      'ul', 'ol', '|',
+      'font', 'fontsize', 'brush', 'paragraph', '|',
+      'image', 'table', 'link', '|',
+      'align', 'undo', 'redo', '|',
+      'hr', 'eraser', 'copyformat', '|',
+      'fullsize', 'source'
+    ],
+    uploader: {
+      insertImageAsBase64URI: true
+    },
+    removeButtons: ['about', 'print', 'file'],
+    showXPathInStatusbar: false,
+    showCharsCounter: false,
+    showWordsCounter: false,
+    toolbarAdaptive: true,
+    placeholder: 'Start typing...'
+  }), []);
 
-  useEffect(() => {
-    const initEditor = async () => {
-      // Don't start if already initializing, already has an editor, or is currently being destroyed
-      if (isInitializing.current || editorRef.current || isDestroying.current) return;
-
-      const ClassicEditor = (await import('@ckeditor/ckeditor5-build-classic')).default;
-      const element = document.getElementById(containerId);
-
-      if (element && !editorRef.current && !isInitializing.current) {
-        // Double check DOM to prevent duplicates if cleanup hasn't finished or race condition occurred
-        if (element.querySelector('.ck-editor')) return;
-
-        isInitializing.current = true;
-        ClassicEditor.create(element, {
-          toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', 'undo', 'redo'],
-        })
-          .then((editor: any) => {
-            editorRef.current = editor;
-            isInitializing.current = false;
-            editor.setData(data);
-            editor.model.document.on('change:data', () => {
-              onChange(editor.getData());
-            });
-          })
-          .catch((err) => {
-            console.error(err);
-            isInitializing.current = false;
-          });
-      }
-    };
-
-    initEditor();
-
-    return () => {
-      if (editorRef.current) {
-        isDestroying.current = true;
-        const currentEditor = editorRef.current;
-        editorRef.current = null; // Clear ref immediately
-        currentEditor.destroy().then(() => {
-          isDestroying.current = false;
-        });
-      }
-    };
-  }, [containerId]);
-
-  return <div id={containerId} className="min-h-[400px]"></div>;
+  return (
+    <div className="min-h-[400px] bg-white rounded-2xl overflow-hidden" id={id}>
+      <JoditEditor
+        ref={editor}
+        value={data}
+        config={config}
+        // Jodit's onBlur is preferred for performance in React forms to avoid cursor jumping
+        onBlur={(newContent) => onChange(newContent)}
+      />
+    </div>
+  );
 };
 
 export default RichTextEditor;

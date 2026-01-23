@@ -1,7 +1,7 @@
-
 import React from 'react';
-import { HiMenuAlt2, HiOutlineBell, HiOutlineSearch, HiOutlineLogout } from 'react-icons/hi';
+import { HiMenuAlt2, HiOutlineBell, HiOutlineSearch, HiOutlineLogout, HiX } from 'react-icons/hi';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '@/lib/api-config';
 
 interface NavbarProps {
   onMenuClick: () => void;
@@ -9,6 +9,79 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
   const router = useRouter();
+  const [notifications, setNotifications] = React.useState<any[]>([]);
+  const [showNotifications, setShowNotifications] = React.useState(false);
+
+  /* SEARCH STATE */
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [searchResults, setSearchResults] = React.useState<any[]>([]);
+  const [isSearching, setIsSearching] = React.useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = React.useState(false);
+  const searchRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const res = await fetch(`${API_BASE_URL}/api/content/notifications`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (Array.isArray(data)) setNotifications(data);
+      } catch (err) {
+        console.error("Failed to load notifications");
+      }
+    };
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setSearchResults([]);
+        setSearchQuery('');
+        // Optional: Close mobile search on outside click if empty
+        if (window.innerWidth < 768 && searchQuery === '') setIsMobileSearchOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [searchQuery]);
+
+  const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    if (query.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_BASE_URL}/api/content/search?q=${query}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      const data = await res.json();
+      setSearchResults(data);
+    } catch (err) {
+      console.error("Search failed");
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleResultClick = (url: string) => {
+    router.push(url);
+    setSearchQuery('');
+    setSearchResults([]);
+    setIsMobileSearchOpen(false);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -16,30 +89,135 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
     router.replace('/admin');
   };
 
+  const handleNotificationClick = (type: string) => {
+    setShowNotifications(false);
+    if (type === 'Enquiry') {
+      router.push('/admin/contact-management');
+    } else if (type === 'Application') {
+      router.push('/admin/careers-management');
+    }
+  };
+
   return (
     <header className="h-20 bg-[var(--color-2)] border-b border-[var(--color-23)] px-4 md:px-8 flex items-center justify-between sticky top-0 z-30">
-      <div className="flex items-center gap-4">
-        <button
-          onClick={onMenuClick}
-          className="md:hidden p-2 rounded-lg hover:bg-[var(--color-24)] text-[var(--color-19)]"
+      <div className="flex items-center gap-2 md:gap-4 w-full md:w-auto">
+        {/* Menu & Mobile Search Trigger */}
+        <div className={`flex items-center gap-2 ${isMobileSearchOpen ? 'hidden' : 'flex'}`}>
+          <button
+            onClick={onMenuClick}
+            className="md:hidden p-2 rounded-lg hover:bg-[var(--color-24)] text-[var(--color-19)]"
+          >
+            <HiMenuAlt2 size={24} />
+          </button>
+          <button
+            onClick={() => setIsMobileSearchOpen(true)}
+            className="md:hidden p-2 rounded-lg hover:bg-[var(--color-24)] text-[var(--color-19)]"
+          >
+            <HiOutlineSearch size={24} />
+          </button>
+        </div>
+
+        {/* Search Bar Container */}
+        <div
+          ref={searchRef}
+          className={`
+            items-center bg-[var(--color-24)] border border-[var(--color-23)] rounded-xl px-4 py-2 
+            transition-all duration-200
+            ${isMobileSearchOpen
+              ? 'absolute left-2 right-2 top-3 z-50 flex shadow-xl w-auto bg-white'
+              : 'hidden md:flex md:w-80'
+            }
+          `}
         >
-          <HiMenuAlt2 size={24} />
-        </button>
-        <div className="hidden md:flex items-center bg-[var(--color-24)] border border-[var(--color-23)] rounded-xl px-4 py-2 w-80">
           <HiOutlineSearch className="text-[var(--color-20)]" size={20} />
           <input
             type="text"
+            value={searchQuery}
+            onChange={handleSearch}
             placeholder="Search dashboard..."
-            className="bg-transparent border-none outline-none ml-2 text-sm w-full text-[var(--color-18)]"
+            className="bg-transparent border-none outline-none ml-2 text-sm w-full text-[var(--color-18)] focus:ring-0"
+            autoFocus={isMobileSearchOpen}
           />
+          {isMobileSearchOpen && (
+            <button onClick={() => { setIsMobileSearchOpen(false); setSearchQuery(''); }} className="ml-2 text-[var(--color-20)] p-1">
+              <HiX size={20} />
+            </button>
+          )}
+
+          {/* Search Dropdown */}
+          {(searchQuery.length > 0 && (isMobileSearchOpen ? true : searchQuery.length > 1)) && (
+            <div className="absolute top-full left-0 mt-2 w-full bg-white border border-[var(--color-23)] rounded-xl shadow-xl overflow-hidden z-50 animate-in slide-in-from-top-2">
+              {isSearching ? (
+                <div className="p-4 text-center text-xs text-[var(--color-21)]">Searching...</div>
+              ) : searchResults.length > 0 ? (
+                <div className="max-h-[60vh] overflow-y-auto">
+                  <div className="px-4 py-2 bg-[var(--color-24)] text-[10px] font-black uppercase text-[var(--color-21)] border-b border-[var(--color-23)]">Results</div>
+                  {searchResults.map((result, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleResultClick(result.url)}
+                      className="w-full text-left px-4 py-3 hover:bg-[var(--color-25)] border-b border-[var(--color-23)] last:border-0 transition-colors flex items-center gap-3"
+                    >
+                      <span className="text-[10px] font-bold bg-[var(--color-13)] text-[var(--color-7)] px-1.5 py-0.5 rounded">{result.type}</span>
+                      <span className="text-sm text-[var(--color-16)] font-medium truncate">{result.title}</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-4 text-center text-xs text-[var(--color-21)]">No results found.</div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="flex items-center gap-2 md:gap-5">
-        <button className="p-2 relative rounded-xl hover:bg-[var(--color-24)] text-[var(--color-19)] transition-colors">
-          <HiOutlineBell size={24} />
-          <span className="absolute top-2 right-2.5 w-2 h-2 bg-[var(--color-27)] rounded-full border-2 border-[var(--color-2)]"></span>
-        </button>
+      <div className={`flex items-center gap-2 md:gap-5 ${isMobileSearchOpen ? 'hidden md:flex' : 'flex'}`}>
+        <div className="relative">
+          <button
+            onClick={() => setShowNotifications(!showNotifications)}
+            className="p-2 relative rounded-xl hover:bg-[var(--color-24)] text-[var(--color-19)] transition-colors"
+          >
+            <HiOutlineBell size={24} />
+            {notifications.length > 0 && (
+              <span className="absolute top-2 right-2.5 w-2 h-2 bg-[var(--color-27)] rounded-full border-2 border-[var(--color-2)]"></span>
+            )}
+          </button>
+
+          {showNotifications && (
+            <div className="absolute right-0 mt-2 w-72 md:w-80 bg-white border border-[var(--color-23)] rounded-2xl shadow-xl overflow-hidden z-50 animate-in slide-in-from-top-2">
+              <div className="p-4 border-b border-[var(--color-23)] flex justify-between items-center bg-[var(--color-24)]">
+                <h4 className="font-bold text-[var(--color-16)] text-sm">Notifications</h4>
+                <span className="text-[10px] bg-[var(--color-7)] text-white px-2 py-0.5 rounded-full">{notifications.length} New</span>
+              </div>
+              <div className="max-h-[300px] overflow-y-auto">
+                {notifications.length > 0 ? (
+                  notifications.map((notif, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => handleNotificationClick(notif.type)}
+                      className="p-4 border-b border-[var(--color-23)] hover:bg-[var(--color-25)] transition-colors cursor-pointer"
+                    >
+                      <div className="flex justify-between items-start mb-1">
+                        <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${notif.type === 'Enquiry' ? 'bg-blue-100 text-blue-600' : 'bg-purple-100 text-purple-600'}`}>
+                          {notif.type}
+                        </span>
+                        <span className="text-[10px] text-[var(--color-21)]">{new Date(notif.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      </div>
+                      <p className="text-xs font-medium text-[var(--color-16)] line-clamp-2">{notif.message}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-8 text-center text-[var(--color-21)] text-xs">No new notifications</div>
+                )}
+              </div>
+              {notifications.length > 0 && (
+                <div className="p-2 text-center border-t border-[var(--color-23)] bg-[var(--color-25)]">
+                  <button className="text-[10px] font-bold text-[var(--color-7)] hover:underline">View All Activity</button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
         <button
           onClick={handleLogout}
@@ -57,7 +235,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
             <p className="text-sm font-semibold text-[var(--color-16)]">Admin</p>
             <p className="text-xs text-[var(--color-20)]">Super Administrator</p>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-[var(--color-7)] flex items-center justify-center text-white font-bold">
+          <div className="w-10 h-10 rounded-xl bg-[var(--color-7)] flex items-center justify-center text-white font-bold hidden xs:flex">
             A
           </div>
         </div>
@@ -67,4 +245,3 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
 };
 
 export default Navbar;
-

@@ -1,14 +1,15 @@
 "use client"
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  HiOutlinePlus, 
-  HiOutlineTrash, 
-  HiOutlineExternalLink, 
+import {
+  HiOutlinePlus,
+  HiOutlineTrash,
+  HiOutlineExternalLink,
   HiOutlineSave,
   HiOutlinePhotograph,
   HiSelector
 } from 'react-icons/hi';
 import api from '@/lib/api';
+import { API_BASE_URL } from '@/lib/api-config';
 
 interface Product {
   id?: string;
@@ -21,7 +22,10 @@ interface Product {
   status: boolean;
 }
 
+import { useToast } from '../components/Toast';
+
 const ProductsManagement: React.FC = () => {
+  const { showToast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -61,12 +65,12 @@ const ProductsManagement: React.FC = () => {
     setIsSaving(true);
     try {
       await api.post('/content/products', products);
-      alert('Navbar Products dropdown updated and published!');
       const { data } = await api.get('/content/products');
       setProducts(data);
+      showToast('success', 'Navbar Updated', 'Product dropdown structure saved.');
     } catch (err) {
       console.error("Error saving products", err);
-      alert('Failed to save products.');
+      showToast('error', 'Update Failed', 'Failed to save products.');
     } finally {
       setIsSaving(false);
     }
@@ -96,17 +100,17 @@ const ProductsManagement: React.FC = () => {
 
   const handleDragEnter = (index: number) => {
     if (draggedIndex === null || draggedIndex === index) return;
-    
+
     const newList = [...products];
     const itemToMove = newList[draggedIndex];
     newList.splice(draggedIndex, 1);
     newList.splice(index, 0, itemToMove);
-    
+
     const updatedOrderList = newList.map((item, idx) => ({
       ...item,
       order: idx + 1
     }));
-    
+
     setDraggedIndex(index);
     setProducts(updatedOrderList);
   };
@@ -125,13 +129,13 @@ const ProductsManagement: React.FC = () => {
           <p className="text-[var(--color-20)]">Drag and drop to reorder items in the Navbar dropdown menu.</p>
         </div>
         <div className="flex gap-3">
-          <button 
+          <button
             onClick={addProduct}
             className="flex items-center gap-2 bg-[var(--color-13)] text-[var(--color-7)] px-5 py-2.5 rounded-xl font-bold hover:scale-[1.02] transition-all"
           >
             <HiOutlinePlus size={20} /> Add Item
           </button>
-          <button 
+          <button
             onClick={handleSave}
             disabled={isSaving}
             className="flex items-center gap-2 bg-[var(--color-7)] text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-[var(--color-7)]/20 hover:scale-[1.02] disabled:opacity-50 transition-all"
@@ -143,13 +147,13 @@ const ProductsManagement: React.FC = () => {
       </div>
 
       <div className="bg-white rounded-3xl border border-[var(--color-23)] shadow-sm overflow-hidden">
-        <div 
+        <div
           className="divide-y divide-[var(--color-23)]"
           onDragOver={(e) => e.preventDefault()}
         >
           {products.map((product, index) => (
-            <div 
-              key={product._id || product.id} 
+            <div
+              key={product._id || product.id}
               draggable
               onDragStart={() => handleDragStart(index)}
               onDragEnter={() => handleDragEnter(index)}
@@ -166,7 +170,7 @@ const ProductsManagement: React.FC = () => {
 
               <div className="flex-shrink-0 flex items-start justify-center pt-2">
                 <div className="relative">
-                  <img src={product.logo.startsWith('/') ? `http://localhost:5000${product.logo}` : product.logo} alt="" className="w-16 h-16 rounded-2xl object-cover ring-4 ring-[var(--color-24)]" />
+                  <img src={product.logo.startsWith('/') ? `${API_BASE_URL}${product.logo}` : product.logo} alt="" className="w-16 h-16 rounded-2xl object-cover ring-4 ring-[var(--color-24)]" />
                   <label className="absolute -bottom-1 -right-1 p-1.5 bg-white border border-[var(--color-23)] rounded-lg text-[var(--color-21)] hover:text-[var(--color-7)] shadow-sm cursor-pointer">
                     <HiOutlinePhotograph size={14} />
                     <input type="file" className="hidden" onChange={(e) => handleImageUpload(e, (product._id || product.id)!)} />
@@ -178,19 +182,19 @@ const ProductsManagement: React.FC = () => {
                 <div className="space-y-4">
                   <div>
                     <label className="text-[10px] font-bold text-[var(--color-21)] uppercase tracking-wider">Product Title</label>
-                    <input 
-                      type="text" 
-                      value={product.title} 
-                      onChange={e => updateProduct((product._id || product.id)!, { title: e.target.value })} 
-                      className="w-full bg-transparent border-none font-bold text-[var(--color-16)] p-0 text-lg outline-none focus:ring-0" 
+                    <input
+                      type="text"
+                      value={product.title}
+                      onChange={e => updateProduct((product._id || product.id)!, { title: e.target.value })}
+                      className="w-full bg-transparent border-none font-bold text-[var(--color-16)] p-0 text-lg outline-none focus:ring-0"
                     />
                   </div>
                   <div>
                     <label className="text-[10px] font-bold text-[var(--color-21)] uppercase tracking-wider">Description</label>
-                    <textarea 
-                      value={product.description} 
-                      onChange={e => updateProduct((product._id || product.id)!, { description: e.target.value })} 
-                      className="w-full bg-transparent border-none text-sm text-[var(--color-20)] p-0 outline-none resize-none leading-relaxed focus:ring-0" 
+                    <textarea
+                      value={product.description}
+                      onChange={e => updateProduct((product._id || product.id)!, { description: e.target.value })}
+                      className="w-full bg-transparent border-none text-sm text-[var(--color-20)] p-0 outline-none resize-none leading-relaxed focus:ring-0"
                       rows={2}
                     />
                   </div>
@@ -201,17 +205,17 @@ const ProductsManagement: React.FC = () => {
                     <label className="text-[10px] font-bold text-[var(--color-21)] uppercase tracking-wider">Redirect URL</label>
                     <div className="flex items-center gap-2 bg-[var(--color-24)] px-3 py-2 rounded-xl border border-[var(--color-23)]">
                       <HiOutlineExternalLink size={16} className="text-[var(--color-21)]" />
-                      <input 
-                        type="text" 
-                        value={product.redirectUrl} 
-                        onChange={e => updateProduct((product._id || product.id)!, { redirectUrl: e.target.value })} 
-                        className="bg-transparent border-none text-xs w-full outline-none focus:ring-0 p-0 text-[var(--color-18)] font-medium" 
+                      <input
+                        type="text"
+                        value={product.redirectUrl}
+                        onChange={e => updateProduct((product._id || product.id)!, { redirectUrl: e.target.value })}
+                        className="bg-transparent border-none text-xs w-full outline-none focus:ring-0 p-0 text-[var(--color-18)] font-medium"
                       />
                     </div>
                   </div>
                   <div className="flex items-center justify-between pt-2">
                     <div className="flex items-center gap-3">
-                      <button 
+                      <button
                         onClick={() => updateProduct((product._id || product.id)!, { status: !product.status })}
                         className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all shadow-sm ${product.status ? 'bg-[var(--color-13)] text-[var(--color-7)]' : 'bg-[var(--color-24)] text-[var(--color-21)]'}`}
                       >
@@ -221,7 +225,7 @@ const ProductsManagement: React.FC = () => {
                         Order: {product.order}
                       </span>
                     </div>
-                    <button 
+                    <button
                       onClick={() => setProducts(prev => prev.filter(p => (p._id || p.id) !== (product._id || product.id)))}
                       className="text-xs font-bold text-[var(--color-27)] hover:underline flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                     >

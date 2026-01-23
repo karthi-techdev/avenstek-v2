@@ -14,8 +14,9 @@ import { TbLicenseOff } from "react-icons/tb";
 import { RiUserHeartLine } from "react-icons/ri";
 import logoImg from '../public/assets/images/logo-avenstek.png'
 import bazLogo from '../public/product/bookadzone-short-logo.png'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { rootMetadata } from "./metadata.config";
+import { useToast } from "./components/Toast";
 import {
   Dialog,
   DialogPanel,
@@ -41,6 +42,7 @@ import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/react/20/
 import Link from "next/link";
 import Image from "next/image";
 import { BsTwitterX } from "react-icons/bs";
+import { API_ENDPOINTS } from "@/lib/api-config";
 
 const products = [
   { name: 'AI Assist', description: 'Ask questions, get sales answers instantly', href: '#', icon: ChartPieIcon },
@@ -70,10 +72,12 @@ const company = [
 
 export const metadata = rootMetadata;
 
-export default function ClientWrapper({ children, }: Readonly<{ children: React.ReactNode; }>) {
+import VisitorTracker from "./components/VisitorTracker";
 
+export default function ClientWrapper({ children, }: Readonly<{ children: React.ReactNode; }>) {
+  const { showToast } = useToast();
   const pathname = usePathname();
-  
+
   // Check if the current route starts with /admin
   const isAdminPage = pathname.startsWith("/admin");
 
@@ -82,30 +86,49 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
     return <>{children}</>;
   }
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [productsList, setProductsList] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch(API_ENDPOINTS.PRODUCTS);
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          // Filter active products and sort by order
+          const active = data.filter((p: any) => p.status !== false).sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+          setProductsList(active);
+        }
+      } catch (err) {
+        console.error("Failed to fetch products");
+      }
+    };
+    fetchProducts();
+  }, []);
   return (
     <>
-        <header className="bg-white dark:bg-gray-900 fixed w-[100%] top-[0] z-10000 border-b-[1px]">
-          <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
-            <div className="flex lg:flex-1">
-              <Link href="/" className="-m-1.5 p-1.5">
-                 <Image src={logoImg} alt="logo" height="20" className="invert-70"/>
-              </Link>
+      <VisitorTracker />
+      <header className="bg-white dark:bg-gray-900 fixed w-[100%] top-[0] z-10000 border-b-[1px]">
+        <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
+          <div className="flex lg:flex-1">
+            <Link href="/" className="-m-1.5 p-1.5">
+              <Image src={logoImg} alt="logo" height="20" className="invert-70" />
+            </Link>
 
-            </div>
-            <div className="flex lg:hidden ">
-              <button
-                type="button"
-                onClick={() => setMobileMenuOpen(true)}
-                className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-400"
-              >
-                <span className="sr-only">Open main menu</span>
-                <Bars3Icon aria-hidden="true" className="size-6" />
-              </button>
-            </div>
-            <PopoverGroup className="hidden lg:flex lg:gap-x-12 ">
-             <Popover className="relative">
-              <PopoverButton className="flex items-center text-[var(--color-20)] gap-x-1 text-sm/6 font-semibold dark:text-white">
+          </div>
+          <div className="flex lg:hidden ">
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(true)}
+              className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-400"
+            >
+              <span className="sr-only">Open main menu</span>
+              <Bars3Icon aria-hidden="true" className="size-6" />
+            </button>
+          </div>
+          <PopoverGroup className="hidden lg:flex lg:gap-x-12 ">
+            <Popover className="relative">
+              <PopoverButton className="flex items-center text-[var(--color-20)] gap-x-1 text-sm/6 font-semibold dark:text-white outline-none">
                 Product
                 <ChevronDownIcon aria-hidden="true" className="size-5 flex-none text-gray-400 dark:text-gray-500" />
               </PopoverButton>
@@ -116,54 +139,64 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
               >
                 {({ close }) => (
                   <div className="p-4">
-                    <div className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm/6 hover:bg-[var(--color-13)] dark:hover:bg-white/5">
-                      <div className="flex size-11 flex-none items-center justify-center rounded-lg bg-[var(--color-13)] group-hover:bg-white dark:bg-gray-700/50 dark:group-hover:bg-gray-700">
-                        <Image src={bazLogo} alt="bazLogo" className="rounded" />
-                      </div>
+                    {productsList.length > 0 ? (
+                      productsList.map((product) => (
+                        <div key={product._id || product.id} className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm/6 hover:bg-[var(--color-13)] dark:hover:bg-white/5">
+                          <div className="flex size-11 flex-none items-center justify-center rounded-lg bg-[var(--color-13)] group-hover:bg-white dark:bg-gray-700/50 dark:group-hover:bg-gray-700 overflow-hidden">
+                            {product.logo ? (
+                              <img src={product.logo} alt={product.title} className="rounded w-full h-full object-cover" />
+                            ) : (
+                              <ChartPieIcon className="size-6 text-gray-600 group-hover:text-indigo-600" />
+                            )}
+                          </div>
 
-                      <div className="flex-auto">
-                        <Link
-                          href="https://bookadzone.com"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={() => close()}
-                          className="expressa-font tracking-wider text-[1rem] block font-semibold text-gray-700 dark:text-white"
-                        >
-                          bookadzone
-                          <span className="absolute inset-0" />
-                        </Link>
+                          <div className="flex-auto">
+                            <Link
+                              href={product.redirectUrl || '#'}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => close()}
+                              className="expressa-font tracking-wider text-[1rem] block font-semibold text-gray-700 dark:text-white"
+                            >
+                              {product.title}
+                              <span className="absolute inset-0" />
+                            </Link>
 
-                        <p className="text-gray-600 dark:text-gray-400">
-                          Your Outdoor Advertising AI Powerhouse.
-                        </p>
-                      </div>
-                    </div>
+                            <p className="text-gray-600 dark:text-gray-400">
+                              {product.description}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-4 text-center text-gray-500">No products available</div>
+                    )}
                   </div>
                 )}
               </PopoverPanel>
             </Popover>
-  {/* <Link href="/product" className="text-sm/6 font-semibold text-[var(--color-20)] dark:text-white">
+            {/* <Link href="/product" className="text-sm/6 font-semibold text-[var(--color-20)] dark:text-white">
                 Product
               </Link> */}
 
-              <Link href="/services" className="text-sm/6 font-semibold text-[var(--color-20)] dark:text-white">
-                Services
-              </Link>
+            <Link href="/services" className="text-sm/6 font-semibold text-[var(--color-20)] dark:text-white">
+              Services
+            </Link>
 
-              <Link href="/about-us" className="text-sm/6 font-semibold text-[var(--color-20)] dark:text-white">
-                About us
-              </Link>
+            <Link href="/about-us" className="text-sm/6 font-semibold text-[var(--color-20)] dark:text-white">
+              About us
+            </Link>
 
 
-              <Link href="/blog" className="text-sm/6 font-semibold text-[var(--color-20)] dark:text-white">
-                Blog
-               </Link>
+            <Link href="/blog" className="text-sm/6 font-semibold text-[var(--color-20)] dark:text-white">
+              Blog
+            </Link>
 
-               <Link href="/contact-us" className="text-sm/6 font-semibold text-[var(--color-20)] dark:text-white">
-                Contact us
-               </Link>
+            <Link href="/contact-us" className="text-sm/6 font-semibold text-[var(--color-20)] dark:text-white">
+              Contact us
+            </Link>
 
-              {/* <Popover className="relative">
+            {/* <Popover className="relative">
                 <PopoverButton className="flex items-center text-[var(--color-20)] gap-x-1 text-sm/6 font-semibold  dark:text-white">
                   Solution
                   <ChevronDownIcon aria-hidden="true" className="size-5 flex-none text-gray-400 dark:text-gray-500" />
@@ -199,7 +232,7 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
                 </PopoverPanel>
               </Popover> */}
 
-              {/* <Popover className="relative">
+            {/* <Popover className="relative">
                 <PopoverButton className="flex items-center text-[var(--color-20)]  gap-x-1 text-sm/6 font-semibold  dark:text-white">
                   Resources
                   <ChevronDownIcon aria-hidden="true" className="size-5 flex-none text-gray-400 dark:text-gray-500" />
@@ -235,7 +268,7 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
                 </PopoverPanel>
               </Popover> */}
 
-              {/* <Popover className="relative">
+            {/* <Popover className="relative">
                 <PopoverButton className="flex items-center text-[var(--color-20)] gap-x-1 text-sm/6 font-semibold  dark:text-white">
                   Company
                   <ChevronDownIcon aria-hidden="true" className="size-5 flex-none text-gray-400 dark:text-gray-500" />
@@ -271,24 +304,24 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
                 </PopoverPanel>
               </Popover> */}
 
-            </PopoverGroup>
-            <div className="hidden lg:flex lg:flex-1 lg:justify-end ml-[3rem]">
-              {/* <a href="#" className="text-sm/6 font-semibold text-gray-900 dark:text-white">
+          </PopoverGroup>
+          <div className="hidden lg:flex lg:flex-1 lg:justify-end ml-[3rem]">
+            {/* <a href="#" className="text-sm/6 font-semibold text-gray-900 dark:text-white">
                 <button className="flex bg-[var(--color-8)] text-[var(--color-2)] text-sm  px-3 py-3 rounded-full font-semibold hover:bg-[var(--color-7)] transition ">Purchase template<GoChevronRight className="text-xl text-[var(--color-2)] font-semibold" /></button>
               </a> */}
-              <Link href="/contact-us" className="text-sm/6 font-semibold text-gray-900 dark:text-white">
-                <button className=" ml-3 flex rounded-full bg-[var(--color-2)] text-sm font-semibold px-3 py-3 text-[var(--color-1)] border border-[var(--color-21)]  hover:bg-[var(--color-13)] transition">
-                  Book a demo <TbClick className=" pl-1 pt-1 text-xl text-[var(--color-20)]" />
-                </button>
-              </Link>
-            </div>
-          </nav>
-          <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
-            <div className="fixed inset-0 z-50" />
-            <DialogPanel className="fixed inset-y-0 right-0 z-100000 w-full overflow-y-auto bg-white p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 dark:bg-gray-900 dark:sm:ring-gray-100/10">
+            <Link href="/contact-us" className="text-sm/6 font-semibold text-gray-900 dark:text-white">
+              <button className=" ml-3 flex rounded-full bg-[var(--color-2)] text-sm font-semibold px-3 py-3 text-[var(--color-1)] border border-[var(--color-21)]  hover:bg-[var(--color-13)] transition">
+                Book a demo <TbClick className=" pl-1 pt-1 text-xl text-[var(--color-20)]" />
+              </button>
+            </Link>
+          </div>
+        </nav>
+        <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
+          <div className="fixed inset-0 z-50" />
+          <DialogPanel className="fixed inset-y-0 right-0 z-100000 w-full overflow-y-auto bg-white p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 dark:bg-gray-900 dark:sm:ring-gray-100/10">
             <div className="flex items-center justify-between">
               <Link href="/" className="-m-1.5 p-1.5" onClick={() => close()}>
-                <Image src={logoImg} alt="logo" height="20" className="invert-70"/>
+                <Image src={logoImg} alt="logo" height="20" className="invert-70" />
               </Link>
               <button
                 type="button"
@@ -304,39 +337,45 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
                 <div className="space-y-2 py-6">
                   <Disclosure as="div" className="-mx-3">
                     <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-[var(--color-20)] hover:bg-gray-50 dark:text-white dark:hover:bg-white/5">
-                      Product  
+                      Product
                       <ChevronDownIcon aria-hidden="true" className="size-5 flex-none group-data-open:rotate-180" />
                     </DisclosureButton>
                     <DisclosurePanel className="mt-2 space-y-2">
-                      <DisclosureButton
-                        as="a"
-                        className="block rounded-lg text-sm/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
-                      >
-                        <div className="p-0">
-                          <div className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm/6 hover:bg-[var(--color-13)] dark:hover:bg-white/5">
-                            <div className="flex size-11 flex-none items-center justify-center rounded-lg bg-[var(--color-13)] group-hover:bg-white dark:bg-gray-700/50 dark:group-hover:bg-gray-700">
-                              <Image src={bazLogo} alt="bazLogo" className="rounded" />
-                            </div>
+                      {productsList.length > 0 ? (
+                        productsList.map((product) => (
+                          <DisclosureButton
+                            key={product._id || product.id}
+                            as="a"
+                            href={product.redirectUrl || '#'}
+                            target="_blank"
+                            className="block rounded-lg text-sm/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5"
+                          >
+                            <div className="p-0">
+                              <div className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm/6 hover:bg-[var(--color-13)] dark:hover:bg-white/5">
+                                <div className="flex size-11 flex-none items-center justify-center rounded-lg bg-[var(--color-13)] group-hover:bg-white dark:bg-gray-700/50 dark:group-hover:bg-gray-700 overflow-hidden">
+                                  {product.logo ? (
+                                    <img src={product.logo} alt={product.title} className="rounded w-full h-full object-cover" />
+                                  ) : (
+                                    <ChartPieIcon className="size-6 text-gray-600 group-hover:text-indigo-600" />
+                                  )}
+                                </div>
 
-                            <div className="flex-auto">
-                              <Link
-                                href="https://bookadzone.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="expressa-font tracking-wider text-[1rem] block font-semibold text-gray-700 dark:text-white"
-                              >
-                                bookadzone
-                                <span className="absolute inset-0" />
-                              </Link>
-
-                              <p className="text-gray-600 dark:text-gray-400">
-                                Your Outdoor Advertising AI Powerhouse.
-                              </p>
+                                <div className="flex-auto">
+                                  <span className="expressa-font tracking-wider text-[1rem] block font-semibold text-gray-700 dark:text-white">
+                                    {product.title}
+                                    <span className="absolute inset-0" />
+                                  </span>
+                                  <p className="text-gray-600 dark:text-gray-400 leading-snug">
+                                    {product.description}
+                                  </p>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                      </DisclosureButton>
+                          </DisclosureButton>
+                        ))
+                      ) : (
+                        <div className="p-2 text-center text-gray-500 text-sm">No products available</div>
+                      )}
                     </DisclosurePanel>
                   </Disclosure>
 
@@ -387,13 +426,13 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
               </div>
             </div>
           </DialogPanel>
-          </Dialog>
-        </header>
+        </Dialog>
+      </header >
 
-        <main className="mt-25">
-          {children}
+      <main className="mt-25">
+        {children}
 
-       {/* CTA Section */}
+        {/* CTA Section */}
         <section className="bg-[var(--color-13)] p-10">
           <div className="mb-24 max-w-7xl mx-auto px-6 text-center">
             <div className="flex justify-center mb-8">
@@ -423,11 +462,11 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
             </div>
           </div>
         </section>
-        </main>
+      </main>
 
 
 
-        {/* <footer className="bg-[var(--color-13)] h-auto">
+      {/* <footer className="bg-[var(--color-13)] h-auto">
 
           <div className="flex justify-center">
             <div className=" max-w-6xl px-6 grid grid-cols-1 md:gird-cols-2 gap-12">
@@ -550,129 +589,129 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
 
         </footer> */}
 
-        <footer className="h-auto border-t-[1px]">
-          <div className="w-full flex md:flex-row flex-col justify-around items-start pt-20">
-            <div className="p-5 flex">
-              <ul>
-                <p className="flex text-[var(--color-1)] font-bold text-2xl pb-6">
-                  <Link href="/" className="-m-1.5 p-1.5">
-                    <Image src={logoImg} alt="logo" height="20" className="invert-70"/>
-                  </Link>
-                </p>
-                <p className="text-[var(--color-1)] tracking-normal text-md pb-3">
-                  Building Excellence Through Consistency in Innovation.
-                </p>
-                <div className="flex gap-3 pb-5">
-                  <Link href="https://www.instagram.com/avenstek/" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaInstagram className="text-4xl p-2" /></Link>
-                  <Link href="https://www.linkedin.com/company/avenstek" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaLinkedin className="text-4xl p-2" /></Link>
-                  <Link href="https://x.com/avenstek" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><BsTwitterX className="text-4xl p-2" /></Link>
-                  <Link href="https://www.facebook.com/avenstek" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaFacebookF className="text-4xl p-2" /></Link>
-                </div>
-              </ul>
-            </div>
-            
-            <div className="p-4 lg:pl-25">
-              <ul>
-                <p className="text-[var(--color-1)] font-bold text-xl pb-4">Quick Links</p>
-                <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
-                  <Link href="/">Home</Link>
-                </li>
-                <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
-                  <Link href="/about-us">About Us</Link>
-                </li>
-                {/* <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+      <footer className="h-auto border-t-[1px]">
+        <div className="w-full flex md:flex-row flex-col justify-around items-start pt-20">
+          <div className="p-5 flex">
+            <ul>
+              <p className="flex text-[var(--color-1)] font-bold text-2xl pb-6">
+                <Link href="/" className="-m-1.5 p-1.5">
+                  <Image src={logoImg} alt="logo" height="20" className="invert-70" />
+                </Link>
+              </p>
+              <p className="text-[var(--color-1)] tracking-normal text-md pb-3">
+                Building Excellence Through Consistency in Innovation.
+              </p>
+              <div className="flex gap-3 pb-5">
+                <Link href="https://www.instagram.com/avenstek/" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaInstagram className="text-4xl p-2" /></Link>
+                <Link href="https://www.linkedin.com/company/avenstek" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaLinkedin className="text-4xl p-2" /></Link>
+                <Link href="https://x.com/avenstek" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><BsTwitterX className="text-4xl p-2" /></Link>
+                <Link href="https://www.facebook.com/avenstek" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaFacebookF className="text-4xl p-2" /></Link>
+              </div>
+            </ul>
+          </div>
+
+          <div className="p-4 lg:pl-25">
+            <ul>
+              <p className="text-[var(--color-1)] font-bold text-xl pb-4">Quick Links</p>
+              <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                <Link href="/">Home</Link>
+              </li>
+              <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                <Link href="/about-us">About Us</Link>
+              </li>
+              {/* <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
                   <Link href="/product">Product</Link>
                 </li> */}
-                <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
-                  <Link href="/services">Services</Link>
-                </li>
-              </ul>
-            </div>
-            
-            <div className="p-4">
-              <ul>
-                <p className="text-[var(--color-1)] font-bold text-xl pb-4">More Links</p>
-                <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
-                  <Link href="/contact-us">Contact Us</Link>
-                </li>
-                <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
-                  <Link href="/careers">Careers</Link>
-                </li>
-                <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
-                  <Link href="/blog">Blog</Link>
-                </li>
-              </ul>
-            </div>
-            
-            {/* Newsletter Subscription Section */}
-            <div className="p-4">
-              <ul>
-                <p className="text-[var(--color-1)] font-bold text-xl pb-4">Stay Updated</p>
-                <p className="text-[var(--color-20)] text-md pb-4 tracking-normal max-w-xs">
-                  Subscribe to our newsletter for the latest updates, news, and insights.
-                </p>
-                <div className="flex flex-col gap-3">
-                  <form 
-                    onSubmit={async (e) => {
-                      e.preventDefault();
-                      const form = e.target as HTMLFormElement;
-                      const emailInput = form.querySelector('input') as HTMLInputElement;
-                      const email = emailInput.value;
-                      
-                      if (!email) return;
-                      
-                      const submitBtn = form.querySelector('button') as HTMLButtonElement;
-                      const originalText = submitBtn.innerText;
-                      submitBtn.disabled = true;
-                      submitBtn.innerText = 'Subscribing...';
+              <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                <Link href="/services">Services</Link>
+              </li>
+            </ul>
+          </div>
 
-                      try {
-                        const api = (await import('@/lib/api')).default;
-                        await api.post('/content/subscribers', { email });
-                        alert('Thank you for subscribing!');
-                        emailInput.value = '';
-                      } catch (err: any) {
-                        if (err.response?.status === 400 || err.response?.data?.message?.includes('duplicate')) {
-                          alert('This email is already subscribed.');
-                        } else {
-                          alert('Something went wrong. Please try again.');
-                        }
-                      } finally {
-                        submitBtn.disabled = false;
-                        submitBtn.innerText = originalText;
+          <div className="p-4">
+            <ul>
+              <p className="text-[var(--color-1)] font-bold text-xl pb-4">More Links</p>
+              <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                <Link href="/contact-us">Contact Us</Link>
+              </li>
+              <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                <Link href="/careers">Careers</Link>
+              </li>
+              <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                <Link href="/blog">Blog</Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Newsletter Subscription Section */}
+          <div className="p-4">
+            <ul>
+              <p className="text-[var(--color-1)] font-bold text-xl pb-4">Stay Updated</p>
+              <p className="text-[var(--color-20)] text-md pb-4 tracking-normal max-w-xs">
+                Subscribe to our newsletter for the latest updates, news, and insights.
+              </p>
+              <div className="flex flex-col gap-3">
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const form = e.target as HTMLFormElement;
+                    const emailInput = form.querySelector('input') as HTMLInputElement;
+                    const email = emailInput.value;
+
+                    if (!email) return;
+
+                    const submitBtn = form.querySelector('button') as HTMLButtonElement;
+                    const originalText = submitBtn.innerText;
+                    submitBtn.disabled = true;
+                    submitBtn.innerText = 'Subscribing...';
+
+                    try {
+                      const api = (await import('@/lib/api')).default;
+                      await api.post('/content/subscribers', { email });
+                      showToast('success', 'Subscribed', 'Thank you for subscribing!');
+                      emailInput.value = '';
+                    } catch (err: any) {
+                      if (err.response?.status === 400 || err.response?.data?.message?.includes('duplicate')) {
+                        showToast('info', 'Already Subscribed', 'This email is already subscribed.');
+                      } else {
+                        showToast('error', 'Subscription Failed', 'Something went wrong. Please try again.');
                       }
-                    }} 
-                    className="flex flex-col gap-3"
+                    } finally {
+                      submitBtn.disabled = false;
+                      submitBtn.innerText = originalText;
+                    }
+                  }}
+                  className="flex flex-col gap-3"
+                >
+                  <div className="relative">
+                    <input
+                      type="email"
+                      required
+                      placeholder="Enter your email"
+                      className="w-full px-4 py-3 rounded-lg bg-[var(--color-2)] border border-[var(--color-19)] text-[var(--color-20)] placeholder-[var(--color-20)]/60 focus:outline-none focus:border-[var(--color-8)] focus:ring-1 focus:ring-[var(--color-8)]"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="px-6 py-3 rounded-lg bg-[var(--color-8)] text-[var(--color-2)] font-semibold hover:bg-[var(--color-7)] transition duration-300 border border-[var(--color-19)] disabled:opacity-50"
                   >
-                    <div className="relative">
-                      <input
-                        type="email"
-                        required
-                        placeholder="Enter your email"
-                        className="w-full px-4 py-3 rounded-lg bg-[var(--color-2)] border border-[var(--color-19)] text-[var(--color-20)] placeholder-[var(--color-20)]/60 focus:outline-none focus:border-[var(--color-8)] focus:ring-1 focus:ring-[var(--color-8)]"
-                      />
-                    </div>
-                    <button 
-                      type="submit"
-                      className="px-6 py-3 rounded-lg bg-[var(--color-8)] text-[var(--color-2)] font-semibold hover:bg-[var(--color-7)] transition duration-300 border border-[var(--color-19)] disabled:opacity-50"
-                    >
-                      Subscribe
-                    </button>
-                  </form>
-                </div>
-                <p className="text-[var(--color-20)] text-xs pt-3 opacity-70">
-                  We respect your privacy. Unsubscribe at any time.
-                </p>
-              </ul>
-            </div>
+                    Subscribe
+                  </button>
+                </form>
+              </div>
+              <p className="text-[var(--color-20)] text-xs pt-3 opacity-70">
+                We respect your privacy. Unsubscribe at any time.
+              </p>
+            </ul>
           </div>
-          
-          <hr className="text-[var(--color-20)]"></hr>
-          
-          <div className="p-5 flex justify-center lg:gap-8 gap-4 lg:px-[6rem] lg:w-[90%] lg:mx-auto">
-            <p className="text-left text-[var(--color-20)] text-md pb-2 tracking-normal">© 2026 Avenstek. All rights reserved.</p>
-          </div>
-        </footer>
-        </>
+        </div>
+
+        <hr className="text-[var(--color-20)]"></hr>
+
+        <div className="p-5 flex justify-center lg:gap-8 gap-4 lg:px-[6rem] lg:w-[90%] lg:mx-auto">
+          <p className="text-left text-[var(--color-20)] text-md pb-2 tracking-normal">© 2026 Avenstek. All rights reserved.</p>
+        </div>
+      </footer>
+    </>
   );
 }

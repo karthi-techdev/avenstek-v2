@@ -29,6 +29,7 @@ const Career = () => {
   const [principles, setPrinciples] = useState<any[]>([]);
   const [departments, setDepartments] = useState<any[]>([]);
   const [jobs, setJobs] = useState<any[]>([]);
+  const [seo, setSeo] = useState({ title: "", description: "", keywords: "" });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,6 +39,13 @@ const Career = () => {
           setHero(config.hero);
           setWhyAvenstek(config.whyAvenstek || []);
           setPrinciples(config.principles || []);
+          if (config.seo) {
+            setSeo({
+              title: config.seo.title,
+              description: config.seo.description,
+              keywords: config.seo.keywords
+            });
+          }
         }
         const { data: depts } = await api.get('/content/departments');
         setDepartments(depts || []);
@@ -53,10 +61,7 @@ const Career = () => {
     fetchData();
   }, []);
 
-  usePageSEO(
-    "Careers",
-    "Build your future with Avenstek Solutions Pvt Ltd. Explore career opportunities in software engineering, AI, and UI/UX design. Join a team with 10+ years of innovation and a global impact."
-  );
+  usePageSEO(seo.title, seo.description, seo.keywords);
   return (
     <>
       {/* Work with us */}

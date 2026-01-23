@@ -3,6 +3,7 @@ import { FiVolume2 } from 'react-icons/fi';
 import { useState } from "react";
 import { usePageSEO } from '../hooks/usePageTitles';
 import api from '@/lib/api';
+import { useToast } from '../components/Toast';
 
 export default function Contact() {
 
@@ -24,7 +25,7 @@ export default function Contact() {
   const [source, setSource] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const { showToast } = useToast();
 
   const handleName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -83,21 +84,16 @@ export default function Contact() {
           message: message || 'Requested a demo/consultation'
         });
 
-        setShowSuccessPopup(true);
+        showToast('success', 'Submitted', 'Thank you for your submission. We\'ll get back to you soon.');
         // Reset form
         setName("");
         setEmail("");
         setNumber("");
         setSource("");
         setMessage("");
-
-        // Hide popup after 3 seconds
-        setTimeout(() => {
-          setShowSuccessPopup(false);
-        }, 3000);
       } catch (err) {
         console.error("Submission failed", err);
-        alert('Failed to submit form. Please try again.');
+        showToast('error', 'Submission Failed', 'Failed to submit form. Please try again.');
       } finally {
         setIsSubmitting(false);
       }
@@ -106,21 +102,7 @@ export default function Contact() {
 
   return (
     <>
-      {showSuccessPopup && (
-        <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-5000000">
-          <div className="bg-white rounded-2xl p-8 max-w-sm mx-4 shadow-2xl animate-in zoom-in duration-300">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-              </div>
-              <h3 className="text-2xl font-semibold text-gray-900 mb-2">Submitted Successfully!</h3>
-              <p className="text-gray-600">Thank you for your submission. We'll get back to you soon.</p>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       <section className="min-h-auto sm:min-h-[65vh] bg-[var(--color-2)] flex items-start justify-center px-4 sm:px-0 pt-20 sm:pt-28 md:pt-32">
         <div className="text-center max-w-2xl mx-auto">

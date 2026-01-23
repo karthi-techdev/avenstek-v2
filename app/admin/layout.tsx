@@ -6,6 +6,7 @@ import Navbar from './components/navbar';
 import { usePathname, useRouter } from 'next/navigation';
 import "./admin.css"
 
+
 interface LayoutProps {
   children: React.ReactNode;
 }

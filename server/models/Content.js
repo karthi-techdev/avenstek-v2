@@ -224,6 +224,16 @@ const footerSchema = new mongoose.Schema({
     }]
 }, { timestamps: true });
 
+const visitorSchema = new mongoose.Schema({
+    ip: String,
+    city: String,
+    country: String,
+    browser: String,
+    os: String,
+    device: String, // Mobile, Desktop, Tablet, etc.
+    visitedAt: { type: Date, default: Date.now }
+}, { timestamps: true });
+
 module.exports = {
     Home: mongoose.model('Home', homeSchema),
     About: mongoose.model('About', aboutSchema),
@@ -241,5 +251,6 @@ module.exports = {
     Testimonial: mongoose.model('Testimonial', testimonialSchema),
     Setting: mongoose.model('Setting', settingSchema),
     Product: mongoose.model('Product', productSchema),
-    Footer: mongoose.model('Footer', footerSchema)
+    Footer: mongoose.model('Footer', footerSchema),
+    Visitor: mongoose.model('Visitor', visitorSchema)
 };

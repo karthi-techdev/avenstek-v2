@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import api from '@/lib/api';
+import { useModal } from '@/app/components/ConfirmModal';
+import { useToast } from '../components/Toast';
 import {
   HiOutlineUsers,
   HiOutlineTrash,
@@ -22,6 +24,8 @@ interface Subscriber {
 }
 
 const SubscribersManagement: React.FC = () => {
+  const { showAlert, showConfirm } = useModal();
+  const { showToast } = useToast();
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -41,13 +45,15 @@ const SubscribersManagement: React.FC = () => {
   }, []);
 
   const deleteSubscriber = async (id: string) => {
-    if (window.confirm('Remove this subscriber permanently?')) {
+    const confirmed = await showConfirm('Remove Subscriber', 'Are you sure you want to remove this subscriber permanently?');
+    if (confirmed) {
       try {
         await api.delete(`/content/subscribers/${id}`);
         setSubscribers(prev => prev.filter(s => (s._id || s.id) !== id));
+        showToast('success', 'Removed', 'Subscriber deleted successfully.');
       } catch (err) {
         console.error("Error deleting subscriber", err);
-        alert('Failed to remove subscriber.');
+        showAlert('Delete Failed', 'Failed to remove subscriber.');
       }
     }
   };

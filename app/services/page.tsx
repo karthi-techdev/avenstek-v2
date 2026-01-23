@@ -1,4 +1,6 @@
 "use client";
+import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '@/lib/api-config';
 import { FaRegCalendarCheck } from "react-icons/fa";
 import { IoStar } from "react-icons/io5";
 import { IoStarHalf } from "react-icons/io5";
@@ -15,13 +17,42 @@ import { FaNetworkWired } from "react-icons/fa";
 import { BsGlobe } from "react-icons/bs";
 import { FiSmartphone } from "react-icons/fi";
 import { FiMonitor } from "react-icons/fi";
+import { IconRenderer } from "../admin/components/IconPicker";
 import { usePageSEO } from '../hooks/usePageTitles';
 
 export default function Services() {
-  usePageSEO(
-    "Services", 
-    "Avenstek delivers custom software solutions that drive growth. From Web & Mobile Apps to UI/UX and Cloud DevOps, we solve your scaling challenges with 95% on-time delivery."
-  );
+    const [servicesList, setServicesList] = useState<any[]>([]);
+    const [seo, setSeo] = useState({
+        title: "",
+        description: "",
+        keywords: ""
+    });
+
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/content/services`);
+                const data = await res.json();
+                if (data) {
+                    if (data.seo) {
+                        setSeo({
+                            title: data.seo.title,
+                            description: data.seo.description,
+                            keywords: data.seo.keywords
+                        });
+                    }
+                    if (data.services) {
+                        setServicesList(data.services);
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch services content");
+            }
+        };
+        fetchServices();
+    }, []);
+
+    usePageSEO(seo.title, seo.description, seo.keywords);
     return (
         <>
             <main className="flex px-[1rem] pb-[3rem] sm:px-[2rem] md:px-[3rem] lg:px-[4rem]">
@@ -44,61 +75,26 @@ export default function Services() {
                         </div>
                     </header>
                     <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[1.5rem]">
-                        {[
-                            {
-                                icon: <BsGlobe className="text-[1.9rem] transition-all duration-500 text-[var(--color-8)] group-hover:text-[var(--color-25)]" />,
-                                title: "Web Development",
-                                desc: "Custom, responsive websites and web applications designed to elevate your online presence and drive business growth.",
-                                items: ["Custom Websites", "Responsive Design", "Content Management Systems"]
-                            },
-                            {
-                                icon: <FiSmartphone className="text-[1.9rem] transition-all duration-500 text-[var(--color-8)] group-hover:text-[var(--color-25)]" />,
-                                title: "Mobile App Development",
-                                desc: "Native and cross-platform mobile applications that deliver seamless user experiences across iOS and Android devices.",
-                                items: ["iOS & Android Apps", "Cross-Platform Solutions", "App Maintenance"]
-                            },
-                            {
-                                icon: <FiMonitor className="text-[1.9rem] transition-all duration-500 text-[var(--color-8)] group-hover:text-[var(--color-25)]" />,
-                                title: "UI/UX Design",
-                                desc: "User-centered designs that combine aesthetics with functionality to create intuitive and engaging digital experiences.",
-                                items: ["Wireframing & Prototyping", "User Research", "Visual Design"]
-                            },
-                            {
-                                icon: <IoCode className="text-[1.9rem] transition-all duration-500 text-[var(--color-8)] group-hover:text-[var(--color-25)]" />,
-                                title: "Custom Software Development",
-                                desc: "Tailored software solutions built to address your specific business challenges and streamline operations.",
-                                items: ["Enterprise Applications", "API Development", "Integration Services"]
-                            },
-                            {
-                                icon: <HiOutlineChip className="text-[1.9rem] transition-all duration-500 text-[var(--color-8)] group-hover:text-[var(--color-25)]" />,
-                                title: "AI & Machine Learning",
-                                desc: "Advanced AI-driven solutions to automate processes, gain insights, and enhance decision-making.",
-                                items: ["Predictive Analytics", "Automation Tools", "Custom AI Models"]
-                            },
-                            {
-                                icon: <LuShield className="text-[1.9rem] transition-all duration-500 text-[var(--color-8)] group-hover:text-[var(--color-25)]" />,
-                                title: "Cybersecurity",
-                                desc: "Robust security measures to protect your systems, data, and operations from evolving threats.",
-                                items: ["Vulnerability Assessments", "Security Consulting", "Incident Response"]
-                            }
-                        ].map((service, index) => (
-                            <div key={index} className="cursor-pointer group transition-all duration-500 border-[var(--color-22)] hover:border-[var(--color-8)] border rounded-lg p-[1.6rem] hover:shadow-lg hover:-translate-y-1">
-                                <div className="flex gap-[1.2rem]">
-                                    <div className="transition-all duration-500 group-hover:bg-[var(--color-8)] bg-[var(--color-24)] rounded-lg inline-flex items-center justify-center h-[3.9rem] w-[3.9rem] p-[1rem] flex-shrink-0">
-                                        {service.icon}
-                                    </div>
-                                    <div>
-                                        <h3 className="text-[1.25rem] sm:text-[1.4rem] font-bold leading-[1.8rem] mb-[0.5rem]">{service.title}</h3>
-                                        <p className="font-light text-[var(--color-20)] text-[0.95rem] leading-[1.5rem] mb-[0.75rem]">{service.desc}</p>
-                                        <ul className="list-disc text-[var(--color-20)] font-light text-[0.9rem] pl-[1rem] space-y-[0.3rem]">
-                                            {service.items.map((item, idx) => (
-                                                <li key={idx} className="leading-[1.4]">{item}</li>
-                                            ))}
-                                        </ul>
+                        {servicesList.length > 0 ? (
+                            servicesList.map((service, index) => (
+                                <div key={service._id || index} className="cursor-pointer group transition-all duration-500 border-[var(--color-22)] hover:border-[var(--color-8)] border rounded-lg p-[1.6rem] hover:shadow-lg hover:-translate-y-1">
+                                    <div className="flex gap-[1.2rem]">
+                                        <div className="transition-all duration-500 group-hover:bg-[var(--color-8)] bg-[var(--color-24)] rounded-lg inline-flex items-center justify-center h-[3.9rem] w-[3.9rem] p-[1rem] flex-shrink-0">
+                                            <span className="text-[1.9rem] transition-all duration-500 text-[var(--color-8)] group-hover:text-[var(--color-25)] flex items-center justify-center">
+                                                <IconRenderer name={service.iconName} size={30} />
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-[1.25rem] sm:text-[1.4rem] font-bold leading-[1.8rem] mb-[0.5rem]">{service.title}</h3>
+                                            <p className="font-light text-[var(--color-20)] text-[0.95rem] leading-[1.5rem] mb-[0.75rem]">{service.subtext}</p>
+                                            {/* Bullet points are not in current schema, preserving layout if needed later or if data structure changes */}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <div className="col-span-3 text-center text-gray-500">Loading services...</div>
+                        )}
                     </div>
                 </section>
             </main>

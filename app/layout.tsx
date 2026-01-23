@@ -1,24 +1,41 @@
 
 import { Metadata } from "next";
-import { headers } from "next/headers"; // Import headers
-import ClientWrapper from "./ClientWrapper";
+import { headers } from "next/headers";
+import ClientWrapper from "./ClientWrapper"; // Ensure this component exists or is correct
 import "./globals.css";
+import VisitorTracker from "./components/VisitorTracker";
+import { ToastProvider } from "./components/Toast";
+import { ModalProvider } from "./components/ConfirmModal";
 
 export const metadata: Metadata = {
   title: "Avenstek Solutions | Building Excellence Through Consistency in Innovation.",
-  description: "Bridge the gap between innovation and reality with Avenstek Solutions. From bespoke UI/UX design to robust Cybersecurity and Generative AI, we build the software that drives business growth. Partner with a premier software development agency to scale your digital presence.",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
 
   const headerList = await headers();
   const domain = headerList.get("host") || "";
-  const fullPath = headerList.get("x-url") || ""; 
+  const fullPath = headerList.get("x-url") || "";
 
+  // Check if current path is admin to avoid wrapping with public site wrapper if needed
   const isAdmin = fullPath.includes("/admin");
   if (isAdmin) {
-
-    return <>{children}</>;
+    // Admin layout handles its own structure, but we need HTML/Body if this is RootLayout
+    // Usually Admin pages are nested, so if this is ROOT, we must render html/body
+    // If the admin pages have their own layout that doesn't use this RootLayout (e.g. they use a (admin) route group), then this check is valid. 
+    // Assuming current structure uses ONE RootLayout for everything.
+    // If isAdmin, we might skip ClientWrapper (header/footer) but still need html/body.
+    return (
+      <html lang="en">
+        <body>
+          <ToastProvider>
+            <ModalProvider>
+              {children}
+            </ModalProvider>
+          </ToastProvider>
+        </body>
+      </html>
+    );
   }
 
   const jsonLd = {
@@ -54,7 +71,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body>
-        <ClientWrapper>{children}</ClientWrapper>
+        <ToastProvider>
+          <ModalProvider>
+            <VisitorTracker />
+            <ClientWrapper>{children}</ClientWrapper>
+          </ModalProvider>
+        </ToastProvider>
       </body>
     </html>
   );

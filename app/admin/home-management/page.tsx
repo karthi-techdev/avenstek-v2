@@ -30,7 +30,10 @@ interface SEOData {
 
 import { IconRenderer, IconPickerModal } from '../components/IconPicker';
 
+import { useToast } from '../components/Toast';
+
 const HomeManagement: React.FC = () => {
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'hero' | 'specializations' | 'seo'>('hero');
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -93,10 +96,10 @@ const HomeManagement: React.FC = () => {
     setIsSaving(true);
     try {
       await api.post('/content/home', { hero, specializations, seo });
-      alert('Home Page updated successfully!');
+      showToast('success', 'Home Page Updated', 'Changes have been published successfully.');
     } catch (err) {
       console.error("Error saving home data", err);
-      alert('Failed to update Home Page.');
+      showToast('error', 'Update Failed', 'Failed to update Home Page.');
     } finally {
       setIsSaving(false);
     }

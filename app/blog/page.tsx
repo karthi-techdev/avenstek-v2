@@ -1,9 +1,10 @@
 "use client"
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { usePageSEO } from "../hooks/usePageTitles";
+import { API_ENDPOINTS } from "@/lib/api-config";
 
 interface BlogPost {
   id: number;
@@ -18,122 +19,50 @@ interface BlogPost {
 
 export default function BlogPage() {
   usePageSEO(
-    "Blog", 
+    "Blog",
     "Stay updated with Avenstek's latest articles on AI, mobile app development, and enterprise IT strategy. Expert insights to help your business navigate the 2026 digital landscape."
   );
   const [activeFilter, setActiveFilter] = useState("All posts");
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [posts, setPosts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<string[]>(["All posts"]);
+  const [loading, setLoading] = useState(true);
 
-  //blog data 
-  const blogPosts: BlogPost[] = [
-    {
-      id: 1,
-      title: "Why We're Building a CRM Without the CRM Baggage",
-      category: "Founder Insights",
-      readTime: "6 mins read",
-      author: "Jenna Marks",
-      date: "Jul 7, 2025",
-      image: "/images/blog-img/card1.jpg",
-      color: "blue",
-    },
-    {
-      id: 2,
-      title: "Building Deal Rooms with Real-Time Threads (Without Going Full Chat App)",
-      category: "Engineering",
-      readTime: "6 mins read",
-      author: "Taylor Nguyen",
-      date: "Jul 7, 2025",
-      image: "/images/blog-img/card2.jpg",
-      color: "blue",
-    },
-    {
-      id: 3,
-      title: "Why CRM Notes Had to Die",
-      category: "Founder Insights",
-      readTime: "7 mins read",
-      author: "Jenna Marks",
-      date: "Jul 7, 2025",
-      image: "/images/blog-img/card3.jpg",
-      color: "blue",
-    },
-    {
-      id: 4,
-      title: "Your AI Is Only as Smart as Your Data",
-      category: "Sales Playbook",
-      readTime: "7 mins read",
-      author: "Jenna Marks",
-      date: "Jul 7, 2025",
-      image: "/images/blog-img/card4.jpg",
-      color: "blue",
-    },
-    {
-      id: 5,
-      title: "The Cost of Complexity: Why Simple Wins",
-      category: "Founder Insights",
-      readTime: "5 mins read",
-      author: "Jenna Marks",
-      date: "Jul 6, 2025",
-      image: "/images/blog-img/card5.jpg",
-      color: "blue",
-    },
-    {
-      id: 6,
-      title: "What AI Can — and Can't — Do for Sales Teams",
-      category: "AI & Workflow",
-      readTime: "8 mins read",
-      author: "Mei tan",
-      date: "Jul 5, 2025",
-      image: "/images/blog-img/card6.jpg",
-      color: "blue",
-    },
-    {
-      id: 7,
-      title: "Fast,Flexible Role -Based Access in the UI",
-      category: "Engineering",
-      readTime: "6 mins read",
-      author: "Taylor Nguyen",
-      date: "Jul 4, 2025",
-      image: "/images/blog-img/card7.jpg",
-      color: "blue",
-    },
-    {
-      id: 8,
-      title: "Smart Summaries Without Full Transcription",
-      category: "Founder Insights",
-      readTime: "9 mins read",
-      author: "Mei Tan",
-      date: "Jul 3, 2025",
-      image: "/images/blog-img/card8.jpg",
-      color: "blue",
-    },
-    {
-      id: 9,
-      title: "How to Add AI Without Breaking Your Workflow",
-      category: "Sales Playbook",
-      readTime: "7 mins read",
-      author: "Jenna Marks",
-      date: "Jul 2, 2025",
-      image: "/images/blog-img/card9.jpg",
-      color: "blue",
-    },
-    {
-      id: 10,
-      title: "Why Fast, Then Right Is How We Build at Avenstek ",
-      category: "Founder Insights",
-      readTime: "5 mins read",
-      author: "Jenna Marks",
-      date: "Jul 1, 2025",
-      image: "/images/blog-img/card10.jpg",
-      color: "blue",
-    },
-  ];
+  // Fetch data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [postsRes, catsRes] = await Promise.all([
+          fetch(API_ENDPOINTS.BLOGS),
+          fetch(API_ENDPOINTS.CATEGORIES)
+        ]);
 
-  const categories = ["All posts", "Founder Insights", "Sales Playbook", "AI & Workflow", "Engineering"];
+        const postsData = await postsRes.json();
+        const catsData = await catsRes.json();
 
-  const filteredPosts = activeFilter === "All posts"
-    ? blogPosts
-    : blogPosts.filter(post => post.category === activeFilter);
+        if (Array.isArray(postsData)) {
+          setPosts(postsData.filter((p: any) => p.status === true));
+        }
+
+        if (Array.isArray(catsData)) {
+          setCategories(["All posts", ...catsData.map((c: any) => c.name)]);
+        }
+
+      } catch (err) {
+        console.error("Failed to fetch blog data", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const filteredPosts = posts.filter(post => {
+    const matchCategory = activeFilter === "All posts" || (post.categoryId?.name || post.category) === activeFilter;
+    const matchSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchCategory && matchSearch;
+  });
 
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -396,7 +325,7 @@ export default function BlogPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 hover:bg-[var(--color-25)]">
             {filteredPosts.map((post, index) => (
               <motion.div
-                key={post.id}
+                key={post._id || post.id || index}
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
@@ -412,7 +341,7 @@ export default function BlogPage() {
                   transition: { duration: 0.3 }
                 }}
               >
-                <Link href={`/blog/blog-view?id=${post.id}`} className="block h-full">
+                <Link href={`/blog/blog-view?id=${post._id || post.id}`} className="block h-full">
                   <div className="group cursor-pointer h-full rounded-2xl hover:shadow-xl transition-all duration-300 bg-[var(--color-2)] hover:bg-[var(--color-25)] flex flex-col">
                     {/* img */}
                     <div className="relative h-48 md:h-56 overflow-hidden rounded-lg p-[1px] bg-[var(--color-gray-300)]">
@@ -423,7 +352,7 @@ export default function BlogPage() {
                         transition={{ duration: 0.4 }}
                       >
                         <Image
-                          src={post.image}
+                          src={post.thumbnail || '/images/blog-img/card1.jpg'}
                           alt={post.title}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-500 rounded-lg border-4 border-white"
@@ -435,10 +364,11 @@ export default function BlogPage() {
                     {/* Content */}
                     <div className="p-6 flex-1 flex flex-col">
                       <div className="flex items-center gap-3 mb-3">
-                        <span className={`py-1 font-medium ${getCategoryColor(post.category)}`}>{post.category}</span>
+                        <span className={`py-1 font-medium ${getCategoryColor(post.categoryId?.name || post.category)}`}>{post.categoryId?.name || post.category}</span>
                         <span className="text-[var(--color-20)]">•</span>
-                        <span className="text-sm text-[var(--color-20)] font-medium">{post.readTime}</span>
+                        <span className="text-sm text-[var(--color-20)] font-medium">{post.readTime || "5 min read"}</span>
                       </div>
+
 
                       <h3 className="text-xl font-bold text-[var(--color-15)] mb-3 group-hover:text-[var(--color-17)] transition-colors line-clamp-2">
                         {post.title}
@@ -446,18 +376,16 @@ export default function BlogPage() {
 
                       <div className="flex items-center gap-3 pt-4 mt-auto">
                         <div className="h-8 w-8 rounded-full overflow-hidden flex-shrink-0 relative">
-                          <Image
-                            src={`/images/author-img/author1.jpg`}
-                            alt={post.author}
-                            fill
-                            className="object-cover"
-                            sizes="32px"
-                          />
+                          {post.authorId?.photo ? (
+                            <img src={post.authorId.photo} alt={post.authorId.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full bg-gray-300" />
+                          )}
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-[var(--color-18)] whitespace-nowrap">{post.author}</span>
+                          <span className="text-sm font-medium text-[var(--color-18)] whitespace-nowrap">{post.authorId?.name || "Avenstek Team"}</span>
                           <span className="text-[var(--color-20)]">•</span>
-                          <span className="text-xs text-[var(--color-20)] whitespace-nowrap">{post.date}</span>
+                          <span className="text-xs text-[var(--color-20)] whitespace-nowrap">{new Date(post.createdAt).toLocaleDateString()}</span>
                         </div>
                       </div>
                     </div>

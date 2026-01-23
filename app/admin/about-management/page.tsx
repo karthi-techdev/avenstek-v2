@@ -1,17 +1,18 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { 
-  HiOutlineSave, 
-  HiOutlinePlus, 
-  HiOutlineTrash, 
-  HiOutlineSearch, 
+import {
+  HiOutlineSave,
+  HiOutlinePlus,
+  HiOutlineTrash,
+  HiOutlineSearch,
   HiOutlineGlobe,
   HiOutlinePhotograph,
   HiOutlineLink,
   HiOutlineArrowsExpand
 } from 'react-icons/hi';
 import api from '@/lib/api';
+import { API_BASE_URL } from '@/lib/api-config';
 
 interface HeroSection {
   heroTitle: string;
@@ -40,7 +41,10 @@ interface SEOData {
   keywords: string;
 }
 
+import { useToast } from '../components/Toast';
+
 const AboutUsManagement: React.FC = () => {
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'hero' | 'team' | 'seo'>('hero');
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -107,10 +111,10 @@ const AboutUsManagement: React.FC = () => {
     setIsSaving(true);
     try {
       await api.post('/content/about', { hero, team, seo });
-      alert('About Us page updated successfully!');
+      showToast('success', 'About Us Saved', 'About page content updated.');
     } catch (err) {
       console.error("Error saving about data", err);
-      alert('Failed to update About Us Page.');
+      showToast('error', 'Update Failed', 'Failed to update About Us Page.');
     } finally {
       setIsSaving(false);
     }
@@ -146,9 +150,9 @@ const AboutUsManagement: React.FC = () => {
           <h1 className="text-2xl font-bold text-[var(--color-16)]">About Us Page</h1>
           <p className="text-[var(--color-20)]">Manage the brand story, team members, and SEO presence.</p>
         </div>
-        <button 
-          onClick={handleSave} 
-          disabled={isSaving} 
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
           className="flex items-center gap-2 bg-[var(--color-7)] text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-[var(--color-7)]/20 hover:scale-[1.02] active:scale-95 disabled:opacity-50 transition-all"
         >
           {isSaving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <HiOutlineSave size={20} />}
@@ -158,14 +162,13 @@ const AboutUsManagement: React.FC = () => {
 
       <div className="flex border-b border-[var(--color-23)] overflow-x-auto">
         {(['hero', 'team', 'seo'] as const).map(tab => (
-          <button 
-            key={tab} 
-            onClick={() => setActiveTab(tab)} 
-            className={`px-6 py-3 text-sm font-semibold transition-all border-b-2 capitalize whitespace-nowrap ${
-              activeTab === tab 
-                ? 'border-[var(--color-7)] text-[var(--color-7)]' 
-                : 'border-transparent text-[var(--color-20)] hover:text-[var(--color-16)]'
-            }`}
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-6 py-3 text-sm font-semibold transition-all border-b-2 capitalize whitespace-nowrap ${activeTab === tab
+              ? 'border-[var(--color-7)] text-[var(--color-7)]'
+              : 'border-transparent text-[var(--color-20)] hover:text-[var(--color-16)]'
+              }`}
           >
             {tab}
           </button>
@@ -176,9 +179,9 @@ const AboutUsManagement: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <div className="bg-white p-6 rounded-3xl border border-[var(--color-23)] space-y-5 shadow-sm">
             <h3 className="text-lg font-bold text-[var(--color-16)] flex items-center gap-2">
-               <HiOutlinePhotograph className="text-[var(--color-7)]" /> Hero Content
+              <HiOutlinePhotograph className="text-[var(--color-7)]" /> Hero Content
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
                 <label className="block text-xs font-bold text-[var(--color-21)] uppercase mb-1.5 tracking-wider">Hero Title</label>
@@ -192,7 +195,7 @@ const AboutUsManagement: React.FC = () => {
                 <label className="block text-xs font-bold text-[var(--color-21)] uppercase mb-1.5 tracking-wider">Subtitle</label>
                 <textarea name="heroSubtitle" value={hero.heroSubtitle} onChange={handleHeroChange} rows={3} className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-23)] bg-[var(--color-24)] text-sm focus:ring-2 focus:ring-[var(--color-11)] outline-none resize-none transition-all" />
               </div>
-              
+
               <div className="md:col-span-2">
                 <label className="block text-xs font-bold text-[var(--color-21)] uppercase mb-1.5 tracking-wider">Banner Image</label>
                 <div className="flex gap-2">
@@ -218,10 +221,10 @@ const AboutUsManagement: React.FC = () => {
               ))}
             </div>
           </div>
-          
+
           <div className="space-y-6 sticky top-6">
             <div className="bg-[var(--color-16)] p-8 rounded-3xl text-white flex flex-col justify-center text-center space-y-4 h-[350px] relative overflow-hidden group shadow-xl">
-              <img src={hero.bannerImage.startsWith('/') ? `http://localhost:5000${hero.bannerImage}` : hero.bannerImage} className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:scale-110 transition-transform duration-700" alt="Preview Banner" />
+              <img src={hero.bannerImage.startsWith('/') ? `${API_BASE_URL}${hero.bannerImage}` : hero.bannerImage} className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:scale-110 transition-transform duration-700" alt="Preview Banner" />
               <div className="relative z-10 space-y-4">
                 <h2 className="text-3xl font-bold leading-tight">
                   {hero.heroTitle} <span className="text-[var(--color-8)]">{hero.highlightedText}</span>
@@ -247,15 +250,15 @@ const AboutUsManagement: React.FC = () => {
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {team.sort((a,b) => a.order - b.order).map(member => (
+            {team.sort((a, b) => a.order - b.order).map(member => (
               <div key={member._id || member.id} className="p-6 border border-[var(--color-23)] rounded-3xl bg-[var(--color-25)] flex flex-col items-center text-center space-y-4 relative group hover:border-[var(--color-7)] transition-all">
                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                   <button onClick={() => setTeam(prev => prev.filter(m => (m._id || m.id) !== (member._id || member.id)))} className="text-[var(--color-27)] p-2 bg-white rounded-lg shadow-md hover:bg-red-50 transition-colors">
-                      <HiOutlineTrash size={16} />
-                   </button>
+                  <button onClick={() => setTeam(prev => prev.filter(m => (m._id || m.id) !== (member._id || member.id)))} className="text-[var(--color-27)] p-2 bg-white rounded-lg shadow-md hover:bg-red-50 transition-colors">
+                    <HiOutlineTrash size={16} />
+                  </button>
                 </div>
                 <div className="relative">
-                  <img src={member.photo.startsWith('/') ? `http://localhost:5000${member.photo}` : member.photo} className="w-24 h-24 rounded-full object-cover ring-4 ring-white shadow-md" alt={member.name} />
+                  <img src={member.photo.startsWith('/') ? `${API_BASE_URL}${member.photo}` : member.photo} className="w-24 h-24 rounded-full object-cover ring-4 ring-white shadow-md" alt={member.name} />
                   <label className="absolute bottom-0 right-0 p-2 bg-[var(--color-7)] text-white rounded-full shadow-lg hover:scale-110 transition-transform cursor-pointer">
                     <HiOutlinePhotograph size={12} />
                     <input type="file" className="hidden" onChange={(e) => handleImageUpload(e, 'photo', (member._id || member.id)!)} />
@@ -268,14 +271,14 @@ const AboutUsManagement: React.FC = () => {
                 <div className="flex items-center gap-3 pt-4 border-t border-[var(--color-23)] w-full justify-between">
                   <div className="flex items-center gap-1.5">
                     <span className="text-[9px] font-black text-[var(--color-21)] uppercase">Order</span>
-                    <input 
-                      type="number" 
-                      value={member.order} 
+                    <input
+                      type="number"
+                      value={member.order}
                       onChange={e => updateMember((member._id || member.id)!, { order: parseInt(e.target.value) })}
                       className="w-8 bg-transparent text-[10px] font-bold text-[var(--color-20)] outline-none"
                     />
                   </div>
-                  <button 
+                  <button
                     onClick={() => updateMember((member._id || member.id)!, { status: !member.status })}
                     className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase transition-colors ${member.status ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-500'}`}
                   >

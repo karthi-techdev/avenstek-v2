@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import api from "@/lib/api";
+import { useToast } from "@/app/components/Toast";
 
 interface ApplyModalProps {
   onClose: () => void;
@@ -11,6 +12,7 @@ interface ApplyModalProps {
 const ApplyModal = ({ onClose, onSuccess, jobId }: ApplyModalProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showToast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -65,7 +67,7 @@ const ApplyModal = ({ onClose, onSuccess, jobId }: ApplyModalProps) => {
       } catch (err: any) {
         console.error("Application error:", err);
         const serverMessage = err.response?.data?.message || "Failed to submit application. Please try again.";
-        alert(serverMessage);
+        showToast('error', 'Application Error', serverMessage);
       } finally {
         setIsSubmitting(false);
       }

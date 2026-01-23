@@ -11,6 +11,7 @@ import {
   HiOutlineViewBoards,
   HiOutlineCollection
 } from 'react-icons/hi';
+import { useModal } from '@/app/components/ConfirmModal';
 
 import api from '@/lib/api';
 
@@ -31,7 +32,11 @@ interface FooterLink {
   status: boolean;
 }
 
+import { useToast } from '../components/Toast';
+
 const FooterManagement: React.FC = () => {
+  const { showToast } = useToast();
+  const { showAlert, showConfirm } = useModal();
   const [categories, setCategories] = useState<FooterCategory[]>([]);
   const [links, setLinks] = useState<FooterLink[]>([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -97,12 +102,12 @@ const FooterManagement: React.FC = () => {
     });
   };
 
-  const deleteCategory = (id: string) => {
+  const deleteCategory = async (id: string) => {
     if (categories.length <= 1) {
-      alert("At least one footer section is required.");
+      showToast('error', 'Action Restricted', "At least one footer section is required.");
       return;
     }
-    const confirmed = window.confirm("Deleting this section will also remove all its links. Continue?");
+    const confirmed = await showConfirm('Delete Section', 'Deleting this section will also remove all its links. Continue?');
     if (!confirmed) return;
 
     const filteredCats = categories.filter(c => c.id !== id);
@@ -172,10 +177,10 @@ const FooterManagement: React.FC = () => {
     setIsSaving(true);
     try {
       await api.post('/content/footer', { categories, links });
-      alert('Footer layout successfully deployed!');
+      showToast('success', 'Footer Updated', 'Architecture successfully deployed.');
     } catch (err) {
       console.error("Error saving footer", err);
-      alert('Failed to deploy changes.');
+      showToast('error', 'Deploy Failed', 'Failed to deploy changes.');
     } finally {
       setIsSaving(false);
     }

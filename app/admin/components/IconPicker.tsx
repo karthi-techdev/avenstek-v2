@@ -1,5 +1,6 @@
 import React, { useState, useMemo, Suspense } from 'react';
 import { HiOutlineSearch, HiOutlineCube } from 'react-icons/hi';
+import { useModal } from '@/app/components/ConfirmModal';
 
 // Import all icon sets
 import * as HiIcons from 'react-icons/hi';
@@ -20,29 +21,30 @@ import * as ImIcons from 'react-icons/im';
 
 // Merge all icons into a single object
 const AllIcons: Record<string, any> = {
-  ...HiIcons,
-  ...FaIcons,
-  ...MdIcons,
-  ...BsIcons,
-  ...BiIcons,
-  ...AiIcons,
-  ...FiIcons,
-  ...IoIcons,
-  ...RiIcons,
-  ...SiIcons,
-  ...TbIcons,
-  ...TiIcons,
-  ...VscIcons,
-  ...CgIcons,
-  ...ImIcons,
+    ...HiIcons,
+    ...FaIcons,
+    ...MdIcons,
+    ...BsIcons,
+    ...BiIcons,
+    ...AiIcons,
+    ...FiIcons,
+    ...IoIcons,
+    ...RiIcons,
+    ...SiIcons,
+    ...TbIcons,
+    ...TiIcons,
+    ...VscIcons,
+    ...CgIcons,
+    ...ImIcons,
 };
 
-export const IconRenderer = ({ name, size = 20 }: { name: string; size?: number }) => {
+export const IconRenderer = ({ name, size = 20, className = "" }: { name: string; size?: number; className?: string }) => {
     const IconComponent = AllIcons[name] || HiOutlineCube;
-    return <IconComponent size={size} />;
+    return <IconComponent size={size} className={className} />;
 };
 
 export const IconPickerModal = ({ isOpen, onClose, onSelect }: { isOpen: boolean; onClose: () => void; onSelect: (name: string) => void }) => {
+    const { showConfirm } = useModal();
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
     const ICONS_PER_PAGE = 100;
@@ -52,8 +54,8 @@ export const IconPickerModal = ({ isOpen, onClose, onSelect }: { isOpen: boolean
         if (!search) return []; // Show specific popular ones or none initially to save perf? Or let's show HiIcons by default if empty?
         // Actually showing all 20k icons at once is bad.
         // Let's filter.
-        
-        return Object.keys(AllIcons).filter(name => 
+
+        return Object.keys(AllIcons).filter(name =>
             name.toLowerCase().includes(search.toLowerCase())
         );
     }, [search]);
@@ -62,11 +64,11 @@ export const IconPickerModal = ({ isOpen, onClose, onSelect }: { isOpen: boolean
     // Let's rely on pagination/slicing.
     const displayIcons = useMemo(() => {
         if (!search) {
-             // By default show HiIcons + FaIcons as initial view (approx 1500 icons)
-             // or just slice the first 200 of AllIcons?
-             // Accessing keys of AllIcons is random order.
-             // Let's just return first 200 keys if no search.
-             return Object.keys(AllIcons).slice(0, 200);
+            // By default show HiIcons + FaIcons as initial view (approx 1500 icons)
+            // or just slice the first 200 of AllIcons?
+            // Accessing keys of AllIcons is random order.
+            // Let's just return first 200 keys if no search.
+            return Object.keys(AllIcons).slice(0, 200);
         }
         return filteredIconNames.slice(0, (page * ICONS_PER_PAGE));
     }, [search, filteredIconNames, page]);
@@ -126,14 +128,14 @@ export const IconPickerModal = ({ isOpen, onClose, onSelect }: { isOpen: boolean
                             );
                         })}
                     </div>
-                    
+
                     {displayIcons.length === 0 && search && (
                         <div className="py-12 text-center text-[var(--color-21)] italic font-bold">No matching icons found...</div>
                     )}
-                    
+
                     {search && filteredIconNames.length > displayIcons.length && (
                         <div className="py-4 text-center">
-                            <button 
+                            <button
                                 onClick={handleLoadMore}
                                 className="text-xs font-bold text-[var(--color-7)] bg-[var(--color-13)] px-4 py-2 rounded-xl hover:bg-[var(--color-12)] transition-colors"
                             >
@@ -144,7 +146,7 @@ export const IconPickerModal = ({ isOpen, onClose, onSelect }: { isOpen: boolean
 
                     {!search && (
                         <div className="py-4 text-center">
-                             <p className="text-[10px] text-[var(--color-21)] mb-2">Type above to search across FontAwesome, Material, Bootstrap, and more.</p>
+                            <p className="text-[10px] text-[var(--color-21)] mb-2">Type above to search across FontAwesome, Material, Bootstrap, and more.</p>
                         </div>
                     )}
                 </div>
@@ -159,13 +161,14 @@ export const IconPickerModal = ({ isOpen, onClose, onSelect }: { isOpen: boolean
                             id="manual-icon-input"
                         />
                         <button
-                            onClick={() => {
+                            onClick={async () => {
                                 const manualName = (document.getElementById('manual-icon-input') as HTMLInputElement).value;
                                 if (manualName && AllIcons[manualName]) {
                                     onSelect(manualName);
                                     onClose();
                                 } else if (manualName) {
-                                    if (confirm("Icon name not found in standard set. This may not render correctly. Add anyway?")) {
+                                    const confirmed = await showConfirm("Invalid Icon", "Icon name not found in standard set. This may not render correctly. Add anyway?");
+                                    if (confirmed) {
                                         onSelect(manualName);
                                         onClose();
                                     }

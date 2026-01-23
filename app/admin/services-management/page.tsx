@@ -30,7 +30,10 @@ interface SEOData {
 
 import { IconRenderer, IconPickerModal } from '../components/IconPicker';
 
+import { useToast } from '../components/Toast';
+
 const ServicesManagement: React.FC = () => {
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'list' | 'seo'>('list');
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -81,10 +84,10 @@ const ServicesManagement: React.FC = () => {
     setIsSaving(true);
     try {
       await api.post('/content/services', { services, seo });
-      alert('Services configuration updated and published!');
+      showToast('success', 'Services Published', 'Configuration and SEO updated.');
     } catch (err) {
       console.error("Error saving services", err);
-      alert('Failed to save changes.');
+      showToast('error', 'Update Failed', 'Failed to save changes.');
     } finally {
       setIsSaving(false);
     }

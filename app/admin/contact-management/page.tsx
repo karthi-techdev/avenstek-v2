@@ -2,14 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import api from '@/lib/api';
-import { 
-  HiOutlineMail, 
-  HiOutlineTrash, 
-  HiOutlineSearch, 
+import {
+  HiOutlineMail,
+  HiOutlineTrash,
+  HiOutlineSearch,
   HiOutlineFilter,
   HiOutlineCalendar,
   HiOutlineAnnotation
 } from 'react-icons/hi';
+import { useModal } from '@/app/components/ConfirmModal';
 
 interface ContactEnquiry {
   _id?: string;
@@ -24,7 +25,11 @@ interface ContactEnquiry {
   status: 'New' | 'Read' | 'Responded';
 }
 
+import { useToast } from '../components/Toast';
+
 const ContactManagement: React.FC = () => {
+  const { showToast } = useToast();
+  const { showAlert, showConfirm } = useModal();
   const [enquiries, setEnquiries] = useState<ContactEnquiry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -44,19 +49,21 @@ const ContactManagement: React.FC = () => {
   }, []);
 
   const deleteEnquiry = async (id: string) => {
-    if (window.confirm('Delete this inquiry?')) {
+    const confirmed = await showConfirm('Delete Enquiry', 'Delete this inquiry permanently?');
+    if (confirmed) {
       try {
         await api.delete(`/content/contacts/${id}`);
         setEnquiries(prev => prev.filter(e => (e._id || e.id) !== id));
+        showToast('success', 'Deleted', 'Enquiry has been removed.');
       } catch (err) {
         console.error("Error deleting enquiry", err);
-        alert('Failed to delete enquiry.');
+        showToast('error', 'Error', 'Failed to delete enquiry.');
       }
     }
   };
 
-  const filteredEnquiries = enquiries.filter(e => 
-    e.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+  const filteredEnquiries = enquiries.filter(e =>
+    e.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     e.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -79,9 +86,9 @@ const ContactManagement: React.FC = () => {
       <div className="bg-white p-4 rounded-2xl border border-[var(--color-23)] shadow-sm flex flex-col md:flex-row gap-4 items-center">
         <div className="flex-1 flex items-center gap-3 bg-[var(--color-24)] border border-[var(--color-23)] px-4 py-2 rounded-xl w-full">
           <HiOutlineSearch className="text-[var(--color-21)]" size={20} />
-          <input 
-            type="text" 
-            placeholder="Search by name or email..." 
+          <input
+            type="text"
+            placeholder="Search by name or email..."
             className="bg-transparent border-none outline-none text-sm w-full font-medium"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -125,8 +132,8 @@ const ContactManagement: React.FC = () => {
                       <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase border
                         ${enq.source === 'Web Search' ? 'bg-blue-50 text-blue-600 border-blue-100' :
                           enq.source === 'Referral' ? 'bg-purple-50 text-purple-600 border-purple-100' :
-                          enq.source === 'Social Media' ? 'bg-pink-50 text-pink-600 border-pink-100' :
-                          'bg-gray-50 text-gray-600 border-gray-100'}`}>
+                            enq.source === 'Social Media' ? 'bg-pink-50 text-pink-600 border-pink-100' :
+                              'bg-gray-50 text-gray-600 border-gray-100'}`}>
                         {enq.source}
                       </span>
                     </td>
@@ -144,7 +151,7 @@ const ContactManagement: React.FC = () => {
                         <button className="p-2.5 bg-white border border-[var(--color-23)] rounded-xl text-[var(--color-20)] hover:text-[var(--color-7)] hover:border-[var(--color-11)] transition-all">
                           <HiOutlineAnnotation size={18} />
                         </button>
-                        <button 
+                        <button
                           onClick={() => deleteEnquiry(enqId)}
                           className="p-2.5 bg-white border border-[var(--color-23)] rounded-xl text-[var(--color-20)] hover:text-red-500 hover:border-red-100 transition-all"
                         >

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { HiOutlineTrash, HiOutlinePhotograph, HiOutlinePlus, HiOutlineSave } from 'react-icons/hi';
 import api from '@/lib/api';
+import { API_BASE_URL } from '@/lib/api-config';
 
 interface Testimonial {
   _id?: string;
@@ -15,7 +16,10 @@ interface Testimonial {
   isActive: boolean;
 }
 
+import { useToast } from '../components/Toast';
+
 const TestimonialsManagement: React.FC = () => {
+  const { showToast } = useToast();
   const [items, setItems] = useState<Testimonial[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -54,12 +58,12 @@ const TestimonialsManagement: React.FC = () => {
     setIsSaving(true);
     try {
       await api.post('/content/testimonials', items);
-      alert('Testimonials configuration updated!');
       const { data } = await api.get('/content/testimonials');
       setItems(data);
+      showToast('success', 'Testimonials Saved', 'Social proof section updated.');
     } catch (err) {
       console.error("Error saving testimonials", err);
-      alert('Failed to save testimonials.');
+      showToast('error', 'Save Failed', 'Failed to save testimonials.');
     } finally {
       setIsSaving(false);
     }
@@ -121,7 +125,7 @@ const TestimonialsManagement: React.FC = () => {
             <div className="flex-shrink-0 flex flex-col items-center gap-4">
               <div className="relative">
                 <img
-                  src={item.photo.startsWith('/') ? `http://localhost:5000${item.photo}` : item.photo}
+                  src={item.photo.startsWith('/') ? `${API_BASE_URL}${item.photo}` : item.photo}
                   className="w-20 h-20 rounded-2xl object-cover ring-4 ring-[var(--color-24)]"
                   alt={item.name}
                 />
@@ -165,8 +169,8 @@ const TestimonialsManagement: React.FC = () => {
                 <button
                   onClick={() => updateTestimonial((item._id || item.id)!, { isActive: !item.isActive })}
                   className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all active:scale-90 ${item.isActive
-                      ? 'bg-[var(--color-13)] text-[var(--color-7)]'
-                      : 'bg-[var(--color-24)] text-[var(--color-21)]'
+                    ? 'bg-[var(--color-13)] text-[var(--color-7)]'
+                    : 'bg-[var(--color-24)] text-[var(--color-21)]'
                     }`}
                 >
                   {item.isActive ? 'Active' : 'Inactive'}

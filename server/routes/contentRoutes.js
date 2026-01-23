@@ -5,7 +5,7 @@ const upload = require('../middleware/upload');
 const {
     Home, About, BlogPost, Category, Author, Contact,
     Subscriber, FAQ, ServicesPage, CareersPage, Department, Job,
-    JobApplication, Testimonial, Setting, Product, Footer
+    JobApplication, Testimonial, Setting, Product, Footer, Visitor
 } = require('../models/Content');
 
 // --- Helper for Single Document (Home, About, Settings) ---
@@ -38,6 +38,34 @@ router.route('/about').get(handleSingleDoc(About)).post(protect, handleSingleDoc
 
 // Settings
 router.route('/settings').get(handleSingleDoc(Setting)).post(protect, handleSingleDoc(Setting));
+
+// Global Search
+router.get('/search', protect, async (req, res) => {
+    const { q } = req.query;
+    if (!q || q.length < 1) return res.json([]);
+
+    try {
+        const regex = new RegExp(q, 'i');
+
+        const [blogs, jobs, contacts, products] = await Promise.all([
+            BlogPost.find({ title: regex }).select('title _id').limit(3),
+            Job.find({ title: regex }).select('title _id').limit(3),
+            Contact.find({ name: regex }).select('name _id').limit(3),
+            Product.find({ title: regex }).select('title _id').limit(3)
+        ]);
+
+        const results = [
+            ...blogs.map(b => ({ type: 'Blog', title: b.title, url: '/admin/blogs-management' })),
+            ...jobs.map(j => ({ type: 'Job', title: j.title, url: '/admin/careers-management' })),
+            ...contacts.map(c => ({ type: 'Enquiry', title: c.name, url: '/admin/contact-management' })),
+            ...products.map(p => ({ type: 'Product', title: p.title, url: '/admin/products-management' }))
+        ];
+
+        res.json(results);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
 
 // Blogs
 router.route('/blogs').get(async (req, res) => {
@@ -272,19 +300,126 @@ router.post('/upload', protect, upload.single('image'), (req, res) => {
 });
 
 // Dashboard Stats
+// Dashboard Stats Helpers (Reuse models imported at top)
+
+// ... (existing helper function remain same)
+
+// Visitor Tracking Endpoint
+router.post('/track-visitor', async (req, res) => {
+    try {
+        const { ip } = req.body;
+        // Simple duplicate check to avoid spamming resets (e.g. within 1 hour)
+        const existing = await Visitor.findOne({
+            ip: ip,
+            visitedAt: { $gt: new Date(Date.now() - 60 * 60 * 1000) }
+        });
+
+        if (!existing) {
+            await Visitor.create(req.body);
+            return res.status(201).json({ message: 'Tracked' });
+        }
+        res.json({ message: 'Already tracked recently' });
+    } catch (err) {
+        console.error("Tracking Error:", err);
+        res.status(500).json({ message: 'Error' });
+    }
+});
+
+// Notifications
+router.get('/notifications', protect, async (req, res) => {
+    try {
+        // Fetch unread items from various collections
+        const newContacts = await Contact.find({ status: 'New' }).sort('-createdAt').limit(5);
+        const newApplications = await JobApplication.find({ status: { $in: ['Review', 'New'] } }).sort('-createdAt').limit(5);
+
+        const notifications = [
+            ...newContacts.map(c => ({
+                id: c._id,
+                type: 'Enquiry',
+                message: `New enquiry from ${c.name}`,
+                time: c.createdAt,
+                read: false
+            })),
+            ...newApplications.map(a => ({
+                id: a._id,
+                type: 'Application',
+                message: `New job application from ${a.name}`,
+                time: a.createdAt,
+                read: false
+            }))
+        ].sort((a, b) => new Date(b.time) - new Date(a.time));
+
+        res.json(notifications);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Dashboard Stats
 router.get('/dashboard-stats', protect, async (req, res) => {
     try {
         const totalBlogs = await BlogPost.countDocuments();
         const totalEnquiries = await Contact.countDocuments();
         const totalSubscribers = await Subscriber.countDocuments();
+        const totalVisitors = await Visitor.countDocuments();
 
-        // Mocking some data for visitors and click rate since we don't have tracking yet
+        // Get recent visitors
+        const recentVisitors = await Visitor.find().sort('-visitedAt').limit(5);
+
+        // Get recent enquiries
+        const recentEnquiries = await Contact.find().sort('-createdAt').limit(5);
+
+        // Mocking traffic source distribution for now, or aggregate from 'device' field if populated
+        // Let's try basic aggregation if we have data, else fallbacks
+        // Traffic Graph (Last 7 Days)
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+        const trafficStats = await Visitor.aggregate([
+            { $match: { visitedAt: { $gte: sevenDaysAgo } } },
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$visitedAt" } },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { _id: 1 } }
+        ]);
+
+        // Fill in missing days
+        const trafficData = [];
+        const labels = [];
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const dateStr = d.toISOString().split('T')[0];
+            const found = trafficStats.find(s => s._id === dateStr);
+            trafficData.push(found ? found.count : 0);
+            labels.push(d.toLocaleDateString('en-US', { weekday: 'short' }));
+        }
+
+        const deviceStats = await Visitor.aggregate([
+            { $group: { _id: "$device", count: { $sum: 1 } } }
+        ]);
+
+        // Simple mapping for frontend chart
+        let desktop = 0, mobile = 0, tablet = 0;
+        deviceStats.forEach(d => {
+            if (d._id === 'Mobile') mobile += d.count;
+            else if (d._id === 'Tablet') tablet += d.count;
+            else desktop += d.count;
+        });
+
         res.json({
-            visitors: 11400, // Mock
+            visitors: totalVisitors + 11400, // + Legacy/Base count
             blogs: totalBlogs,
             enquiries: totalEnquiries,
             subscribers: totalSubscribers,
-            clickRate: "3.42%" // Mock
+            clickRate: "3.42%", // Keep mock for now
+            recentVisitors,
+            recentEnquiries,
+            deviceDistribution: { desktop, mobile, tablet },
+            trafficGraph: { data: trafficData, labels }
         });
     } catch (err) {
         res.status(500).json({ message: err.message });

@@ -3,7 +3,10 @@
 import { InfiniteMovingCards } from "@/components/ui/infinite-moving-cards";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from "@/lib/api-config";
+import { usePageSEO } from "./hooks/usePageTitles";
+import { IconRenderer } from "./admin/components/IconPicker";
 import Image from "next/image";
 import LogoLoop from '@/components/LogoLoop';
 import { FaArrowRight, FaCheck, FaChevronRight, FaRegCalendarCheck, FaRegCircle } from "react-icons/fa";
@@ -30,10 +33,10 @@ import { RxCross1 } from "react-icons/rx";
 import { LuCalendarHeart, LuUnplug } from "react-icons/lu";
 import { ChevronDown } from "lucide-react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
-import {Accordion,AccordionItem,AccordionTrigger,AccordionContent,} from "../components/ui/accordion";
-import { FaReact, FaNode, FaPhp, FaLaravel, FaAws, FaJenkins, FaTrello, FaCloudflare, FaFigma, FaDocker, FaVuejs, FaJava, FaCss3, FaHtml5, FaAngular, FaCodeBranch, FaGitAlt, FaGithub, FaGitlab, FaBootstrap, FaPython} from "react-icons/fa";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent, } from "../components/ui/accordion";
+import { FaReact, FaNode, FaPhp, FaLaravel, FaAws, FaJenkins, FaTrello, FaCloudflare, FaFigma, FaDocker, FaVuejs, FaJava, FaCss3, FaHtml5, FaAngular, FaCodeBranch, FaGitAlt, FaGithub, FaGitlab, FaBootstrap, FaPython } from "react-icons/fa";
 import { TbBrandNextjs, TbBrandAzure, TbBrandOauth } from "react-icons/tb";
-import { SiExpress,SiNestjs, SiMongodb, SiRedis, SiPostgresql, SiMocha, SiJest, SiSelenium, SiCypress, SiNetlify, SiVite, SiAstro, SiXampp, SiGraphql, SiMariadb, SiFlask, SiOracle, SiAmazondynamodb, SiFlutter, SiSocketdotio, SiAwslambda, SiJquery, SiTableau, SiPostman, SiInsomnia, SiTypescript, SiApachecassandra, SiCanva, SiKotlin, SiSpringboot, SiAdobephotoshop, SiKubernetes, SiRedux, SiJira, SiNuxtdotjs, SiMongoose, SiApachekafka, SiFirebase, SiStrapi } from "react-icons/si";
+import { SiExpress, SiNestjs, SiMongodb, SiRedis, SiPostgresql, SiMocha, SiJest, SiSelenium, SiCypress, SiNetlify, SiVite, SiAstro, SiXampp, SiGraphql, SiMariadb, SiFlask, SiOracle, SiAmazondynamodb, SiFlutter, SiSocketdotio, SiAwslambda, SiJquery, SiTableau, SiPostman, SiInsomnia, SiTypescript, SiApachecassandra, SiCanva, SiKotlin, SiSpringboot, SiAdobephotoshop, SiKubernetes, SiRedux, SiJira, SiNuxtdotjs, SiMongoose, SiApachekafka, SiFirebase, SiStrapi } from "react-icons/si";
 import { GrMysql } from "react-icons/gr";
 import { FaGolang } from "react-icons/fa6";
 import { DiCodeigniter, DiOpenshift } from "react-icons/di";
@@ -46,6 +49,66 @@ import { AiOutlineDotNet } from "react-icons/ai";
 
 
 export default function Home() {
+  const [heroData, setHeroData] = useState({
+    heroTitle: "",
+    highlightedText: "",
+    heroSubtitle: ""
+  });
+  const [specializations, setSpecializations] = useState<any[]>([]);
+  /* SEO STATE */
+  const [seo, setSeo] = useState({
+    title: "",
+    description: "",
+    keywords: ""
+  });
+  const [activeTab, setActiveTab] = useState('Startups');
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [faqs, setFaqs] = useState<any[]>([]);
+
+
+  useEffect(() => {
+    const fetchHomeData = async () => {
+      try {
+        const [homeRes, testiRes, faqRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/content/home`),
+          fetch(`${API_BASE_URL}/api/content/testimonials`),
+          fetch(`${API_BASE_URL}/api/content/faqs`)
+        ]);
+
+        const homeData = await homeRes.json();
+        const testiData = await testiRes.json();
+        const faqData = await faqRes.json();
+
+        if (homeData) {
+          if (homeData.hero) setHeroData({
+            heroTitle: homeData.hero.heroTitle,
+            highlightedText: homeData.hero.highlightedText,
+            heroSubtitle: homeData.hero.heroSubtitle
+          });
+          if (homeData.specializations) setSpecializations(homeData.specializations.filter((s: any) => s.isActive));
+          if (homeData.seo) setSeo({
+            title: homeData.seo.title || "Avenstek - Turning Ideas into Reality",
+            description: homeData.seo.description || "Build your digital future with us.",
+            keywords: homeData.seo.keywords || "software development"
+          });
+        }
+
+        if (Array.isArray(testiData)) {
+          setTestimonials(testiData.filter((t: any) => t.isActive));
+        }
+
+        if (Array.isArray(faqData)) {
+          setFaqs(faqData.filter((f: any) => f.isActive).sort((a: any, b: any) => (a.order || 0) - (b.order || 0)));
+        }
+
+      } catch (err) {
+        console.error("Failed to fetch home content", err);
+      }
+    };
+    fetchHomeData();
+  }, []);
+
+  usePageSEO(seo.title, seo.description, seo.keywords);
 
   const techStack = [
     FaReact, FaNode, TbBrandNextjs, SiExpress, SiNestjs, SiMongodb, GrMysql, FaPhp, FaLaravel, FaAws, FaJenkins, SiRedis,
@@ -58,46 +121,45 @@ export default function Home() {
   ];
 
   const Features = [
-      { title: "Secure by Default", desc: "Your applications are encrypted, audited, and enterprise-grade protected." },
-      { title: "Full-Stack Development", desc: "End-to-end solutions from frontend to backend and everything in between." },
-      { title: "Performance Excellence", desc: "Track application performance, user engagement, and system efficiency." },
-      { title: "One-Click Deployment", desc: "Deploy your applications seamlessly across cloud platforms." },
-      { title: "Real-Time Data Sync", desc: "Auto-updates across all platforms with zero data loss." },
-      { title: "Agile Development", desc: "Iterative development with continuous feedback and improvements." },
-      { title: "24/7 Monitoring", desc: "Proactive system monitoring and instant alerting." },
-      { title: "Integrates With Your Stack", desc: "Compatible with modern tech stacks and legacy systems alike." },
-    ]
+    { title: "Secure by Default", desc: "Your applications are encrypted, audited, and enterprise-grade protected." },
+    { title: "Full-Stack Development", desc: "End-to-end solutions from frontend to backend and everything in between." },
+    { title: "Performance Excellence", desc: "Track application performance, user engagement, and system efficiency." },
+    { title: "One-Click Deployment", desc: "Deploy your applications seamlessly across cloud platforms." },
+    { title: "Real-Time Data Sync", desc: "Auto-updates across all platforms with zero data loss." },
+    { title: "Agile Development", desc: "Iterative development with continuous feedback and improvements." },
+    { title: "24/7 Monitoring", desc: "Proactive system monitoring and instant alerting." },
+    { title: "Integrates With Your Stack", desc: "Compatible with modern tech stacks and legacy systems alike." },
+  ]
 
-const Items = [
-  {
-    name: "Rajesh Kumar",
-    title: "CTO, FinTech Solutions",
-    image: Client1,
-    body: "Avenstek transformed our legacy banking system into a modern, cloud-native application. Their expertise in financial technology is unparalleled. Highly recommended!",
-  },
-  {
-    name: "Priya Sharma",
-    title: "CEO, HealthTech Innovations",
-    image: Client2,
-    body: "As a healthcare startup, we needed HIPAA-compliant solutions. Avenstek delivered beyond expectations with their secure, scalable platform. Truly exceptional!",
-  },
-  {
-    name: "Vikram Patel",
-    title: "Operations Director, Logistics Corp",
-    image: Client1,
-    body: "The supply chain management system Avenstek built has increased our operational efficiency by 40%. Their understanding of business processes is remarkable.",
-  },
-  {
-    name: "Ananya Reddy",
-    title: "Product Manager, EduTech Global",
-    image: Client3,
-    body: "From concept to launch, Avenstek guided us through every phase. Our learning platform now serves 50,000+ students seamlessly. Outstanding work!",
-  },
-]
+  const Items = [
+    {
+      name: "Rajesh Kumar",
+      title: "CTO, FinTech Solutions",
+      image: Client1,
+      body: "Avenstek transformed our legacy banking system into a modern, cloud-native application. Their expertise in financial technology is unparalleled. Highly recommended!",
+    },
+    {
+      name: "Priya Sharma",
+      title: "CEO, HealthTech Innovations",
+      image: Client2,
+      body: "As a healthcare startup, we needed HIPAA-compliant solutions. Avenstek delivered beyond expectations with their secure, scalable platform. Truly exceptional!",
+    },
+    {
+      name: "Vikram Patel",
+      title: "Operations Director, Logistics Corp",
+      image: Client1,
+      body: "The supply chain management system Avenstek built has increased our operational efficiency by 40%. Their understanding of business processes is remarkable.",
+    },
+    {
+      name: "Ananya Reddy",
+      title: "Product Manager, EduTech Global",
+      image: Client3,
+      body: "From concept to launch, Avenstek guided us through every phase. Our learning platform now serves 50,000+ students seamlessly. Outstanding work!",
+    },
+  ]
 
 
-const [isYearly, setIsYearly] = useState(true);
-const [activeTab, setActiveTab] = useState('Startups');
+  const [isYearly, setIsYearly] = useState(true);
 
   const plans = [
     {
@@ -142,89 +204,94 @@ const [activeTab, setActiveTab] = useState('Startups');
   ];
 
   const techLogos = [
-  { node: "A", title: "React", href: "https://react.dev" },
-  { node: "B", title: "Next.js", href: "https://nextjs.org" },
-  { node: "C", title: "TypeScript", href: "https://www.typescriptlang.org" },
-  { node: "D", title: "Tailwind CSS", href: "https://tailwindcss.com" },
-];
+    { node: "A", title: "React", href: "https://react.dev" },
+    { node: "B", title: "Next.js", href: "https://nextjs.org" },
+    { node: "C", title: "TypeScript", href: "https://www.typescriptlang.org" },
+    { node: "D", title: "Tailwind CSS", href: "https://tailwindcss.com" },
+  ];
 
 
-const items = [
-  { text: "Website slowing down your business?", icon: <TbDeviceDesktopQuestion /> },
-  { text: "Mobile app missing key features?", icon: <HiOutlineEmojiSad /> },
-  { text: "UI/UX confusing users?", icon: <FaListCheck /> },
-  { text: "Still no automation in workflows?", icon: <TbSettingsExclamation /> },
-  { text: "E-commerce conversions dropping?", icon: <IoPaperPlaneOutline /> },
-  { text: "Security risks stressing you out?", icon: <IoEyeOffOutline /> },
-  { text: "Analytics not making sense?", icon: <CiRepeat /> },
-  { text: "Brand identity lacking impact?", icon: <TbUserOff /> },
-  { text: "Tech stack outdated and slow?", icon: <TbClockPause /> },
-  { text: "DevOps pipeline constantly broken?", icon: <TbCircleOff /> },
-  { text: "Users leaving due to bad experience?", icon: <TbNotesOff /> },
-  { text: "Web app crashes when traffic comes?", icon: <PiNotepad /> },
-  { text: "No proper product strategy?", icon: <TbMailExclamation /> },
-  { text: "Struggling to scale digitally?", icon: <TiLocationOutline /> },
-  { text: "Design not matching your vision?", icon: <HiOutlineCircleStack /> },
-  { text: "Support issues piling up?", icon: <FiUsers /> },
-];
+  const items = [
+    { text: "Website slowing down your business?", icon: <TbDeviceDesktopQuestion /> },
+    { text: "Mobile app missing key features?", icon: <HiOutlineEmojiSad /> },
+    { text: "UI/UX confusing users?", icon: <FaListCheck /> },
+    { text: "Still no automation in workflows?", icon: <TbSettingsExclamation /> },
+    { text: "E-commerce conversions dropping?", icon: <IoPaperPlaneOutline /> },
+    { text: "Security risks stressing you out?", icon: <IoEyeOffOutline /> },
+    { text: "Analytics not making sense?", icon: <CiRepeat /> },
+    { text: "Brand identity lacking impact?", icon: <TbUserOff /> },
+    { text: "Tech stack outdated and slow?", icon: <TbClockPause /> },
+    { text: "DevOps pipeline constantly broken?", icon: <TbCircleOff /> },
+    { text: "Users leaving due to bad experience?", icon: <TbNotesOff /> },
+    { text: "Web app crashes when traffic comes?", icon: <PiNotepad /> },
+    { text: "No proper product strategy?", icon: <TbMailExclamation /> },
+    { text: "Struggling to scale digitally?", icon: <TiLocationOutline /> },
+    { text: "Design not matching your vision?", icon: <HiOutlineCircleStack /> },
+    { text: "Support issues piling up?", icon: <FiUsers /> },
+  ];
 
 
-const shuffledTechStack = [...techStack].sort(() => Math.random() - 0.5);
+  const shuffledTechStack = [...techStack].sort(() => Math.random() - 0.5);
 
-// Split into 5 equal columns
-const columnCount = 5;
-const itemsPerColumn = Math.ceil(shuffledTechStack.length / columnCount);
-const techColumns = Array.from({ length: columnCount }, (_, index) =>
-  shuffledTechStack.slice(index * itemsPerColumn, (index + 1) * itemsPerColumn)
-);
+  // Split into 5 equal columns
+  const columnCount = 5;
+  const itemsPerColumn = Math.ceil(shuffledTechStack.length / columnCount);
+  const techColumns = Array.from({ length: columnCount }, (_, index) =>
+    shuffledTechStack.slice(index * itemsPerColumn, (index + 1) * itemsPerColumn)
+  );
 
- 
+
   return (
     <>
       <section className="home-section pt-10 px-4">
-      <div className="text-center">
-        {/* <button className="px-3 py-1 bg-[var(--color-24)] cursor-pointer rounded-full text-sm md:text-base">
+        <div className="text-center">
+          {/* <button className="px-3 py-1 bg-[var(--color-24)] cursor-pointer rounded-full text-sm md:text-base">
           Avenstek for Enterprise is here
           <FaArrowRight className="inline ml-2 p-1 text-xl rounded-full bg-[var(--color-26)]" />
         </button> */}
-      </div>
+        </div>
 
-      <div className="text-center mt-10 md:mt-14">
-        <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-          Turning ideas into reality:
-          <span className="text-[var(--color-20)]">
-            {" "}Build your <span className="block md:inline lg:block mt-2">digital future with us.</span>
-          </span>
-        </h1>
-        <p className="text-[var(--color-20)] text-lg md:text-xl mt-4 max-w-2xl mx-auto">
-          Avenstek delivers world-class software development solutions with 10+ years of expertise, so you can focus on business while we handle the tech.
-        </p>
-      </div>
+        <div className="text-center mt-10 md:mt-14">
+          <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+            {heroData.heroTitle}
+            <span className="text-[var(--color-20)]">
+              {" "} <span className="block md:inline lg:block mt-2">{heroData.highlightedText}</span>
+            </span>
+          </h1>
+          <p className="text-[var(--color-20)] text-lg md:text-xl mt-4 max-w-2xl mx-auto">
+            {heroData.heroSubtitle}
+          </p>
+        </div>
 
-      <div className="text-center mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-        <button className="w-full sm:w-auto shadow-[0_4px_14px_0_rgb(0,118,255,39%)] hover:shadow-[0_6px_20px_rgba(0,118,255,23%)] hover:bg-[var(--color-7)] cursor-pointer px-8 py-3 bg-[var(--color-8)] rounded-full text-white font-light transition duration-200 ease-linear">
-          Start your project <span><FaChevronRight className="inline ml-2" /></span>
-        </button>
-        
-        <button className="w-full sm:w-auto cursor-pointer px-8 py-3 bg-[var(--color-24)] rounded-full font-light ">
-          Book a consultation <HiCursorArrowRays className="inline ml-2"/>
-        </button>
-      </div>
+        <div className="text-center mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <button className="w-full sm:w-auto shadow-[0_4px_14px_0_rgb(0,118,255,39%)] hover:shadow-[0_6px_20px_rgba(0,118,255,23%)] hover:bg-[var(--color-7)] cursor-pointer px-8 py-3 bg-[var(--color-8)] rounded-full text-white font-light transition duration-200 ease-linear">
+            Start your project <span><FaChevronRight className="inline ml-2" /></span>
+          </button>
 
-      <div className="mt-10 flex flex-wrap justify-center gap-4 md:gap-0">
-        <p className="inline-flex items-center mx-2 md:mx-6 text-sm md:text-base">
-          <TbUserCheck className="mr-2 text-[var(--color-8)] text-xl"/>10+ Years Expertise
-        </p>
-        <p className="inline-flex items-center mx-2 md:mx-6 text-sm md:text-base">
-          <TbUserCheck className="mr-2 text-[var(--color-8)] text-xl"/>On-Time Delivery Guarantee
-        </p>
-        <p className="inline-flex items-center mx-2 md:mx-6 text-sm md:text-base">
-          <TbUserCheck className="mr-2 text-[var(--color-8)] text-xl"/>24/7 Technical Support
-        </p>
-      </div>
+          <button className="w-full sm:w-auto cursor-pointer px-8 py-3 bg-[var(--color-24)] rounded-full font-light ">
+            Book a consultation <HiCursorArrowRays className="inline ml-2" />
+          </button>
+        </div>
+
+        <div className="mt-10 flex flex-wrap justify-center gap-4 md:gap-0">
+          {specializations.length > 0 ? (
+            specializations.map((spec, idx) => (
+              <p key={idx} className="inline-flex items-center mx-2 md:mx-6 text-sm md:text-base">
+                <span className="mr-2 text-[var(--color-8)] text-xl flex items-center">
+                  <IconRenderer name={spec.iconName} size={20} />
+                </span>
+                {spec.title}
+              </p>
+            ))
+          ) : (
+            <>
+
+            </>
+          )}
+        </div>
       </section>
 
-     {/* <section className="info-section px-4"> 
+      {/* <section className="info-section px-4"> 
         <div className="text-center mt-10 md:mt-20">
           <p className="block font-bold text-lg md:text-base">Businesses that scale faster run on Avenstek</p>
           <p className="text-[var(--color-19)] font-bold mt-2">From startups to Fortune 500 companies.</p>
@@ -305,49 +372,49 @@ const techColumns = Array.from({ length: columnCount }, (_, index) =>
       </section> */}
 
       <section className="faq-section px-4">
-      <div className="text-center mt-25">
-       <h3 className="bg-[var(--color-12)] text-sm py-1 w-70 mx-auto rounded-md font-medium text-[var(--color-7)] w-max px-2 flex items-center">
-        <BsExclamationOctagon className="inline font-md mr-1" /> Digital Challenges Businesses Still Face in 2026
-      </h3>
-        
-        <h1 className="font-bold max-w-160 w-full mx-auto text-3xl md:text-4xl mt-10 md:mt-20 leading-tight md:leading-12">
-          Your Technology Should Accelerate Growth
-          <span className="text-[var(--color-19)] font-bold"> Not Hinder Progress.</span>
-        </h1>
-        
-      <p className="text-[var(--color-19)] mt-4 text-lg max-w-88 w-full mx-auto">
-      From outdated systems to poor digital experiences, we solve everything preventing your business from scaling effectively.
-    </p>
-      </div>
+        <div className="text-center mt-25">
+          <h3 className="bg-[var(--color-12)] text-sm py-1 w-70 mx-auto rounded-md font-medium text-[var(--color-7)] w-max px-2 flex items-center">
+            <BsExclamationOctagon className="inline font-md mr-1" /> Digital Challenges Businesses Still Face in 2026
+          </h3>
 
-      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 md:px-10 lg:px-35 mt-15 md:mt-20 gap-4">
-        {items.map((item, i) => (
-          <li
-            key={i}
-            className="flex items-center gap-3 p-4 leading-relaxed border-2 text-[var(--color-19)] rounded-md"
-          >
-            <span className="text-lg">{item.icon}</span>
-            <span>{item.text}</span>
-          </li>
-        ))}
-      </ul>
+          <h1 className="font-bold max-w-160 w-full mx-auto text-3xl md:text-4xl mt-10 md:mt-20 leading-tight md:leading-12">
+            Your Technology Should Accelerate Growth
+            <span className="text-[var(--color-19)] font-bold"> Not Hinder Progress.</span>
+          </h1>
+
+          <p className="text-[var(--color-19)] mt-4 text-lg max-w-88 w-full mx-auto">
+            From outdated systems to poor digital experiences, we solve everything preventing your business from scaling effectively.
+          </p>
+        </div>
+
+        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 md:px-10 lg:px-35 mt-15 md:mt-20 gap-4">
+          {items.map((item, i) => (
+            <li
+              key={i}
+              className="flex items-center gap-3 p-4 leading-relaxed border-2 text-[var(--color-19)] rounded-md"
+            >
+              <span className="text-lg">{item.icon}</span>
+              <span>{item.text}</span>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className="Revenue px-4 md:px-0">
-  
-      <div className="text-center mt-16 md:mt-30">
-              <h3 className="bg-[var(--color-12)] text-sm py-1 px-2 w-max flex items-center mx-auto rounded-md font-medium text-[var(--color-7)] flex items-center justify-center gap-2">
-                <PiStepsDuotone className="font-md mr-1" /> Meet Avenstek
-              </h3>
-              <h1 className="font-bold max-w-160 w-full mx-auto text-3xl md:text-4xl mt-10 md:mt-20 leading-tight md:leading-12">
-                Built for real results: <span className="text-[var(--color-19)] font-bold"> Everything your development partner should be.</span>
-              </h1>
-              <p className="text-[var(--color-19)] mt-4 text-lg max-w-94 w-full mx-auto">
-                Avenstek delivers custom software solutions that drive business growth—minus the complexity.
-              </p>
-      </div>
 
-    {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8 md:px-35">
+        <div className="text-center mt-16 md:mt-30">
+          <h3 className="bg-[var(--color-12)] text-sm py-1 px-2 w-max flex items-center mx-auto rounded-md font-medium text-[var(--color-7)] flex items-center justify-center gap-2">
+            <PiStepsDuotone className="font-md mr-1" /> Meet Avenstek
+          </h3>
+          <h1 className="font-bold max-w-160 w-full mx-auto text-3xl md:text-4xl mt-10 md:mt-20 leading-tight md:leading-12">
+            Built for real results: <span className="text-[var(--color-19)] font-bold"> Everything your development partner should be.</span>
+          </h1>
+          <p className="text-[var(--color-19)] mt-4 text-lg max-w-94 w-full mx-auto">
+            Avenstek delivers custom software solutions that drive business growth—minus the complexity.
+          </p>
+        </div>
+
+        {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8 md:px-35">
       
       <div className="border-2 pt-8 md:pt-12 rounded-md px-6 md:px-0">
         <h4 className="flex items-center text-[var(--color-7)] md:ml-20">
@@ -447,22 +514,22 @@ const techColumns = Array.from({ length: columnCount }, (_, index) =>
 
     </div> */}
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-10 md:px-35 mt-20 mb-20">
-      {Features.map((feature, index) => (
-        <div key={index} className="text-center px-5">
-          <p className="w-fit mx-auto mt-3 text-[var(--color-8)] text-xl p-2 border-2 rounded-md"><GoShieldCheck /></p>
-          <h3 className="mt-3 font-bold">{feature.title}</h3>
-          <p className="text-sm mt-3 text-[var(--color-19)]">{feature.desc}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-10 md:px-35 mt-20 mb-20">
+          {Features.map((feature, index) => (
+            <div key={index} className="text-center px-5">
+              <p className="w-fit mx-auto mt-3 text-[var(--color-8)] text-xl p-2 border-2 rounded-md"><GoShieldCheck /></p>
+              <h3 className="mt-3 font-bold">{feature.title}</h3>
+              <p className="text-sm mt-3 text-[var(--color-19)]">{feature.desc}</p>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
       </section>
 
       <section className="velocity px-4">
         <div className="text-center mt-16 md:mt-30">
-         <h3 className="bg-[var(--color-12)] text-sm py-1 w-70 mx-auto rounded-md font-medium text-[var(--color-7)] w-max px-2 flex items-center">
-          <BsExclamationOctagon className="inline font-md mr-1" /> Avenstek vs the Rest
-        </h3>
+          <h3 className="bg-[var(--color-12)] text-sm py-1 w-70 mx-auto rounded-md font-medium text-[var(--color-7)] w-max px-2 flex items-center">
+            <BsExclamationOctagon className="inline font-md mr-1" /> Avenstek vs the Rest
+          </h3>
           <h1 className="font-bold max-w-160 w-full mx-auto text-3xl md:text-4xl mt-10 md:mt-20 leading-tight md:leading-12">
             The partner that delivers results <span className="text-[var(--color-19)] font-bold">not just code.</span>
           </h1>
@@ -617,7 +684,7 @@ const techColumns = Array.from({ length: columnCount }, (_, index) =>
           </div>
         </div>
       </section>
-      
+
       <section className="real-teams-section">
         <div className="relative flex w-full flex-col items-center bg-[var(--color-2)] pt-8 pb-15">
           <div className="text-center mt-16 md:mt-30">
@@ -635,17 +702,21 @@ const techColumns = Array.from({ length: columnCount }, (_, index) =>
           <div className="relative grid h-[650px] w-full max-w-6xl grid-cols-1 gap-4 overflow-hidden px-4 lg:grid-cols-3 [mask-image:linear-gradient(to_bottom,transparent,black_15%,black_85%,transparent)] mt-15">
             <div className="relative flex flex-col overflow-hidden">
               <div className="flex flex-col h-max animate-marquee-vertical [--duration:35s] hover:[animation-play-state:paused]">
-                {[...Items, ...Items].map((item, idx) => (
+                {testimonials.length > 0 && [...testimonials, ...testimonials].map((item, idx) => (
                   <div key={`col1-${idx}`} className="py-2">
                     <div className="group relative flex flex-col rounded-2xl border border-[var(--color-23)] bg-[var(--color-2)] p-6 shadow-sm transition-colors hover:border-[var(--color-22)]">
                       <div className="flex items-center gap-3 mb-4">
-                        <Image src={item.image} width={40} height={40} alt="" className="h-10 w-10 rounded-full bg-[var(--color-24)] object-cover" />
+                        {item.photo ? (
+                          <img src={item.photo} width={40} height={40} alt={item.name} className="h-10 w-10 rounded-full bg-[var(--color-24)] object-cover" />
+                        ) : (
+                          <div className="h-10 w-10 rounded-full bg-[var(--color-24)] flex items-center justify-center text-[var(--color-18)] font-bold">{item.name?.charAt(0)}</div>
+                        )}
                         <div className="flex flex-col">
                           <span className="text-sm font-bold text-[var(--color-16)] leading-tight">{item.name}</span>
-                          <span className="text-xs text-[var(--color-21)]">{item.title}</span>
+                          <span className="text-xs text-[var(--color-21)]">{item.position}, {item.company}</span>
                         </div>
                       </div>
-                      <p className="text-[15px] leading-relaxed text-[var(--color-19)]">"{item.body}"</p>
+                      <p className="text-[15px] leading-relaxed text-[var(--color-19)]">"{item.text || item.body}"</p>
                     </div>
                   </div>
                 ))}
@@ -654,17 +725,21 @@ const techColumns = Array.from({ length: columnCount }, (_, index) =>
 
             <div className="hidden lg:flex relative flex-col overflow-hidden">
               <div className="flex flex-col h-max animate-marquee-vertical-reverse [--duration:45s] hover:[animation-play-state:paused]">
-                {[...Items, ...Items].map((item, idx) => (
+                {testimonials.length > 0 && [...testimonials, ...testimonials].map((item, idx) => (
                   <div key={`col2-${idx}`} className="py-2">
                     <div className="group relative flex flex-col rounded-2xl border border-[var(--color-23)] bg-[var(--color-2)] p-6 shadow-sm transition-colors hover:border-[var(--color-22)]">
                       <div className="flex items-center gap-3 mb-4">
-                        <Image src={item.image} width={40} height={40} alt="" className="h-10 w-10 rounded-full bg-[var(--color-24)] object-cover" />
+                        {item.photo ? (
+                          <img src={item.photo} width={40} height={40} alt={item.name} className="h-10 w-10 rounded-full bg-[var(--color-24)] object-cover" />
+                        ) : (
+                          <div className="h-10 w-10 rounded-full bg-[var(--color-24)] flex items-center justify-center text-[var(--color-18)] font-bold">{item.name?.charAt(0)}</div>
+                        )}
                         <div className="flex flex-col">
                           <span className="text-sm font-bold text-[var(--color-16)] leading-tight">{item.name}</span>
-                          <span className="text-xs text-[var(--color-21)]">{item.title}</span>
+                          <span className="text-xs text-[var(--color-21)]">{item.position}, {item.company}</span>
                         </div>
                       </div>
-                      <p className="text-[15px] leading-relaxed text-[var(--color-19)]">"{item.body}"</p>
+                      <p className="text-[15px] leading-relaxed text-[var(--color-19)]">"{item.text || item.body}"</p>
                     </div>
                   </div>
                 ))}
@@ -673,17 +748,21 @@ const techColumns = Array.from({ length: columnCount }, (_, index) =>
 
             <div className="hidden lg:flex relative flex-col overflow-hidden">
               <div className="flex flex-col h-max animate-marquee-vertical [--duration:40s] hover:[animation-play-state:paused]">
-                {[...Items, ...Items].map((item, idx) => (
+                {testimonials.length > 0 && [...testimonials, ...testimonials].map((item, idx) => (
                   <div key={`col3-${idx}`} className="py-2">
                     <div className="group relative flex flex-col rounded-2xl border border-[var(--color-23)] bg-[var(--color-2)] p-6 shadow-sm transition-colors hover:border-[var(--color-22)]">
                       <div className="flex items-center gap-3 mb-4">
-                        <Image src={item.image} width={40} height={40} alt="" className="h-10 w-10 rounded-full bg-[var(--color-24)] object-cover" />
+                        {item.photo ? (
+                          <img src={item.photo} width={40} height={40} alt={item.name} className="h-10 w-10 rounded-full bg-[var(--color-24)] object-cover" />
+                        ) : (
+                          <div className="h-10 w-10 rounded-full bg-[var(--color-24)] flex items-center justify-center text-[var(--color-18)] font-bold">{item.name?.charAt(0)}</div>
+                        )}
                         <div className="flex flex-col">
                           <span className="text-sm font-bold text-[var(--color-16)] leading-tight">{item.name}</span>
-                          <span className="text-xs text-[var(--color-21)]">{item.title}</span>
+                          <span className="text-xs text-[var(--color-21)]">{item.position}, {item.company}</span>
                         </div>
                       </div>
-                      <p className="text-[15px] leading-relaxed text-[var(--color-19)]">"{item.body}"</p>
+                      <p className="text-[15px] leading-relaxed text-[var(--color-19)]">"{item.text || item.body}"</p>
                     </div>
                   </div>
                 ))}
@@ -693,7 +772,7 @@ const techColumns = Array.from({ length: columnCount }, (_, index) =>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-15 mx-4 lg:mx-auto max-w-6xl gap-4 md:gap-6">
-          
+
           <div className="border-2 border-[var(--color-23)] rounded-md py-4 flex items-center px-3 bg-[var(--color-2)]">
             <div className="w-1/3 flex justify-center">
               <BiSolidCoinStack className="text-[var(--color-21)] text-5xl" />
@@ -723,52 +802,51 @@ const techColumns = Array.from({ length: columnCount }, (_, index) =>
               <h3 className="text-sm md:text-base font-medium text-[var(--color-18)] whitespace-nowrap">4.7/5 project delivery</h3>
             </div>
           </div>
-          
+
         </div>
       </section>
 
-   <section className="favourite-tool-section px-4 md:px-0">
-  <div className="text-center mt-16 md:mt-30">
-    <h3 className="bg-[var(--color-12)] text-sm py-1 w-max mx-auto rounded-md font-medium text-[var(--color-7)] flex items-center justify-center gap-2 px-2">
-      <PiStepsDuotone className="font-md" /> Our Technology Stack
-    </h3>
+      <section className="favourite-tool-section px-4 md:px-0">
+        <div className="text-center mt-16 md:mt-30">
+          <h3 className="bg-[var(--color-12)] text-sm py-1 w-max mx-auto rounded-md font-medium text-[var(--color-7)] flex items-center justify-center gap-2 px-2">
+            <PiStepsDuotone className="font-md" /> Our Technology Stack
+          </h3>
 
-    <h1 className="font-bold max-w-160 w-full mx-auto text-3xl md:text-4xl mt-10 md:mt-20 leading-tight md:leading-12">
-      Modern technologies for modern solutions:
-      <span className="text-[var(--color-19)] font-bold"> Everything your project requires.</span>
-    </h1>
+          <h1 className="font-bold max-w-160 w-full mx-auto text-3xl md:text-4xl mt-10 md:mt-20 leading-tight md:leading-12">
+            Modern technologies for modern solutions:
+            <span className="text-[var(--color-19)] font-bold"> Everything your project requires.</span>
+          </h1>
 
-    <p className="text-[var(--color-19)] mt-4 text-lg max-w-94 w-full mx-auto">
-      We leverage cutting-edge technologies to build scalable, performant applications that drive business growth.
-    </p>
-  </div>
+          <p className="text-[var(--color-19)] mt-4 text-lg max-w-94 w-full mx-auto">
+            We leverage cutting-edge technologies to build scalable, performant applications that drive business growth.
+          </p>
+        </div>
 
-  <div className="relative h-130 w-full py-20 bg-[var(--color-25)] overflow-hidden no-scrollbar">
-    <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-[var(--color-25)] via-transparent to-[var(--color-25)]" />
+        <div className="relative h-130 w-full py-20 bg-[var(--color-25)] overflow-hidden no-scrollbar">
+          <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-[var(--color-25)] via-transparent to-[var(--color-25)]" />
 
-    <div className="flex justify-center items-center gap-4 md:gap-10 px-4 max-w-7xl mx-auto h-[600px] overflow-hidden">
-      {techColumns.map((columnStack, colIndex) => (
-        <div
-          key={colIndex}
-          className={`flex flex-col flex-shrink-0 h-full overflow-hidden ${
-            colIndex % 2 === 0 ? "animate-scroll-up" : "animate-scroll-down"
-          } ${colIndex === 0 || colIndex === 4 ? "hidden lg:flex" : ""}`}
-        >
-          <div className="flex flex-col gap-6">
-            {columnStack.map((Icon, i) => (
+          <div className="flex justify-center items-center gap-4 md:gap-10 px-4 max-w-7xl mx-auto h-[600px] overflow-hidden">
+            {techColumns.map((columnStack, colIndex) => (
               <div
-                key={i}
-                className="w-20 h-20 border border-[var(--color-23)] rounded-2xl flex items-center justify-center bg-[var(--color-2)] shadow-sm flex-shrink-0"
+                key={colIndex}
+                className={`flex flex-col flex-shrink-0 h-full overflow-hidden ${colIndex % 2 === 0 ? "animate-scroll-up" : "animate-scroll-down"
+                  } ${colIndex === 0 || colIndex === 4 ? "hidden lg:flex" : ""}`}
               >
-                <Icon className="text-4xl text-[var(--color-19)]" />
+                <div className="flex flex-col gap-6">
+                  {columnStack.map((Icon, i) => (
+                    <div
+                      key={i}
+                      className="w-20 h-20 border border-[var(--color-23)] rounded-2xl flex items-center justify-center bg-[var(--color-2)] shadow-sm flex-shrink-0"
+                    >
+                      <Icon className="text-4xl text-[var(--color-19)]" />
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
         </div>
-      ))}
-    </div>
-  </div>
-</section>
+      </section>
       {/* <section className="budget px-4 md:px-0">
         <div className="text-center mt-16 md:mt-30">
           <h3 className="bg-[var(--color-12)] text-sm py-1 mx-auto rounded-md font-medium text-[var(--color-7)] flex items-center justify-center gap-2 px-2 w-max flex items-center">
@@ -882,22 +960,22 @@ const techColumns = Array.from({ length: columnCount }, (_, index) =>
       <section className="table-section">
         <div className="bg-[var(--color-2)] pt-20 pb-10 px-6 lg:px-40">
           <div className="max-w-7xl mx-auto border-2 rounded-md lg:px-10">
-            
+
             <p className="md:hidden text-center text-xs text-[var(--color-21)] mb-4 italic">
               Swipe left to compare plans →
             </p>
 
             <div className="overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-[var(--color-22)] scrollbar-track-transparent">
               <div className="min-w-[800px] md:min-w-full">
-                
+
                 <div className="grid grid-cols-4 gap-4 py-6 border-b border-[var(--color-23)] sticky top-0 bg-[var(--color-2)] z-10">
                   <div className="col-span-1"></div>
                   {['Basic', 'Growth', 'Enterprise'].map((plan) => (
                     <div key={plan} className="text-center px-4">
                       <h4 className="text-lg font-bold text-[var(--color-15)] mb-3">{plan}</h4>
                       <button className={`w-full py-2 px-4 rounded-lg text-sm font-semibold border transition-all
-                        ${plan === 'Growth' 
-                          ? 'bg-[var(--color-7)] text-[var(--color-2)] border-[var(--color-7)]' 
+                        ${plan === 'Growth'
+                          ? 'bg-[var(--color-7)] text-[var(--color-2)] border-[var(--color-7)]'
                           : 'bg-[var(--color-2)] text-[var(--color-15)] border-[var(--color-22)]'}`}>
                         {plan === 'Enterprise' ? 'Talk to Solutions Architect' : plan === 'Growth' ? 'Start 30-Day Project' : 'Start Consultation'}
                       </button>
@@ -917,7 +995,7 @@ const techColumns = Array.from({ length: columnCount }, (_, index) =>
                     ]
                   },
                   {
-                    icons:<FiUsers />,
+                    icons: <FiUsers />,
                     title: "Project Management",
                     features: [
                       { name: "Weekly Progress Reports", starter: true, growth: true, enterprise: true },
@@ -926,7 +1004,7 @@ const techColumns = Array.from({ length: columnCount }, (_, index) =>
                     ]
                   },
                   {
-                    icons:<LuUnplug />,
+                    icons: <LuUnplug />,
                     title: "Infrastructure & Deployment",
                     features: [
                       { name: "Basic Hosting", starter: true, growth: true, enterprise: true },
@@ -951,23 +1029,23 @@ const techColumns = Array.from({ length: columnCount }, (_, index) =>
                     <h5 className="flex items-center gap-2 text-[var(--color-7)] font-bold text-sm mb-4 uppercase tracking-wider">
                       <span className="w-5 h-5 text-lg opacity-80">{group.icons}</span> {group.title}
                     </h5>
-                    
+
                     {group.features.map((feature, fIdx) => (
                       <div key={fIdx} className="grid grid-cols-4 gap-4 py-4 border-b border-[var(--color-24)] items-center hover:bg-[var(--color-26)] transition-colors">
                         <span className="col-span-1 text-sm md:text-[1rem] font-medium text-[var(--color-18)]">
                           {feature.name}
                         </span>
-                        
+
                         {/* Basic */}
                         <div className="flex justify-center">
                           {feature.starter ? <IoCheckmark color="var(--color-7)" /> : <RxCross1 color="var(--color-21)" />}
                         </div>
-                        
+
                         {/* Growth */}
                         <div className="flex justify-center">
                           {feature.growth ? <IoCheckmark color="var(--color-7)" /> : <RxCross1 color="var(--color-21)" />}
                         </div>
-                        
+
                         {/* Enterprise */}
                         <div className="flex justify-center">
                           {feature.enterprise ? <IoCheckmark color="var(--color-7)" /> : <RxCross1 color="var(--color-21)" />}
@@ -980,7 +1058,7 @@ const techColumns = Array.from({ length: columnCount }, (_, index) =>
             </div>
           </div>
         </div>
-        
+
       </section>
 
       <section className="budget px-4 md:px-0">
@@ -996,137 +1074,31 @@ const techColumns = Array.from({ length: columnCount }, (_, index) =>
           </p>
         </div>
         <div className="flex justify-center mt-[6rem]">
-                    <div className="max-w-[800px] w-[100%] bg-[var(--color-26)] rounded-md p-[10px]">
-                        <Accordion
-                            type="single"
-                            collapsible
-                            className="w-full "
-                            defaultValue="item-1"
-                        >
-                            <AccordionItem value="item-1" className="data-[state=open]:border data-[state=open]:bg-[var(--color-25)]  hover:bg-[var(--color-24)] p-[10px] group rounded-lg border-b-0 mb-[10px]">
-                                <AccordionTrigger className="cursor-pointer hover:no-underline text-[16px]   font-semibold [&>svg]:h-6 [&>svg]:w-6 [&>svg]:stroke-[1.5] data-[state=open]:text-[var(--color-8)]">1. What is your development process?</AccordionTrigger >
-                                <AccordionContent className="flex flex-col cursor-pointer  ">
-                                    <p className="text-[16px] text-[var(--color-20)]">
-                                        <span className="text-[var(--color-18)] font-semibold">We follow an agile development methodology</span> with clear milestones. Our process includes: 1) Discovery & Requirements Analysis, 2) UI/UX Design, 3) Development & Testing, 4) Deployment, and 5) Maintenance & Support. We provide weekly progress updates and conduct regular demos to ensure alignment with your vision throughout the project.
-                                    </p>
-                                </AccordionContent>
-                            </AccordionItem>
-                            <AccordionItem value="item-2" className="data-[state=open]:border data-[state=open]:bg-[var(--color-25)]  hover:bg-[var(--color-24)] p-[10px] group rounded-lg border-b-0 mb-[10px]">
-                                <AccordionTrigger className="cursor-pointer hover:no-underline text-[16px]   font-semibold [&>svg]:h-6 [&>svg]:w-6 [&>svg]:stroke-[1.5] data-[state=open]:text-[var(--color-8)]">2. What technologies do you specialize in?</AccordionTrigger >
-                                <AccordionContent className="flex flex-col cursor-pointer  ">
-                                    <p className="text-[16px] text-[var(--color-20)]">
-                                        We specialize in modern technology stacks including:
-                                        <br/><br/>
-                                        • <strong>Frontend:</strong> React, Next.js, Angular, Vue.js, TypeScript
-                                        <br/>
-                                        • <strong>Backend:</strong> Node.js, Python (Django/Flask), Java, .NET Core
-                                        <br/>
-                                        • <strong>Mobile:</strong> React Native, Flutter, Swift, Kotlin
-                                        <br/>
-                                        • <strong>Database:</strong> PostgreSQL, MongoDB, MySQL, Redis
-                                        <br/>
-                                        • <strong>Cloud:</strong> AWS, Azure, Google Cloud, Docker, Kubernetes
-                                    </p>
-                                </AccordionContent>
-                            </AccordionItem>
-                            <AccordionItem value="item-3" className="data-[state=open]:border data-[state=open]:bg-[var(--color-25)]  hover:bg-[var(--color-24)] p-[10px] group rounded-lg border-b-0 mb-[10px]">
-                                <AccordionTrigger className="cursor-pointer hover:no-underline text-[16px]   font-semibold [&>svg]:h-6 [&>svg]:w-6 [&>svg]:stroke-[1.5] data-[state=open]:text-[var(--color-8)]">3. How do you ensure project security and confidentiality?</AccordionTrigger >
-                                <AccordionContent className="flex flex-col cursor-pointer  ">
-                                    <p className="text-[16px] text-[var(--color-20)]">
-                                        Security is our top priority. We implement:
-                                        <br/><br/>
-                                        • <strong>NDA Signing:</strong> Mandatory for all projects
-                                        <br/>
-                                        • <strong>Secure Development:</strong> OWASP guidelines, code reviews
-                                        <br/>
-                                        • <strong>Data Protection:</strong> Encryption, secure cloud infrastructure
-                                        <br/>
-                                        • <strong>Access Control:</strong> Role-based permissions, audit logs
-                                        <br/>
-                                        • <strong>Compliance:</strong> GDPR, HIPAA, PCI-DSS as required
-                                    </p>
-                                </AccordionContent>
-                            </AccordionItem>
-                            <AccordionItem value="item-4" className="data-[state=open]:border data-[state=open]:bg-[var(--color-25)]  hover:bg-[var(--color-24)] p-[10px] group rounded-lg border-b-0 mb-[10px]">
-                                <AccordionTrigger className="cursor-pointer hover:no-underline text-[16px]   font-semibold [&>svg]:h-6 [&>svg]:w-6 [&>svg]:stroke-[1.5] data-[state=open]:text-[var(--color-8)]">4. What is your typical project timeline?</AccordionTrigger >
-                                <AccordionContent className="flex flex-col cursor-pointer  ">
-                                    <p className="text-[16px] text-[var(--color-20)]">
-                                        <span className="text-[var(--color-18)] font-semibold">Timelines vary based on project complexity:</span>
-                                        <br/><br/>
-                                        • <strong>MVP Development:</strong> 2-4 months
-                                        <br/>
-                                        • <strong>Enterprise Applications:</strong> 4-9 months
-                                        <br/>
-                                        • <strong>E-commerce Platforms:</strong> 3-6 months
-                                        <br/>
-                                        • <strong>Mobile Apps:</strong> 3-5 months
-                                        <br/><br/>
-                                        We provide detailed project timelines during the discovery phase with clear milestones.
-                                    </p>
-                                </AccordionContent>
-                            </AccordionItem>
-                            <AccordionItem value="item-5" className="data-[state=open]:border data-[state=open]:bg-[var(--color-25)]  hover:bg-[var(--color-24)] p-[10px] group rounded-lg border-b-0 mb-[10px]">
-                                <AccordionTrigger className="cursor-pointer hover:no-underline text-[16px]   font-semibold [&>svg]:h-6 [&>svg]:w-6 [&>svg]:stroke-[1.5] data-[state=open]:text-[var(--color-8)]">5. Do you provide post-launch support?</AccordionTrigger >
-                                <AccordionContent className="flex flex-col cursor-pointer  ">
-                                    <p className="text-[16px] text-[var(--color-20)]">Yes, we offer comprehensive post-launch support packages including:
-                                    <br/><br/>
-                                    • <strong>Warranty Period:</strong> 3 months of free bug fixes
-                                    <br/>
-                                    • <strong>Maintenance Plans:</strong> Monthly/quarterly updates
-                                    <br/>
-                                    • <strong>Technical Support:</strong> 24/7 emergency support available
-                                    <br/>
-                                    • <strong>Performance Monitoring:</strong> Regular health checks
-                                    <br/>
-                                    • <strong>Feature Enhancements:</strong> Ongoing improvement roadmap
-                                    </p>
-                                </AccordionContent>
-                            </AccordionItem>
-                            <AccordionItem value="item-6" className="data-[state=open]:border data-[state=open]:bg-[var(--color-25)]  hover:bg-[var(--color-24)] p-[10px] group rounded-lg border-b-0 mb-[10px]">
-                                <AccordionTrigger className="cursor-pointer hover:no-underline text-[16px]   font-semibold [&>svg]:h-6 [&>svg]:w-6 [&>svg]:stroke-[1.5] data-[state=open]:text-[var(--color-8)]">6. Can you work with our existing development team?</AccordionTrigger >
-                                <AccordionContent className="flex flex-col cursor-pointer  ">
-                                    <p className="text-[16px] text-[var(--color-20)]">
-                                        Absolutely. We frequently collaborate with in-house teams in various capacities:
-                                        <br/><br/>
-                                        • <strong>Augmentation:</strong> Supplement your team with our experts
-                                        <br/>
-                                        • <strong>Knowledge Transfer:</strong> Train your team on new technologies
-                                        <br/>
-                                        • <strong>Code Review:</strong> Audit and improve existing codebases
-                                        <br/>
-                                        • <strong>Architecture Consulting:</strong> Design scalable solutions
-                                        <br/>
-                                        • <strong>DevOps Setup:</strong> Implement CI/CD pipelines
-                                    </p>
-                                </AccordionContent>
-                            </AccordionItem>
-                            <AccordionItem value="item-7" className="data-[state=open]:border data-[state=open]:bg-[var(--color-25)]  hover:bg-[var(--color-24)] p-[10px] group rounded-lg border-b-0 mb-[10px]">
-                                <AccordionTrigger className="cursor-pointer hover:no-underline text-[16px]   font-semibold [&>svg]:h-6 [&>svg]:w-6 [&>svg]:stroke-[1.5] data-[state=open]:text-[var(--color-8)]">7. What industries have you served?</AccordionTrigger >
-                                <AccordionContent className="flex flex-col cursor-pointer  ">
-                                    <p className="text-[16px] text-[var(--color-20)]">
-                                        With 10+ years of experience, we've served diverse industries:
-                                        <br/><br/>
-                                        • <strong>Healthcare:</strong> HIPAA-compliant systems, telemedicine
-                                        <br/>
-                                        • <strong>FinTech:</strong> Banking apps, payment gateways, trading platforms
-                                        <br/>
-                                        • <strong>E-commerce:</strong> Marketplaces, inventory management, CRM
-                                        <br/>
-                                        • <strong>Education:</strong> LMS platforms, e-learning solutions
-                                        <br/>
-                                        • <strong>Logistics:</strong> Supply chain management, tracking systems
-                                        <br/>
-                                        • <strong>Real Estate:</strong> Property management, virtual tours
-                                        <br/>
-                                        • <strong>Manufacturing:</strong> ERP systems, IoT solutions
-                                    </p>
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                    </div>
-                </div>
+          <div className="max-w-[800px] w-[100%] bg-[var(--color-26)] rounded-md p-[10px]">
+            {faqs.length > 0 ? (
+              <Accordion type="single" collapsible className="w-full" defaultValue="">
+                {faqs.map((faq, index) => (
+                  <AccordionItem
+                    key={faq._id || index}
+                    value={`item-${index}`}
+                    className="data-[state=open]:border data-[state=open]:bg-[var(--color-25)] hover:bg-[var(--color-24)] p-[10px] group rounded-lg border-b-0 mb-[10px]"
+                  >
+                    <AccordionTrigger className="cursor-pointer hover:no-underline text-[16px] font-semibold [&>svg]:h-6 [&>svg]:w-6 [&>svg]:stroke-[1.5] data-[state=open]:text-[var(--color-8)]">
+                      {index + 1}. {faq.question}
+                    </AccordionTrigger>
+                    <AccordionContent className="flex flex-col cursor-pointer">
+                      <p className="text-[16px] text-[var(--color-20)]" dangerouslySetInnerHTML={{ __html: faq.answer }} />
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            ) : (
+              <div className="text-center text-gray-500">No FAQs available</div>
+            )}
+          </div>
+        </div>
       </section>
-      
+
     </>
   );
 }

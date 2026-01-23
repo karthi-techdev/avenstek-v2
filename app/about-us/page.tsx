@@ -1,4 +1,6 @@
 "use client";
+import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '@/lib/api-config';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { TbTargetArrow, TbNotes, TbUserHeart } from "react-icons/tb";
@@ -25,84 +27,72 @@ import { usePageSEO } from '../hooks/usePageTitles';
 export default function About() {
 
   usePageSEO(
-    "About us", 
+    "About us",
     "Avenstek Solutions Pvt Ltd: 10+ years of expertise in bridging technology and business. Discover our mission to deliver customized, scalable IT solutions worldwide."
   );
 
   const router = useRouter();
 
-  const teamMembers = [
-    {
-      name: "Venkatesan Chandirasekar",
-      role: "Founder & CEO",
-      img: venkatImg
-    },
-    {
-      name: "Srimathi Venugopal",
-      role: "Software Engineer",
-      img: srimathiImg
-    },
-    {
-      name: "Sasithra Chanemougam",
-      role: "Software Engineer",
-      img: sasithraImg
-    },
-     {
-      name: "Karthi Rajendhiran",
-      role: "Full Stack Developer",
-      img: karthiImg
-    },
-    {
-      name: "Kishore",
-      role: "Full Stack Developer",
-      img: kishoreImg
-    },
-    {
-      name: "Suresh",
-      role: "Full Stack Developer",
-      img: sureshImg
-    },
-    {
-      name: "Pradeep",
-      role: "Full Stack Developer",
-      img: pradeepImg
-    },
-    {
-      name: "Malini",
-      role: "Junior Developer",
-      img: maliniImg
-    },
-    {
-      name: "Gurumurthi",
-      role: "Junior Developer",
-      img: gurumurthiImg
-    },
-    {
-      name: "Kanika Sri",
-      role: "Junior Developer",
-      img: kanikaImg
-    },
-    {
-      name: "Mani",
-      role: "Junior Developer",
-      img: maniImg
-    },
-    {
-      name: "Devendhiran",
-      role: "Junior Developer",
-      img: devendhiranImg
-    },
-    {
-      name: "Ashmitha",
-      role: "Junior Developer",
-      img: ashmithaImg
-    },
-    {
-      name: "Deepika",
-      role: "Junior Developer",
-      img: deepikaImg
-    },
-  ];
+  /* DYNAMIC FETCHING LOGIC */
+  const [heroData, setHeroData] = useState({
+    heroTitle: "",
+    highlightedText: "",
+    heroSubtitle: "",
+    bannerImage: "",
+    primaryBtnText: "",
+    primaryBtnUrl: "",
+    secondaryBtnText: "",
+    secondaryBtnUrl: ""
+  });
+
+  const [teamList, setTeamList] = useState<any[]>([]);
+
+  const [seo, setSeo] = useState({
+    title: "",
+    description: "",
+    keywords: ""
+  });
+
+  useEffect(() => {
+    const fetchAbout = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/content/about`);
+        const data = await res.json();
+        if (data) {
+          if (data.hero) {
+            setHeroData({
+              heroTitle: data.hero.heroTitle,
+              highlightedText: data.hero.highlightedText,
+              heroSubtitle: data.hero.heroSubtitle,
+              bannerImage: data.hero.bannerImage,
+              primaryBtnText: data.hero.primaryBtnText,
+              primaryBtnUrl: data.hero.primaryBtnUrl,
+              secondaryBtnText: data.hero.secondaryBtnText,
+              secondaryBtnUrl: data.hero.secondaryBtnUrl
+            });
+          }
+          if (data.team && data.team.length > 0) {
+            const activeTeam = data.team.filter((t: any) => t.status !== false).sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+            setTeamList(activeTeam);
+          }
+          if (data.seo) {
+            setSeo({
+              title: data.seo.title,
+              description: data.seo.description,
+              keywords: data.seo.keywords
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch about content");
+      }
+    };
+    fetchAbout();
+  }, []);
+
+  usePageSEO(seo.title, seo.description, seo.keywords);
+
+  const finalTeamList = teamList;
 
   return (
     <>
@@ -114,22 +104,20 @@ export default function About() {
           </div>
 
           <h1 className="leading-tight text-3xl sm:text-4xl lg:text-6xl font-bold tracking-tight mb-6">
-            Crafting Digital Excellence <br />
-            <span className="text-zinc-500">for Modern Businesses</span>
+            {heroData.heroTitle} <br />
+            <span className="text-zinc-500">{heroData.highlightedText}</span>
           </h1>
 
           <p className="mx-auto max-w-xl sm:max-w-2xl text-base sm:text-lg text-zinc-600">
-            At Avenstek Solutions Pvt Ltd, we transform ideas into powerful digital solutions.<br />
-            From custom web and mobile applications to intuitive UI/UX designs and advanced AI integrations,<br />
-            we deliver innovation that drives growth and efficiency.
+            {heroData.heroSubtitle}
           </p>
 
           <div className="mt-6 sm:mt-10 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 flex-wrap">
-            <Link href="/services" className="w-full sm:w-auto rounded-full bg-[var(--color-8)] px-6 py-3 text-sm sm:text-base font-semibold text-white transition hover:bg-blue-400">
-              Explore Our Services
+            <Link href={heroData.primaryBtnUrl} className="w-full sm:w-auto rounded-full bg-[var(--color-8)] px-6 py-3 text-sm sm:text-base font-semibold text-white transition hover:bg-blue-400">
+              {heroData.primaryBtnText}
             </Link>
-            <Link href="/contact" className="w-full sm:w-auto rounded-full border border-zinc-700 px-6 py-3 text-sm sm:text-base font-semibold text-black transition hover:bg-zinc-900 hover:text-white">
-              Get in Touch
+            <Link href={heroData.secondaryBtnUrl} className="w-full sm:w-auto rounded-full border border-zinc-700 px-6 py-3 text-sm sm:text-base font-semibold text-black transition hover:bg-zinc-900 hover:text-white">
+              {heroData.secondaryBtnText}
             </Link>
           </div>
         </section>
@@ -138,7 +126,7 @@ export default function About() {
         <section className="mt-16 flex justify-center px-4 sm:px-6 lg:px-8">
           <div className="relative w-full max-w-5xl border border-gray-400 rounded-2xl p-1">
             <img
-              src="https://media.istockphoto.com/id/1459581852/photo/digital-transformation-concept-high-speed-agile-development.jpg?s=612x612&w=0&k=20&c=USL7C7xkve8HohZroZFI1_kEtM92z4NiHi2Q9siwrg4="
+              src={heroData.bannerImage.startsWith('/') ? `${API_BASE_URL}${heroData.bannerImage}` : heroData.bannerImage}
               alt="Avenstek Digital Transformation"
               className="w-full h-auto rounded-2xl shadow-2xl"
             />
@@ -282,7 +270,7 @@ export default function About() {
             <span className="text-zinc-400">build the magic.</span>
           </h2>
           <div className="flex flex-wrap justify-center gap-y-8 mx-auto">
-            {teamMembers.map((member, index) => (
+            {finalTeamList.map((member, index) => (
               <div
                 key={index}
                 className="text-center w-full sm:w-[calc(50%-1rem)] md:w-[calc(33.333%-1.5rem)] lg:w-[calc(20%-2rem)]"
@@ -290,7 +278,9 @@ export default function About() {
                 <div className="p-1 border border-gray-400 rounded-2xl mb-4 mx-auto w-59">
                   <div className="aspect-square rounded-2xl overflow-hidden bg-zinc-200 flex ">
                     <img
-                      src={typeof member.img === 'string' ? member.img : member.img.src}
+                      src={typeof member.photo === 'string'
+                        ? (member.photo.startsWith('/') ? `${API_BASE_URL}${member.photo}` : member.photo)
+                        : (member.photo?.src || member.img?.src || member.img)} // Handle various image sources
                       alt={member.name}
                       className="w-full h-full object-cover object-top"
                     />
@@ -298,13 +288,13 @@ export default function About() {
                 </div>
 
                 <h3 className="font-semibold text-black">{member.name}</h3>
-                <p className="text-sm text-zinc-500">{member.role}</p>
+                <p className="text-sm text-zinc-500">{member.position || member.role}</p>
               </div>
             ))}
           </div>
         </section>
 
-    
+
       </section>
     </>
   );

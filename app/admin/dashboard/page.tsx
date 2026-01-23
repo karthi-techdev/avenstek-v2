@@ -63,7 +63,7 @@ const Dashboard: React.FC = () => {
     stroke: { curve: 'smooth', width: 3 },
     grid: { borderColor: '#E9EAEB', strokeDashArray: 4 },
     xaxis: {
-      categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      categories: stats?.trafficGraph?.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
       axisBorder: { show: false },
       axisTicks: { show: false },
       labels: { style: { colors: '#717680' } }
@@ -72,7 +72,7 @@ const Dashboard: React.FC = () => {
     tooltip: { theme: 'light' },
   };
 
-  const visitorSeries = [{ name: 'Visitors', data: [1240, 1532, 1100, 1845, 1620, 2100, 1950] }];
+  const visitorSeries = [{ name: 'Visitors', data: stats?.trafficGraph?.data || [0, 0, 0, 0, 0, 0, 0] }];
 
   // Donut Chart Config: Traffic Source
   const sourceOptions: ApexOptions = {
@@ -148,65 +148,96 @@ const Dashboard: React.FC = () => {
             <p className="text-xs text-[var(--color-21)]">Device distribution of users</p>
           </div>
           <div className="flex-1 flex items-center justify-center">
-            <Chart options={sourceOptions} series={sourceSeries} type="donut" width="100%" />
+            <Chart options={sourceOptions} series={[
+              stats?.deviceDistribution?.desktop || 6420,
+              stats?.deviceDistribution?.mobile || 4210,
+              stats?.deviceDistribution?.tablet || 770
+            ]} type="donut" width="100%" />
           </div>
           <div className="mt-6 space-y-3">
+            {/* Dynamic mapping or static legend - keeping static style for now but could map */}
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-[#1570EF]"></div>
                 <span className="text-[var(--color-19)]">Desktop</span>
               </div>
-              <span className="font-bold text-[var(--color-16)]">56%</span>
+              <span className="font-bold text-[var(--color-16)]">{stats?.deviceDistribution?.desktop || 0} hits</span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-[#2E90FA]"></div>
                 <span className="text-[var(--color-19)]">Mobile</span>
               </div>
-              <span className="font-bold text-[var(--color-16)]">37%</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#B2DDFF]"></div>
-                <span className="text-[var(--color-19)]">Tablet</span>
-              </div>
-              <span className="font-bold text-[var(--color-16)]">7%</span>
+              <span className="font-bold text-[var(--color-16)]">{stats?.deviceDistribution?.mobile || 0} hits</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-[var(--color-2)] p-6 rounded-2xl border border-[var(--color-23)] shadow-sm">
-        <h3 className="text-lg font-bold text-[var(--color-16)] mb-6">Recent Enquiries</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-b border-[var(--color-23)]">
-                <th className="pb-4 text-xs font-bold text-[var(--color-21)] uppercase">Customer</th>
-                <th className="pb-4 text-xs font-bold text-[var(--color-21)] uppercase">Service Interested</th>
-                <th className="pb-4 text-xs font-bold text-[var(--color-21)] uppercase">Date</th>
-                <th className="pb-4 text-xs font-bold text-[var(--color-21)] uppercase">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--color-23)]">
-              {[
-                { name: 'John Doe', service: 'Web Development', date: 'Today, 10:45 AM', status: 'Pending' },
-                { name: 'Alice Smith', service: 'UI/UX Design', date: 'Yesterday', status: 'Contacted' },
-                { name: 'Robert Fox', service: 'Mobile Apps', date: '2 days ago', status: 'Pending' },
-              ].map((enquiry, i) => (
-                <tr key={i} className="group hover:bg-[var(--color-25)] transition-colors">
-                  <td className="py-4 text-sm font-bold text-[var(--color-16)]">{enquiry.name}</td>
-                  <td className="py-4 text-sm text-[var(--color-20)]">{enquiry.service}</td>
-                  <td className="py-4 text-xs text-[var(--color-21)]">{enquiry.date}</td>
-                  <td className="py-4">
-                    <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase ${enquiry.status === 'Pending' ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'}`}>
-                      {enquiry.status}
-                    </span>
-                  </td>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Enquiries */}
+        <div className="bg-[var(--color-2)] p-6 rounded-2xl border border-[var(--color-23)] shadow-sm">
+          <h3 className="text-lg font-bold text-[var(--color-16)] mb-6">Recent Enquiries</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b border-[var(--color-23)]">
+                  <th className="pb-4 text-xs font-bold text-[var(--color-21)] uppercase">Customer</th>
+                  <th className="pb-4 text-xs font-bold text-[var(--color-21)] uppercase">Message/Source</th>
+                  <th className="pb-4 text-xs font-bold text-[var(--color-21)] uppercase">Date</th>
+                  <th className="pb-4 text-xs font-bold text-[var(--color-21)] uppercase">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-[var(--color-23)]">
+                {stats?.recentEnquiries?.length > 0 ? stats.recentEnquiries.map((enquiry: any, i: number) => (
+                  <tr key={i} className="group hover:bg-[var(--color-25)] transition-colors">
+                    <td className="py-4 text-sm font-bold text-[var(--color-16)]">{enquiry.name}</td>
+                    <td className="py-4 text-sm text-[var(--color-20)] truncate max-w-[150px]">{enquiry.source || 'Website'}</td>
+                    <td className="py-4 text-xs text-[var(--color-21)]">{new Date(enquiry.createdAt).toLocaleDateString()}</td>
+                    <td className="py-4">
+                      <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase ${enquiry.status === 'New' ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'}`}>
+                        {enquiry.status}
+                      </span>
+                    </td>
+                  </tr>
+                )) : (
+                  <tr><td colSpan={4} className="py-4 text-center text-xs text-[var(--color-21)]">No recent enquiries</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Recent Visitors Log */}
+        <div className="bg-[var(--color-2)] p-6 rounded-2xl border border-[var(--color-23)] shadow-sm">
+          <h3 className="text-lg font-bold text-[var(--color-16)] mb-6">Live Visitor Log</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b border-[var(--color-23)]">
+                  <th className="pb-4 text-xs font-bold text-[var(--color-21)] uppercase">Location</th>
+                  <th className="pb-4 text-xs font-bold text-[var(--color-21)] uppercase">Device/OS</th>
+                  <th className="pb-4 text-xs font-bold text-[var(--color-21)] uppercase">IP Address</th>
+                  <th className="pb-4 text-xs font-bold text-[var(--color-21)] uppercase">Time</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--color-23)]">
+                {stats?.recentVisitors?.length > 0 ? stats.recentVisitors.map((visitor: any, i: number) => (
+                  <tr key={i} className="group hover:bg-[var(--color-25)] transition-colors">
+                    <td className="py-4 text-sm font-bold text-[var(--color-16)] flex flex-col">
+                      <span>{visitor.city || 'Unknown'}</span>
+                      <span className="text-[10px] text-[var(--color-20)] uppercase font-medium">{visitor.country || 'Unknown'}</span>
+                    </td>
+                    <td className="py-4 text-sm text-[var(--color-20)]">{visitor.device} • {visitor.os?.split(' ')[0]}</td>
+                    <td className="py-4 text-xs text-[var(--color-21)] font-mono">{visitor.ip}</td>
+                    <td className="py-4 text-xs text-[var(--color-21)]">{new Date(visitor.visitedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                  </tr>
+                )) : (
+                  <tr><td colSpan={4} className="py-4 text-center text-xs text-[var(--color-21)]">No recent data</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

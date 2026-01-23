@@ -21,7 +21,9 @@ import {
   HiOutlineArrowLeft,
   HiOutlineClipboardList
 } from 'react-icons/hi';
+import { useModal } from '@/app/components/ConfirmModal';
 import api from '@/lib/api';
+import { API_BASE_URL } from '@/lib/api-config';
 import RichTextEditor from '../components/RichTextEditor';
 
 // --- Interfaces ---
@@ -60,7 +62,11 @@ interface BlogPost {
   seoKeywords: string;
 }
 
+import { useToast } from '../components/Toast';
+
 const BlogManagement: React.FC = () => {
+  const { showToast } = useToast();
+  const { showAlert, showConfirm } = useModal();
   const [activeTab, setActiveTab] = useState<'posts' | 'categories' | 'authors'>('posts');
   const [viewMode, setViewMode] = useState<'list' | 'edit' | 'preview'>('list');
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
@@ -94,48 +100,87 @@ const BlogManagement: React.FC = () => {
     fetchData();
   }, []);
 
+  // Helper to check if an element qualifies as a heading
+  const isHeading = (el: Element): boolean => {
+    const tag = el.tagName.toLowerCase();
+    if (tag === 'h2' || tag === 'h3') return true;
+
+    const style = el.getAttribute('style');
+    if (style && style.includes('font-size')) {
+      const match = style.match(/font-size\s*:\s*(\d+(\.\d+)?)(px|pt)/i);
+      if (match) {
+        let size = parseFloat(match[1]);
+        const unit = match[3].toLowerCase();
+        // Convert pt to px (approx 1pt = 1.33px)
+        if (unit === 'pt') size = size * 1.333;
+        if (size >= 24) return true;
+      }
+    }
+    return false;
+  };
+
+  const getHeadingsFromDoc = (parent: Document | Element) => {
+    // Broad selection to catch styled spans/divs/paragraphs from Jodit
+    const candidates = parent.querySelectorAll('h2, h3, p, div, span, strong, b');
+    return Array.from(candidates).filter(isHeading);
+  };
+
   const extractHeadings = (html: string) => {
     if (typeof window === 'undefined') return [];
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
-    const headings = doc.querySelectorAll('h2, h3');
-    return Array.from(headings).map(h => h.textContent || '');
+    return getHeadingsFromDoc(doc).map(h => h.textContent?.trim() || '').filter(Boolean);
   };
-
 
   useEffect(() => {
     if (viewMode !== 'preview' || typeof window === 'undefined') return;
+
     const handleScroll = () => {
-      const headings = document.querySelectorAll('.preview-content h2, .preview-content h3');
+      const container = document.querySelector('.preview-content');
+      if (!container) return;
+
+      const headings = getHeadingsFromDoc(container);
       let current = '';
+
       headings.forEach((h: any) => {
         const rect = h.getBoundingClientRect();
-        if (rect.top < 150) current = h.innerText;
+        // If element is near top (allow some buffer)
+        if (rect.top < 150) current = h.innerText?.trim() || '';
       });
+
       setActiveHeading(current);
     };
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [viewMode]);
 
   const scrollToHeading = (headingText: string) => {
+    let container: Element | null = null;
+    let offsetAdjustment = 0;
+
     if (viewMode === 'edit') {
-      const editable = document.querySelector('.ck-content');
-      if (editable) {
-        const headings = editable.querySelectorAll('h2, h3');
-        headings.forEach((h: any) => {
-          if (h.innerText === headingText) {
-            editable.scrollTo({ top: h.offsetTop - 10, behavior: 'smooth' });
-          }
-        });
-      }
+      // Jodit editor usually puts content in .jodit-wysiwyg
+      container = document.querySelector('.jodit-wysiwyg');
+      offsetAdjustment = 10;
     } else if (viewMode === 'preview') {
-      const headings = document.querySelectorAll('.preview-content h2, .preview-content h3');
-      headings.forEach((h: any) => {
-        if (h.innerText === headingText) {
-          window.scrollTo({ top: h.offsetTop + window.scrollY - 100, behavior: 'smooth' });
-        }
-      });
+      container = document.querySelector('.preview-content');
+      offsetAdjustment = 100;
+    }
+
+    if (container) {
+      const headings = getHeadingsFromDoc(container);
+      const target = headings.find((h: any) => (h.innerText?.trim() || '') === headingText);
+
+      if (target) {
+        // For Jodit (edit mode), we might need to scroll the internal container if possible, 
+        // but typically Jodit uses window scroll or iframe? 
+        // Given Jodit React implementation, it's often a div if not in iframe mode.
+        // We'll trust scrollIntoView or window scroll logic.
+
+        const top = target.getBoundingClientRect().top + window.scrollY - offsetAdjustment;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
     }
   };
 
@@ -172,26 +217,28 @@ const BlogManagement: React.FC = () => {
       } else {
         await api.post('/content/blogs', editingPost);
       }
-      alert('Blog post saved successfully!');
+      showToast('success', 'Post Saved', 'Blog post has been successfully saved.');
       const { data } = await api.get('/content/blogs');
       setPosts(data);
       setViewMode('list');
     } catch (err) {
       console.error("Error saving post", err);
-      alert('Failed to save post.');
+      showToast('error', 'Save Failed', 'Could not save blog post.');
     } finally {
       setIsSaving(false);
     }
   };
 
   const deletePost = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this post?')) return;
+    const confirmed = await showConfirm('Delete Post', 'Are you sure you want to delete this post?');
+    if (!confirmed) return;
     try {
       await api.delete(`/content/blogs/${id}`);
       setPosts(posts.filter(p => p._id !== id));
+      showToast('success', 'Post Deleted', 'Blog post was removed.');
     } catch (err) {
       console.error("Error deleting post", err);
-      alert('Failed to delete post.');
+      showToast('error', 'Delete Failed', 'Could not delete blog post.');
     }
   };
 
@@ -238,7 +285,7 @@ const BlogManagement: React.FC = () => {
                 <h1 className="text-4xl md:text-6xl xl:text-6xl font-medium text-[var(--color-15)] leading-tight mb-10 mt-10">{editingPost.title}</h1>
                 <div className="flex items-center gap-3">
                   <div className="h-9 w-9 rounded-full overflow-hidden relative border border-[var(--color-23)]">
-                    <img src={(author?.photo || '').startsWith('/') ? `http://localhost:5000${author?.photo}` : author?.photo} alt={author?.name} className="object-cover w-full h-full" />
+                    <img src={(author?.photo || '').startsWith('/') ? `${API_BASE_URL}${author?.photo}` : author?.photo} alt={author?.name} className="object-cover w-full h-full" />
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <span className="font-medium text-[var(--color-17)]">{author?.name}</span>
@@ -251,7 +298,7 @@ const BlogManagement: React.FC = () => {
                 <div className="h-full w-full rounded-2xl border border-[var(--color-21)] p-[2px]">
                   <div className="h-full w-full rounded-xl bg-[var(--color-2)] p-[6px]">
                     <div className="relative h-full w-full overflow-hidden rounded-lg group">
-                      <img src={(editingPost.thumbnail || '').startsWith('/') ? `http://localhost:5000${editingPost.thumbnail}` : editingPost.thumbnail} alt={editingPost.title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" />
+                      <img src={(editingPost.thumbnail || '').startsWith('/') ? `${API_BASE_URL}${editingPost.thumbnail}` : editingPost.thumbnail} alt={editingPost.title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" />
                     </div>
                   </div>
                 </div>
@@ -364,7 +411,7 @@ const BlogManagement: React.FC = () => {
                 return (
                   <div key={postId} className="bg-white rounded-3xl border border-[var(--color-23)] p-6 shadow-sm flex flex-col lg:flex-row gap-6 hover:border-[var(--color-11)] transition-colors group">
                     <div className="w-full lg:w-48 h-32 flex-shrink-0 overflow-hidden rounded-2xl relative">
-                      <img src={(post.thumbnail || '').startsWith('/') ? `http://localhost:5000${post.thumbnail}` : post.thumbnail} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="" />
+                      <img src={(post.thumbnail || '').startsWith('/') ? `${API_BASE_URL}${post.thumbnail}` : post.thumbnail} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="" />
                       <div className="absolute top-2 left-2 px-2 py-1 bg-white/90 backdrop-blur rounded-lg text-[10px] font-black uppercase text-[var(--color-7)]">{cat?.name}</div>
                     </div>
                     <div className="flex-1 flex flex-col justify-between">
@@ -375,7 +422,7 @@ const BlogManagement: React.FC = () => {
                             <span className="flex items-center gap-1"><HiOutlineCalendar /> {new Date(post.publishedAt).toLocaleDateString()}</span>
                           </div>
                           <h3 className="text-xl font-bold text-[var(--color-16)] group-hover:text-[var(--color-7)] transition-colors">{post.title}</h3>
-                          <p className="text-xs text-[var(--color-21)] font-medium mt-1 italic">/blog/{post.slug}</p>
+                          <p className="text-xs text-[var(--color-21)] font-medium mt-1 italic">/blog/blog-view?{post.slug}</p>
                         </div>
                         <div className="flex gap-2">
                           <button onClick={() => handleEditPost(post)} className="p-2 text-[var(--color-20)] hover:text-[var(--color-7)] bg-[var(--color-24)] rounded-xl"><HiOutlinePencilAlt size={18} /></button>
@@ -384,7 +431,7 @@ const BlogManagement: React.FC = () => {
                       </div>
                       <div className="mt-4 flex items-center justify-between border-t border-[var(--color-23)] pt-4">
                         <div className="flex items-center gap-3">
-                          <img src={(author?.photo || '').startsWith('/') ? `http://localhost:5000${author?.photo}` : author?.photo} className="w-8 h-8 rounded-full border-2 border-white shadow-sm" alt="" />
+                          <img src={(author?.photo || '').startsWith('/') ? `${API_BASE_URL}${author?.photo}` : author?.photo} className="w-8 h-8 rounded-full border-2 border-white shadow-sm" alt="" />
                           <span className="text-xs font-bold text-[var(--color-16)]">{author?.name}</span>
                         </div>
                         <div className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase ${post.status ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-500'}`}>
@@ -453,7 +500,7 @@ const BlogManagement: React.FC = () => {
                 <div key={author._id || author.id} className="bg-white p-6 rounded-3xl border border-[var(--color-23)] shadow-sm hover:border-[var(--color-11)] transition-all">
                   <div className="flex gap-4 items-start mb-4">
                     <div className="relative group/photo">
-                      <img src={(author.photo || '').startsWith('/') ? `http://localhost:5000${author.photo}` : author.photo} className="w-16 h-16 rounded-2xl object-cover ring-4 ring-[var(--color-24)]" alt="" />
+                      <img src={(author.photo || '').startsWith('/') ? `${API_BASE_URL}${author.photo}` : author.photo} className="w-16 h-16 rounded-2xl object-cover ring-4 ring-[var(--color-24)]" alt="" />
                       <label className="absolute inset-0 bg-black/40 opacity-0 group-hover/photo:opacity-100 transition-opacity flex items-center justify-center text-white rounded-2xl cursor-pointer">
                         <HiOutlinePhotograph size={16} />
                         <input
@@ -562,13 +609,17 @@ const BlogManagement: React.FC = () => {
 
             <div className="lg:col-span-2 space-y-6">
               <div className="bg-white p-8 rounded-3xl border border-[var(--color-23)] shadow-sm space-y-6">
-                <input type="text" value={editingPost?.title} onChange={e => setEditingPost(p => p ? { ...p, title: e.target.value } : null)} placeholder="Enter title..." className="w-full bg-transparent border-none p-0 text-3xl font-black text-[var(--color-16)] outline-none focus:ring-0" />
+                <input type="text" value={editingPost?.title} onChange={e => {
+                  const title = e.target.value;
+                  const slug = title.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+                  setEditingPost(p => p ? { ...p, title, slug } : null);
+                }} placeholder="Enter title..." className="w-full bg-transparent border-none p-0 text-3xl font-black text-[var(--color-16)] outline-none focus:ring-0" />
 
                 <div className="flex flex-wrap gap-4 pt-4 border-t border-[var(--color-23)]">
                   <div className="flex-1 min-w-[200px]">
                     <label className="text-[10px] font-black text-[var(--color-21)] uppercase mb-2 block">Slug URL</label>
                     <div className="flex items-center gap-2 bg-[var(--color-24)] px-4 py-2.5 rounded-xl border border-[var(--color-23)]">
-                      <span className="text-[10px] text-[var(--color-21)]">/blog/</span>
+                      <span className="text-[10px] text-[var(--color-21)]">/blog/blog-view?</span>
                       <input type="text" value={editingPost?.slug} onChange={e => setEditingPost(p => p ? { ...p, slug: e.target.value } : null)} className="bg-transparent border-none text-xs w-full p-0 font-bold focus:ring-0 outline-none" />
                     </div>
                   </div>
@@ -594,6 +645,7 @@ const BlogManagement: React.FC = () => {
                 <div className="grid grid-cols-1 gap-6">
                   <input type="text" value={editingPost?.seoTitle} onChange={e => setEditingPost(p => p ? { ...p, seoTitle: e.target.value } : null)} placeholder="SEO Title" className="w-full px-4 py-3 rounded-2xl border border-[var(--color-23)] bg-[var(--color-24)] text-sm outline-none" />
                   <textarea value={editingPost?.seoDescription} onChange={e => setEditingPost(p => p ? { ...p, seoDescription: e.target.value } : null)} rows={3} placeholder="SEO Description" className="w-full px-4 py-3 rounded-2xl border border-[var(--color-23)] bg-[var(--color-24)] text-sm outline-none resize-none" />
+                  <input type="text" value={editingPost?.seoKeywords} onChange={e => setEditingPost(p => p ? { ...p, seoKeywords: e.target.value } : null)} placeholder="SEO Keywords (comma separated)" className="w-full px-4 py-3 rounded-2xl border border-[var(--color-23)] bg-[var(--color-24)] text-sm outline-none" />
                 </div>
               </div>
             </div>
@@ -614,13 +666,24 @@ const BlogManagement: React.FC = () => {
                       {authors.map(a => <option key={a._id || a.id} value={a._id || a.id}>{a.name}</option>)}
                     </select>
                   </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-[var(--color-21)] uppercase mb-1.5 block">Status</label>
+                    <select
+                      value={editingPost?.status ? 'true' : 'false'}
+                      onChange={e => setEditingPost(p => p ? { ...p, status: e.target.value === 'true' } : null)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-23)] bg-[var(--color-24)] text-xs font-bold outline-none"
+                    >
+                      <option value="true">Published</option>
+                      <option value="false">Unpublished</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
               <div className="bg-white p-6 rounded-3xl border border-[var(--color-23)] shadow-sm space-y-4">
                 <h4 className="text-xs font-black text-[var(--color-16)] uppercase tracking-widest border-b pb-3">Featured Image</h4>
                 <div className="relative group overflow-hidden rounded-2xl aspect-video bg-[var(--color-24)] border border-[var(--color-23)]">
-                  <img src={editingPost?.thumbnail.startsWith('/') ? `http://localhost:5000${editingPost.thumbnail}` : editingPost?.thumbnail} className="w-full h-full object-cover" alt="" />
+                  <img src={editingPost?.thumbnail.startsWith('/') ? `${API_BASE_URL}${editingPost.thumbnail}` : editingPost?.thumbnail} className="w-full h-full object-cover" alt="" />
                   <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white gap-2 text-xs font-bold backdrop-blur-[2px] cursor-pointer">
                     <HiOutlinePhotograph size={20} /> Change
                     <input

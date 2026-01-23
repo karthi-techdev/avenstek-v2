@@ -13,7 +13,10 @@ interface FAQ {
   order?: number;
 }
 
+import { useToast } from '../components/Toast';
+
 const FAQManagement: React.FC = () => {
+  const { showToast } = useToast();
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -52,10 +55,10 @@ const FAQManagement: React.FC = () => {
       await api.post('/content/faqs', faqs);
       const { data } = await api.get('/content/faqs');
       setFaqs(data);
-      alert('FAQs configuration saved and published!');
+      showToast('success', 'FAQs Published', 'Knowledge base has been updated.');
     } catch (err) {
       console.error("Error saving FAQs", err);
-      alert('Failed to save changes.');
+      showToast('error', 'Update Failed', 'Failed to save changes.');
     } finally {
       setIsSaving(false);
     }
@@ -133,8 +136,8 @@ const FAQManagement: React.FC = () => {
                       <button
                         onClick={() => updateFaq(faqId, { isActive: !faq.isActive })}
                         className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all shadow-sm active:scale-90 ${faq.isActive
-                            ? 'bg-[var(--color-13)] text-[var(--color-7)]'
-                            : 'bg-[var(--color-24)] text-[var(--color-21)]'
+                          ? 'bg-[var(--color-13)] text-[var(--color-7)]'
+                          : 'bg-[var(--color-24)] text-[var(--color-21)]'
                           }`}
                       >
                         {faq.isActive ? 'Active' : 'Inactive'}

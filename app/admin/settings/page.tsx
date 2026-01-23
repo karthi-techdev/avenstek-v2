@@ -12,6 +12,7 @@ import {
   HiOutlineAdjustments,
   HiOutlineHashtag
 } from 'react-icons/hi';
+import { useModal } from '@/app/components/ConfirmModal';
 
 interface GeneralSettings {
   companyName: string;
@@ -32,7 +33,11 @@ interface GeneralSettings {
 
 import api from '@/lib/api';
 
+import { useToast } from '../components/Toast';
+
 const Settings: React.FC = () => {
+  const { showToast } = useToast();
+  const { showAlert } = useModal();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [settings, setSettings] = useState<GeneralSettings>({
@@ -76,11 +81,24 @@ const Settings: React.FC = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await api.post('/content/settings', settings);
-      alert('Global settings updated and cached!');
+      // Strip system fields that shouldn't be sent back to the API
+      const { _id, id, createdAt, updatedAt, __v, ...payload } = settings as any;
+
+      await api.post('/content/settings', payload);
+      showToast('success', 'Settings Saved', 'Global configuration has been updated.');
+
+      // Refresh to ensure we have the latest state (optional, but good practice)
+      const { data } = await api.get('/content/settings');
+      if (data) {
+        setSettings(prev => ({
+          ...prev,
+          ...data,
+          socials: { ...prev.socials, ...(data.socials || {}) }
+        }));
+      }
     } catch (err) {
       console.error("Error saving settings", err);
-      alert('Failed to update settings.');
+      showToast('error', 'Update Failed', 'Could not save settings. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -111,7 +129,7 @@ const Settings: React.FC = () => {
       updateSettings(key, data.url);
     } catch (err) {
       console.error("Upload failed", err);
-      alert("Failed to upload image. Please try again.");
+      showAlert("Upload Failed", "Failed to upload image. Please try again.");
     }
   };
 
