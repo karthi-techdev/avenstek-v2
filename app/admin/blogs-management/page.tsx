@@ -24,6 +24,7 @@ import {
 import { useModal } from '@/app/components/ConfirmModal';
 import api from '@/lib/api';
 import { API_BASE_URL } from '@/lib/api-config';
+import LoadingScreen from '../components/LoadingScreen';
 import RichTextEditor from '../components/RichTextEditor';
 
 // --- Interfaces ---
@@ -66,7 +67,7 @@ import { useToast } from '../components/Toast';
 
 const BlogManagement: React.FC = () => {
   const { showToast } = useToast();
-  const { showAlert, showConfirm } = useModal();
+  const { showAlert, showConfirm, showPrompt } = useModal();
   const [activeTab, setActiveTab] = useState<'posts' | 'categories' | 'authors'>('posts');
   const [viewMode, setViewMode] = useState<'list' | 'edit' | 'preview'>('list');
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
@@ -242,7 +243,7 @@ const BlogManagement: React.FC = () => {
     }
   };
 
-  if (!isMounted) return null;
+  if (!isMounted || isLoading) return <LoadingScreen text="Fetching Articles" />;
 
   const getId = (item: any): string => {
     if (!item) return '';
@@ -258,7 +259,7 @@ const BlogManagement: React.FC = () => {
     const category = getCategory(editingPost.categoryId);
 
     return (
-      <div className="min-h-screen bg-[var(--color-2)] font-sans">
+      <div className="min-h-screen bg-[var(--color-2)]">
         <div className="flex items-center justify-between sticky top-0 z-50 bg-[var(--color-2)]/90 backdrop-blur-md border-b border-[var(--color-23)] px-6 lg:px-20">
           <button onClick={() => setViewMode('edit')} className="flex items-center gap-2 text-sm font-bold text-[var(--color-18)] hover:text-[var(--color-7)] transition-colors">
             <HiOutlineChevronLeft size={20} /> Exit Preview & Continue Editing
@@ -455,7 +456,8 @@ const BlogManagement: React.FC = () => {
                     </div>
                     <button
                       onClick={async () => {
-                        if (!window.confirm('Delete this category?')) return;
+                        const confirmed = await showConfirm('Delete Category', 'Delete this category?');
+                        if (!confirmed) return;
                         await api.delete(`/content/categories/${cat._id || cat.id}`);
                         setCategories(categories.filter(c => (c._id || c.id) !== (cat._id || cat.id)));
                       }}
@@ -480,11 +482,16 @@ const BlogManagement: React.FC = () => {
               ))}
               <button
                 onClick={async () => {
-                  const name = window.prompt('Enter category name:');
+                  const name = await showPrompt('New Category', 'Enter category name:');
                   if (!name) return;
                   const slug = name.toLowerCase().replace(/ /g, '-');
-                  const { data } = await api.post('/content/categories', { name, slug, status: true });
-                  setCategories([...categories, data]);
+                  try {
+                    const { data } = await api.post('/content/categories', { name, slug, status: true });
+                    setCategories([...categories, data]);
+                    showToast('success', 'Category Created', `"${name}" architecture added.`);
+                  } catch (err) {
+                    showToast('error', 'Creation Failed', 'Could not create category.');
+                  }
                 }}
                 className="border-2 border-dashed border-[var(--color-23)] rounded-3xl flex flex-col items-center justify-center p-8 text-[var(--color-20)] hover:border-[var(--color-7)] hover:text-[var(--color-7)] transition-all group"
               >
@@ -533,7 +540,8 @@ const BlogManagement: React.FC = () => {
                     <button className="p-2 text-[var(--color-20)] hover:text-[var(--color-7)] bg-[var(--color-24)] rounded-xl transition-colors"><HiOutlinePencilAlt size={18} /></button>
                     <button
                       onClick={async () => {
-                        if (!window.confirm('Delete this author?')) return;
+                        const confirmed = await showConfirm('Delete Author', 'Delete this author?');
+                        if (!confirmed) return;
                         await api.delete(`/content/authors/${author._id || author.id}`);
                         setAuthors(authors.filter(a => (a._id || a.id) !== (author._id || author.id)));
                       }}
@@ -546,12 +554,18 @@ const BlogManagement: React.FC = () => {
               ))}
               <button
                 onClick={async () => {
-                  const name = window.prompt('Enter author name:');
+                  const name = await showPrompt('New Author', 'Enter author name:');
                   if (!name) return;
-                  const bio = window.prompt('Enter bio:');
+                  const bio = await showPrompt('Author Bio', `Enter bio for ${name}:`);
                   const photo = `https://i.pravatar.cc/150?u=${Date.now()}`;
-                  const { data } = await api.post('/content/authors', { name, bio, photo });
-                  setAuthors([...authors, data]);
+
+                  try {
+                    const { data } = await api.post('/content/authors', { name, bio, photo });
+                    setAuthors([...authors, data]);
+                    showToast('success', 'Author Added', `"${name}" registered in database.`);
+                  } catch (err) {
+                    showToast('error', 'Addition Failed', 'Could not register author.');
+                  }
                 }}
                 className="border-2 border-dashed border-[var(--color-23)] rounded-3xl flex flex-col items-center justify-center p-8 text-[var(--color-20)] hover:border-[var(--color-7)] hover:text-[var(--color-7)] transition-all group"
               >
@@ -594,15 +608,27 @@ const BlogManagement: React.FC = () => {
                 </div>
               </div>
 
-              <div className="bg-[var(--color-16)] p-6 rounded-3xl text-white space-y-4">
-                <div className="flex items-center gap-2 text-[var(--color-21)]">
+              <div className="bg-white p-6 rounded-3xl border border-[var(--color-23)] space-y-4 shadow-sm">
+                <div className="flex items-center gap-2 text-[var(--color-7)] mb-2">
                   <HiOutlineSearch size={14} />
-                  <span className="text-[10px] font-black uppercase tracking-tighter">Google Preview</span>
+                  <span className="text-[10px] font-black uppercase tracking-tighter">SEO Quality Score</span>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-[#8ab4f8] text-[9px] overflow-hidden truncate">lumina.com › {editingPost?.slug || '...'}</p>
-                  <h3 className="text-[#8ab4f8] text-sm font-medium line-clamp-2">{editingPost?.seoTitle || editingPost?.title || 'Title missing'}</h3>
-                  <p className="text-[#bdc1c6] text-[10px] leading-relaxed line-clamp-3">{editingPost?.seoDescription || 'Meta description missing.'}</p>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-tighter">
+                    <span className="text-[var(--color-21)]">Title</span>
+                    <span className={(editingPost?.seoTitle || '').length > 60 || (editingPost?.seoTitle || '').length < 30 ? "text-amber-500" : "text-green-500"}>{(editingPost?.seoTitle || '').length} / 60</span>
+                  </div>
+                  <div className="w-full h-1 bg-[var(--color-24)] rounded-full overflow-hidden">
+                    <div className={`h-full transition-all ${(editingPost?.seoTitle || '').length > 60 || ((editingPost?.seoTitle || '').length < 30 && (editingPost?.seoTitle || '').length > 0) ? "bg-amber-500" : "bg-green-500"}`} style={{ width: `${Math.min(((editingPost?.seoTitle || '').length / 60) * 100, 100)}%` }}></div>
+                  </div>
+
+                  <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-tighter pt-1">
+                    <span className="text-[var(--color-21)]">Description</span>
+                    <span className={(editingPost?.seoDescription || '').length > 160 || (editingPost?.seoDescription || '').length < 70 ? "text-amber-500" : "text-green-500"}>{(editingPost?.seoDescription || '').length} / 160</span>
+                  </div>
+                  <div className="w-full h-1 bg-[var(--color-24)] rounded-full overflow-hidden">
+                    <div className={`h-full transition-all ${(editingPost?.seoDescription || '').length > 160 || ((editingPost?.seoDescription || '').length < 70 && (editingPost?.seoDescription || '').length > 0) ? "bg-amber-500" : "bg-green-500"}`} style={{ width: `${Math.min(((editingPost?.seoDescription || '').length / 160) * 100, 100)}%` }}></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -627,7 +653,7 @@ const BlogManagement: React.FC = () => {
 
                 <div className="space-y-3">
                   <label className="text-[10px] font-black text-[var(--color-21)] uppercase block">Rich Article Content</label>
-                  <div className="border border-[var(--color-23)] rounded-3xl overflow-hidden min-h-[400px] bg-white">
+                  <div className="border border-[var(--color-23)] rounded-3xl overflow-hidden min-h-[500px] bg-white">
                     <RichTextEditor
                       id={editingPost?._id || editingPost?.id || 'new-blog'}
                       data={editingPost?.content || ''}
@@ -637,15 +663,6 @@ const BlogManagement: React.FC = () => {
                       }}
                     />
                   </div>
-                </div>
-              </div>
-
-              <div className="bg-white p-8 rounded-3xl border border-[var(--color-23)] shadow-sm space-y-6">
-                <h3 className="text-lg font-bold text-[var(--color-16)] flex items-center gap-2"><HiOutlineGlobe className="text-[var(--color-7)]" /> SEO Meta</h3>
-                <div className="grid grid-cols-1 gap-6">
-                  <input type="text" value={editingPost?.seoTitle} onChange={e => setEditingPost(p => p ? { ...p, seoTitle: e.target.value } : null)} placeholder="SEO Title" className="w-full px-4 py-3 rounded-2xl border border-[var(--color-23)] bg-[var(--color-24)] text-sm outline-none" />
-                  <textarea value={editingPost?.seoDescription} onChange={e => setEditingPost(p => p ? { ...p, seoDescription: e.target.value } : null)} rows={3} placeholder="SEO Description" className="w-full px-4 py-3 rounded-2xl border border-[var(--color-23)] bg-[var(--color-24)] text-sm outline-none resize-none" />
-                  <input type="text" value={editingPost?.seoKeywords} onChange={e => setEditingPost(p => p ? { ...p, seoKeywords: e.target.value } : null)} placeholder="SEO Keywords (comma separated)" className="w-full px-4 py-3 rounded-2xl border border-[var(--color-23)] bg-[var(--color-24)] text-sm outline-none" />
                 </div>
               </div>
             </div>
@@ -705,6 +722,59 @@ const BlogManagement: React.FC = () => {
                       }}
                     />
                   </label>
+                </div>
+              </div>
+            </div>
+
+            {/* SEO Section spanning the content area */}
+            <div className="lg:col-start-2 lg:col-span-3">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                <div className="bg-white p-8 rounded-3xl border border-[var(--color-23)] shadow-sm space-y-6">
+                  <h3 className="text-lg font-bold text-[var(--color-16)] flex items-center gap-2 border-b pb-4"><HiOutlineGlobe className="text-[var(--color-7)]" /> SEO Meta</h3>
+                  <div className="grid grid-cols-1 gap-6">
+                    <div>
+                      <label className="block text-xs font-bold text-[var(--color-21)] uppercase mb-2 tracking-widest">Meta Title</label>
+                      <input type="text" value={editingPost?.seoTitle} onChange={e => setEditingPost(p => p ? { ...p, seoTitle: e.target.value } : null)} placeholder="Enter SEO Title" className="w-full px-4 py-3 rounded-2xl border border-[var(--color-23)] bg-[var(--color-24)] text-sm focus:ring-2 focus:ring-[var(--color-11)] outline-none transition-all" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-[var(--color-21)] uppercase mb-2 tracking-widest">Meta Description</label>
+                      <textarea value={editingPost?.seoDescription} onChange={e => setEditingPost(p => p ? { ...p, seoDescription: e.target.value } : null)} rows={4} placeholder="Enter SEO Description" className="w-full px-4 py-3 rounded-2xl border border-[var(--color-23)] bg-[var(--color-24)] text-sm focus:ring-2 focus:ring-[var(--color-11)] outline-none resize-none transition-all" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-[var(--color-21)] uppercase mb-2 tracking-widest">Focus Keywords</label>
+                      <input type="text" value={editingPost?.seoKeywords} onChange={e => setEditingPost(p => p ? { ...p, seoKeywords: e.target.value } : null)} placeholder="e.g. tech, innovation, software" className="w-full px-4 py-3 rounded-2xl border border-[var(--color-23)] bg-[var(--color-24)] text-sm focus:ring-2 focus:ring-[var(--color-11)] outline-none transition-all" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-8 rounded-3xl border border-[var(--color-23)] space-y-6 shadow-sm min-h-[400px]">
+                  <h3 className="text-lg font-bold text-[var(--color-16)] border-b pb-4 flex items-center gap-2">
+                    <HiOutlineSearch className="text-[var(--color-7)]" /> Search Engine Preview
+                  </h3>
+
+                  <div className="bg-[#f8f9fa] p-8 rounded-2xl border border-gray-100">
+                    <div className="flex flex-col gap-1 max-w-xl">
+                      <div className="flex items-center gap-2 text-sm text-[#202124]">
+                        <div className="w-7 h-7 bg-white rounded-full border border-gray-200 flex items-center justify-center p-1 overflow-hidden">
+                          <img src="/favicon.ico" alt="fav" className="w-full h-full object-contain" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[14px] leading-tight font-medium">Avenstek Solutions</span>
+                          <span className="text-[12px] text-[#4d5156] leading-tight">https://avenstek.com › blog › {editingPost?.slug || '...'}</span>
+                        </div>
+                      </div>
+                      <h3 className="text-[20px] text-[#1a0dab] font-medium leading-tight hover:underline cursor-pointer mt-1">
+                        {editingPost?.seoTitle || editingPost?.title || "Blog Post Title | Avenstek Insights"}
+                      </h3>
+                      <p className="text-[14px] text-[#4d5156] leading-relaxed mt-1 line-clamp-2">
+                        {editingPost?.seoDescription || "Read our latest blog post about digital transformation and industry trends. Expert insights from Avenstek Solutions."}
+                      </p>
+                    </div>
+                  </div>
+
+                  <p className="text-[10px] text-[var(--color-21)] font-medium leading-relaxed bg-[var(--color-13)] p-4 rounded-xl border border-[var(--color-11)]">
+                    <strong>SEO Pro Tip:</strong> Keep your meta titles between 30-60 characters and descriptions between 70-160 characters for optimal visibility on Google Search Result Pages (SERP).
+                  </p>
                 </div>
               </div>
             </div>

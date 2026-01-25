@@ -21,6 +21,9 @@ import { usePageSEO } from "../hooks/usePageTitles";
 import { useState, useEffect } from "react";
 import api from "@/lib/api";
 
+import PublicIconRenderer from "../components/PublicIconRenderer";
+import { API_BASE_URL } from "@/lib/api-config";
+
 const Career = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -29,29 +32,32 @@ const Career = () => {
   const [principles, setPrinciples] = useState<any[]>([]);
   const [departments, setDepartments] = useState<any[]>([]);
   const [jobs, setJobs] = useState<any[]>([]);
-  const [seo, setSeo] = useState({ title: "", description: "", keywords: "" });
+  const [seo, setSeo] = useState({ title: "Careers | Avenstek Solutions", description: "Join our team and help us build the future of sales tools.", keywords: "" });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data: config } = await api.get('/content/careers/config');
+        const [configRes, deptsRes, jobsRes] = await Promise.all([
+          api.get('/content/careers/config'),
+          api.get('/content/departments'),
+          api.get('/content/jobs')
+        ]);
+
+        const config = configRes.data;
         if (config) {
-          setHero(config.hero);
-          setWhyAvenstek(config.whyAvenstek || []);
-          setPrinciples(config.principles || []);
+          if (config.hero) setHero(config.hero);
+          if (config.whyAvenstek) setWhyAvenstek(config.whyAvenstek);
+          if (config.principles) setPrinciples(config.principles);
           if (config.seo) {
             setSeo({
-              title: config.seo.title,
-              description: config.seo.description,
-              keywords: config.seo.keywords
+              title: config.seo.title || "Careers | Avenstek Solutions",
+              description: config.seo.description || "Join our team and help us build the future of sales tools.",
+              keywords: config.seo.keywords || ""
             });
           }
         }
-        const { data: depts } = await api.get('/content/departments');
-        setDepartments(depts || []);
-
-        const { data: jobList } = await api.get('/content/jobs');
-        setJobs(jobList || []);
+        setDepartments(deptsRes.data || []);
+        setJobs(jobsRes.data || []);
       } catch (err) {
         console.error("Error fetching careers:", err);
       } finally {
@@ -62,6 +68,36 @@ const Career = () => {
   }, []);
 
   usePageSEO(seo.title, seo.description, seo.keywords);
+
+  const getImageUrl = (url: string) => {
+    if (!url) return "";
+    if (url.startsWith('http')) return url;
+    return `${API_BASE_URL}${url}`;
+  };
+
+  const galleryImages = [
+    getImageUrl(hero?.images?.[0]) || image1,
+    getImageUrl(hero?.images?.[1]) || image2,
+    getImageUrl(hero?.images?.[2]) || image3,
+    getImageUrl(hero?.images?.[3]) || image4,
+    getImageUrl(hero?.images?.[4]) || image5,
+    getImageUrl(hero?.images?.[5]) || image6,
+  ];
+
+  const getGallerySrc = (img: any) => {
+    if (typeof img === 'string') return img;
+    return (img as any)?.src || '';
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <div className="w-12 h-12 border-4 border-[var(--color-7)]/20 border-t-[var(--color-7)] rounded-full animate-spin"></div>
+        <p className="text-[var(--color-20)] font-medium">Loading Careers...</p>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Work with us */}
@@ -106,8 +142,8 @@ const Career = () => {
 
           {/* div1 */}
           <div className="col-span-2 row-span-2">
-            <Image
-              src={image1}
+            <img
+              src={getGallerySrc(galleryImages[0])}
               alt="career-img-1"
               className="rounded-3xl object-cover h-full w-full p-2"
             />
@@ -115,8 +151,8 @@ const Career = () => {
 
           {/* div2 */}
           <div className="col-start-3">
-            <Image
-              src={image2}
+            <img
+              src={getGallerySrc(galleryImages[1])}
               alt="career-img-2"
               className="rounded-3xl object-cover h-full w-full p-2"
             />
@@ -124,8 +160,8 @@ const Career = () => {
 
           {/* div3 */}
           <div className="col-start-3 row-start-2">
-            <Image
-              src={image3}
+            <img
+              src={getGallerySrc(galleryImages[2])}
               alt="career-img-3"
               className="rounded-3xl object-cover h-full w-full p-2"
             />
@@ -133,8 +169,8 @@ const Career = () => {
 
           {/* div4 */}
           <div className="row-start-3">
-            <Image
-              src={image4}
+            <img
+              src={getGallerySrc(galleryImages[3])}
               alt="career-img-4"
               className="rounded-3xl object-cover h-full w-full p-2"
             />
@@ -142,8 +178,8 @@ const Career = () => {
 
           {/* div5 */}
           <div className="row-start-3">
-            <Image
-              src={image5}
+            <img
+              src={getGallerySrc(galleryImages[4])}
               alt="career-img-5"
               className="rounded-3xl object-cover h-full w-full p-2"
             />
@@ -151,8 +187,8 @@ const Career = () => {
 
           {/* div6 */}
           <div className="row-start-3">
-            <Image
-              src={image6}
+            <img
+              src={getGallerySrc(galleryImages[5])}
               alt="career-img-6"
               className="rounded-3xl object-cover h-full w-full p-2"
             />
@@ -187,13 +223,15 @@ const Career = () => {
             >
 
               {whyAvenstek.map((item, idx) => (
-                <div key={item._id || idx} className="border border-2 border-[var(--color-23)] rounded-2xl
+                <div key={item._id || item.id || idx} className="border border-2 border-[var(--color-23)] rounded-2xl
                       w-full md:w-[48%] lg:w-[31%]
                       p-4 sm:p-5 bg-[var(--color-26)]">
-                  {/* We can use a Map or switch if we want icon mapping, but for now fallback */}
-                  <AiOutlineThunderbolt className="text-[var(--color-7)]
-          h-7 w-7 sm:h-8 sm:w-8 lg:h-11 lg:w-11
-          p-1 lg:p-2 border border-2 border-[var(--color-23)] rounded-lg"/>
+                  <div className="flex justify-center md:justify-start">
+                    <PublicIconRenderer
+                      name={item.icon}
+                      className="text-[var(--color-7)] h-7 w-7 sm:h-8 sm:w-8 lg:h-11 lg:w-11 p-1 lg:p-2 border border-2 border-[var(--color-23)] rounded-lg"
+                    />
+                  </div>
                   <div className="text-left py-3 sm:py-4">
                     <h2 className="text-[var(--color-1)] font-bold">
                       {item.title}
@@ -206,21 +244,9 @@ const Career = () => {
               ))}
 
               {whyAvenstek.length === 0 && (
-                <>
-                  {/* Fallback to original cards if empty */}
-                  <div className="border border-2 border-[var(--color-23)] rounded-2xl
-                        w-full md:w-[48%] lg:w-[31%]
-                        p-4 sm:p-5 bg-[var(--color-26)]">
-                    <AiOutlineThunderbolt className="text-[var(--color-7)]
-            h-7 w-7 sm:h-8 sm:w-8 lg:h-11 lg:w-11
-            p-1 lg:p-2 border border-2 border-[var(--color-23)] rounded-lg"/>
-                    <div className="text-left py-3 sm:py-4">
-                      <h2 className="text-[var(--color-1)] font-bold"> Clarity beats complexity </h2>
-                      <p className="text-[var(--color-19)]"> We strip away noise. Every feature we ship has to earn its place. </p>
-                    </div>
-                  </div>
-                  {/* ... other fallbacks if needed, but I'll keeping it simple */}
-                </>
+                <div className="py-10 text-center text-[var(--color-21)] italic">
+                  Explore our unique company culture and benefits.
+                </div>
               )}
 
             </div>
@@ -232,7 +258,7 @@ const Career = () => {
       {/* principles */}
       <section>
         <div className=" text-center px-4 py-6 md:py-8">
-          <div className="bg-[var(--color-13)] max-w-38 mx-auto text-center p-2 rounded-lg mb-6 flex text-[0.90rem] md:text-[0.95rem] lg:text-[1rem]">
+          <div className="bg-[var(--color-13)] max-w-38 mx-auto text-center p-2 rounded-lg mb-6 flex text-[0.90rem] md:text-[0.95rem] lg:text-[1rem] items-center justify-center">
             <LuNewspaper className="text-[var(--color-7)] mr-2 h-5 w-4" />
             <h3 className='text-[var(--color-7)] '>Our Principles</h3>
           </div>
@@ -243,8 +269,11 @@ const Career = () => {
           <div className="p-9 max-w-7xl mx-auto" >
             <div className="grid sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6 place-items-center text-[0.90rem] md:text-[.95rem] lg:text-[1rem]">
               {principles.map((item, idx) => (
-                <div key={item._id || idx} className="h-42 w-65 p-5">
-                  <AiOutlineThunderbolt className="text-[var(--color-7)] md:h-8 md:w-8 lg:h-11 lg:w-11 h-7 w-7 md:p-1 lg:p-2 p-1 mx-auto border border-2 border-[var(--color-23)] rounded-lg" />
+                <div key={item._id || item.id || idx} className="h-42 w-65 p-5">
+                  <PublicIconRenderer
+                    name={item.icon}
+                    className="text-[var(--color-7)] md:h-8 md:w-8 lg:h-11 lg:w-11 h-7 w-7 md:p-1 lg:p-2 p-1 mx-auto border border-2 border-[var(--color-23)] rounded-lg"
+                  />
                   <div className="text-center py-4 max-w-40 mx-auto">
                     <h2 className="text-[var(--color-1)] font-bold">{item.title}</h2>
                     <p className="text-[var(--color-19)]">{item.description}</p>
@@ -253,12 +282,8 @@ const Career = () => {
               ))}
 
               {principles.length === 0 && (
-                <div className="h-42 w-65 p-5">
-                  <AiOutlineThunderbolt className="text-[var(--color-7)] md:h-8 md:w-8 lg:h-11 lg:w-11 h-7 w-7 md:p-1 lg:p-2 p-1 mx-auto border border-2 border-[var(--color-23)] rounded-lg" />
-                  <div className="text-center py-4 max-w-40 mx-auto">
-                    <h2 className="text-[var(--color-1)] font-bold">Clarity over control</h2>
-                    <p className="text-[var(--color-19)]">Tools should guide, not micromanage reps</p>
-                  </div>
+                <div className="col-span-full py-10 text-center text-[var(--color-21)] italic">
+                  Guided by excellence and technical integrity.
                 </div>
               )}
             </div>
@@ -270,7 +295,7 @@ const Career = () => {
         <div className="p-9 bg-[var(--color-25)] text-center  px-4 py-12 sm:py-16">
           <div>
             <div className="bg-[var(--color-13)] inline-flex items-center justify-center 
-             mx-auto text-center px-4 py-2 rounded-lg mb-6 text-[0.90rem] md:text-[0.95rem] lg:text-[1rem]">
+              mx-auto text-center px-4 py-2 rounded-lg mb-6 text-[0.90rem] md:text-[0.95rem] lg:text-[1rem]">
               <LuNewspaper className="text-[var(--color-7)] mr-2 h-5 w-4" />
               <h3 className='text-[var(--color-7)] '>Open Roles</h3>
             </div>
@@ -281,7 +306,15 @@ const Career = () => {
 
               <div className="px-4 sm:px-6 lg:px-9 max-w-7xl mx-auto py-4">
                 {departments.filter(d => d.status).map(dept => {
-                  const deptJobs = jobs.filter(j => j.status && (j.departmentId?._id === dept?._id || j.departmentId === dept?._id));
+                  const deptJobs = jobs.filter(j =>
+                    j.status &&
+                    (
+                      (typeof j.departmentId === 'object' && j.departmentId?._id === dept?._id) ||
+                      (j.departmentId === dept?._id) ||
+                      (typeof j.departmentId === 'object' && j.departmentId?.id === dept?.id) ||
+                      (j.departmentId === dept?.id)
+                    )
+                  );
                   if (deptJobs.length === 0) return null;
 
                   return (
@@ -325,7 +358,7 @@ const Career = () => {
                             <div className="flex gap-4 mt-2">
                               <div className="flex gap-2 text-[var(--color-19)] items-center">
                                 <RiMoneyDollarBoxLine />
-                                <h4>{job.currency} {job.salaryMin.toLocaleString()} - {job.salaryMax.toLocaleString()}</h4>
+                                <h4>{job.currency} {job.salaryMin?.toLocaleString()} - {job.salaryMax?.toLocaleString()}</h4>
                               </div>
                             </div>
                           </div>
@@ -335,7 +368,7 @@ const Career = () => {
                   );
                 })}
 
-                {!loading && jobs.length === 0 && (
+                {!loading && jobs.filter(j => j.status).length === 0 && (
                   <div className="py-20 text-center text-[var(--color-20)]">
                     No open roles at the moment. Check back later!
                   </div>

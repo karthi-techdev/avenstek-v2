@@ -88,6 +88,8 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [productsList, setProductsList] = useState<any[]>([]);
+  const [footerConfig, setFooterConfig] = useState<any>(null);
+  const [settings, setSettings] = useState<any>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -103,7 +105,34 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
         console.error("Failed to fetch products");
       }
     };
+
+    const fetchFooter = async () => {
+      try {
+        const res = await fetch(API_ENDPOINTS.FOOTER);
+        const data = await res.json();
+        if (data && data.categories) {
+          setFooterConfig(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch footer config");
+      }
+    };
+
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch(API_ENDPOINTS.SETTINGS);
+        const data = await res.json();
+        if (data && data.socials) {
+          setSettings(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch settings");
+      }
+    };
+
     fetchProducts();
+    fetchFooter();
+    fetchSettings();
   }, []);
   return (
     <>
@@ -112,7 +141,7 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
         <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
           <div className="flex lg:flex-1">
             <Link href="/" className="-m-1.5 p-1.5">
-              <Image src={logoImg} alt="logo" height="20" className="invert-70" />
+              <img src={settings?.logoUrl || logoImg.src} alt={settings?.companyName || "logo"} height="20" className="invert-70 h-[20px] w-auto" />
             </Link>
 
           </div>
@@ -156,7 +185,7 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
                               target="_blank"
                               rel="noopener noreferrer"
                               onClick={() => close()}
-                              className="expressa-font tracking-wider text-[1rem] block font-semibold text-gray-700 dark:text-white"
+                              className="tracking-wider text-[1rem] block font-semibold text-gray-700 dark:text-white"
                             >
                               {product.title}
                               <span className="absolute inset-0" />
@@ -321,7 +350,7 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
           <DialogPanel className="fixed inset-y-0 right-0 z-100000 w-full overflow-y-auto bg-white p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 dark:bg-gray-900 dark:sm:ring-gray-100/10">
             <div className="flex items-center justify-between">
               <Link href="/" className="-m-1.5 p-1.5" onClick={() => close()}>
-                <Image src={logoImg} alt="logo" height="20" className="invert-70" />
+                <img src={settings?.logoUrl || logoImg.src} alt={settings?.companyName || "logo"} height="20" className="invert-70 h-[20px] w-auto" />
               </Link>
               <button
                 type="button"
@@ -361,7 +390,7 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
                                 </div>
 
                                 <div className="flex-auto">
-                                  <span className="expressa-font tracking-wider text-[1rem] block font-semibold text-gray-700 dark:text-white">
+                                  <span className="tracking-wider text-[1rem] block font-semibold text-gray-700 dark:text-white">
                                     {product.title}
                                     <span className="absolute inset-0" />
                                   </span>
@@ -595,53 +624,91 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
             <ul>
               <p className="flex text-[var(--color-1)] font-bold text-2xl pb-6">
                 <Link href="/" className="-m-1.5 p-1.5">
-                  <Image src={logoImg} alt="logo" height="20" className="invert-70" />
+                  <img src={settings?.logoUrl || logoImg.src} alt="logo" height="20" className="invert-70 h-[20px] w-auto" />
                 </Link>
               </p>
               <p className="text-[var(--color-1)] tracking-normal text-md pb-3">
-                Building Excellence Through Consistency in Innovation.
+                {settings?.companyTagline || "Building Excellence Through Consistency in Innovation."}
               </p>
               <div className="flex gap-3 pb-5">
-                <Link href="https://www.instagram.com/avenstek/" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaInstagram className="text-4xl p-2" /></Link>
-                <Link href="https://www.linkedin.com/company/avenstek" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaLinkedin className="text-4xl p-2" /></Link>
-                <Link href="https://x.com/avenstek" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><BsTwitterX className="text-4xl p-2" /></Link>
-                <Link href="https://www.facebook.com/avenstek" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaFacebookF className="text-4xl p-2" /></Link>
+                {settings?.socials?.instagram ? (
+                  <Link href={settings.socials.instagram} className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaInstagram className="text-4xl p-2" /></Link>
+                ) : !settings && (
+                  <Link href="https://www.instagram.com/avenstek/" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaInstagram className="text-4xl p-2" /></Link>
+                )}
+
+                {settings?.socials?.linkedin ? (
+                  <Link href={settings.socials.linkedin} className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaLinkedin className="text-4xl p-2" /></Link>
+                ) : !settings && (
+                  <Link href="https://www.linkedin.com/company/avenstek" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaLinkedin className="text-4xl p-2" /></Link>
+                )}
+
+                {settings?.socials?.twitter ? (
+                  <Link href={settings.socials.twitter} className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><BsTwitterX className="text-4xl p-2" /></Link>
+                ) : !settings && (
+                  <Link href="https://x.com/avenstek" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><BsTwitterX className="text-4xl p-2" /></Link>
+                )}
+
+                {settings?.socials?.facebook ? (
+                  <Link href={settings.socials.facebook} className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaFacebookF className="text-4xl p-2" /></Link>
+                ) : !settings && (
+                  <Link href="https://www.facebook.com/avenstek" className="text-xl cursor-pointer w-9 h-9 rounded-lg bg-[var(--color-2)] hover:text-[var(--color-8)] hover:bg-[var(--color-13)] border border-[var(--color-19)]"><FaFacebookF className="text-4xl p-2" /></Link>
+                )}
               </div>
             </ul>
           </div>
 
-          <div className="p-4 lg:pl-25">
-            <ul>
-              <p className="text-[var(--color-1)] font-bold text-xl pb-4">Quick Links</p>
-              <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
-                <Link href="/">Home</Link>
-              </li>
-              <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
-                <Link href="/about-us">About Us</Link>
-              </li>
-              {/* <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
-                  <Link href="/product">Product</Link>
-                </li> */}
-              <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
-                <Link href="/services">Services</Link>
-              </li>
-            </ul>
-          </div>
+          {footerConfig && footerConfig.categories && footerConfig.categories.length > 0 ? (
+            footerConfig.categories
+              .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
+              .map((cat: any, index: number) => (
+                <div key={cat.id || cat._id} className={`p-4 ${index === 0 ? "lg:pl-25" : ""}`}>
+                  <ul>
+                    <p className="text-[var(--color-1)] font-bold text-xl pb-4">{cat.title}</p>
+                    {footerConfig.links
+                      ?.filter((l: any) => l.categoryId === cat.id && l.status !== false)
+                      .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
+                      .map((link: any) => (
+                        <li key={link.id || link._id} className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                          <Link href={link.url}>{link.title}</Link>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              ))
+          ) : (
+            <>
+              <div className="p-4 lg:pl-25">
+                <ul>
+                  <p className="text-[var(--color-1)] font-bold text-xl pb-4">Quick Links</p>
+                  <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                    <Link href="/">Home</Link>
+                  </li>
+                  <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                    <Link href="/about-us">About Us</Link>
+                  </li>
+                  <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                    <Link href="/services">Services</Link>
+                  </li>
+                </ul>
+              </div>
 
-          <div className="p-4">
-            <ul>
-              <p className="text-[var(--color-1)] font-bold text-xl pb-4">More Links</p>
-              <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
-                <Link href="/contact-us">Contact Us</Link>
-              </li>
-              <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
-                <Link href="/careers">Careers</Link>
-              </li>
-              <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
-                <Link href="/blog">Blog</Link>
-              </li>
-            </ul>
-          </div>
+              <div className="p-4">
+                <ul>
+                  <p className="text-[var(--color-1)] font-bold text-xl pb-4">More Links</p>
+                  <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                    <Link href="/contact-us">Contact Us</Link>
+                  </li>
+                  <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                    <Link href="/careers">Careers</Link>
+                  </li>
+                  <li className="text-[var(--color-20)] text-md pb-2 tracking-normal hover:text-[var(--color-8)] cursor-pointer">
+                    <Link href="/blog">Blog</Link>
+                  </li>
+                </ul>
+              </div>
+            </>
+          )}
 
           {/* Newsletter Subscription Section */}
           <div className="p-4">
@@ -709,7 +776,7 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
         <hr className="text-[var(--color-20)]"></hr>
 
         <div className="p-5 flex justify-center lg:gap-8 gap-4 lg:px-[6rem] lg:w-[90%] lg:mx-auto">
-          <p className="text-left text-[var(--color-20)] text-md pb-2 tracking-normal">© 2026 Avenstek. All rights reserved.</p>
+          <p className="text-left text-[var(--color-20)] text-md pb-2 tracking-normal">© {new Date().getFullYear()} {settings?.companyName || "Avenstek"}. All rights reserved.</p>
         </div>
       </footer>
     </>

@@ -11,6 +11,7 @@ import {
   HiOutlineAnnotation
 } from 'react-icons/hi';
 import { useModal } from '@/app/components/ConfirmModal';
+import LoadingScreen from '../components/LoadingScreen';
 
 interface ContactEnquiry {
   _id?: string;
@@ -29,7 +30,7 @@ import { useToast } from '../components/Toast';
 
 const ContactManagement: React.FC = () => {
   const { showToast } = useToast();
-  const { showAlert, showConfirm } = useModal();
+  const { showConfirm } = useModal();
   const [enquiries, setEnquiries] = useState<ContactEnquiry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -67,14 +68,7 @@ const ContactManagement: React.FC = () => {
     e.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-        <div className="w-12 h-12 border-4 border-[var(--color-7)]/20 border-t-[var(--color-7)] rounded-full animate-spin"></div>
-        <p className="text-[var(--color-21)] font-bold animate-pulse uppercase tracking-widest text-xs">Loading Enquiries...</p>
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingScreen text="Fetching Enquiries" />;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-10">

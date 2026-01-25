@@ -14,6 +14,7 @@ import {
 import { useModal } from '@/app/components/ConfirmModal';
 
 import api from '@/lib/api';
+import LoadingScreen from '../components/LoadingScreen';
 
 interface FooterCategory {
   _id?: string;
@@ -36,7 +37,7 @@ import { useToast } from '../components/Toast';
 
 const FooterManagement: React.FC = () => {
   const { showToast } = useToast();
-  const { showAlert, showConfirm } = useModal();
+  const { showConfirm } = useModal();
   const [categories, setCategories] = useState<FooterCategory[]>([]);
   const [links, setLinks] = useState<FooterLink[]>([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -186,20 +187,13 @@ const FooterManagement: React.FC = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-        <div className="w-12 h-12 border-4 border-[var(--color-7)]/20 border-t-[var(--color-7)] rounded-full animate-spin"></div>
-        <p className="text-[var(--color-21)] font-bold animate-pulse uppercase tracking-widest text-xs">Loading Architecture...</p>
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingScreen text="Loading Architecture" />;
 
   return (
     <div className="space-y-8 animate-in pb-20">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-[var(--color-16)] tracking-tight">Footer Architecture</h1>
+          <h1 className="text-3xl font-black text-[var(--color-16)] tracking-tight">Footer Config</h1>
           <p className="text-[var(--color-20)] font-medium">Coordinate dynamic navigation sections and hierarchical URL mapping.</p>
         </div>
         <div className="flex gap-3">

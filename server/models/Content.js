@@ -234,6 +234,9 @@ const visitorSchema = new mongoose.Schema({
     visitedAt: { type: Date, default: Date.now }
 }, { timestamps: true });
 
+visitorSchema.index({ visitedAt: -1 });
+visitorSchema.index({ ip: 1 });
+
 module.exports = {
     Home: mongoose.model('Home', homeSchema),
     About: mongoose.model('About', aboutSchema),

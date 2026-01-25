@@ -16,4 +16,6 @@ export const API_ENDPOINTS = {
     SUBMIT_CONTACT: `${API_BASE_URL}/api/content/contact`,
     SUBSCRIBE: `${API_BASE_URL}/api/content/subscribers`,
     UPLOAD: `${API_BASE_URL}/api/content/upload`,
+    FOOTER: `${API_BASE_URL}/api/content/footer`,
+    SETTINGS: `${API_BASE_URL}/api/content/settings`,
 };

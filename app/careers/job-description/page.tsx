@@ -50,8 +50,9 @@ const JobDescriptionContent = () => {
   }, [jobId]);
 
   usePageSEO(
-    job?.title || "Job Description",
-    job?.preText || "Build your future with Avenstek Solutions Pvt Ltd."
+    job?.seoTitle || job?.title || "Job Description",
+    job?.seoDescription || job?.preText || "Build your future with Avenstek Solutions Pvt Ltd.",
+    job?.seoKeywords || ""
   );
 
   if (loading) return <div className="py-40 text-center">Loading job details...</div>;

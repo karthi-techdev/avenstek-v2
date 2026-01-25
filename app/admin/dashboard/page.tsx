@@ -7,9 +7,15 @@ import {
   HiOutlineGlobeAlt,
   HiOutlineChatAlt,
   HiOutlineDocumentText,
-  HiOutlineCursorClick
+  HiOutlineCursorClick,
+  HiOutlineChevronLeft,
+  HiOutlineChevronRight,
+  HiOutlineBriefcase,
+  HiOutlineUserGroup,
+  HiOutlineCollection
 } from 'react-icons/hi';
 import api from '@/lib/api';
+import LoadingScreen from '../components/LoadingScreen';
 
 // Dynamically import Chart to prevent SSR issues
 const Chart = dynamic(() => import('react-apexcharts'), {
@@ -39,11 +45,15 @@ const StatCard: React.FC<{ title: string; value: string | number; trend: string;
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [timeRange, setTimeRange] = useState('7d');
+  const [enquiryPage, setEnquiryPage] = useState(1);
+  const [visitorPage, setVisitorPage] = useState(1);
+  const PAGE_SIZE = 5;
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const { data } = await api.get('/content/dashboard-stats');
+        const { data } = await api.get(`/content/dashboard-stats?range=${timeRange}`);
         setStats(data);
       } catch (err) {
         console.error("Error fetching stats", err);
@@ -52,10 +62,10 @@ const Dashboard: React.FC = () => {
       }
     };
     fetchStats();
-  }, []);
+  }, [timeRange]);
 
   // Area Chart Config: Website Visitors
-  const visitorOptions: ApexOptions = {
+  const visitorOptions: ApexOptions = React.useMemo(() => ({
     chart: { type: 'area', toolbar: { show: false }, zoom: { enabled: false }, fontFamily: 'Outfit' },
     colors: ['#1570EF'],
     fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.45, opacityTo: 0.05, stops: [20, 100] } },
@@ -70,12 +80,12 @@ const Dashboard: React.FC = () => {
     },
     yaxis: { labels: { style: { colors: '#717680' } } },
     tooltip: { theme: 'light' },
-  };
+  }), [stats?.trafficGraph]);
 
-  const visitorSeries = [{ name: 'Visitors', data: stats?.trafficGraph?.data || [0, 0, 0, 0, 0, 0, 0] }];
+  const visitorSeries = React.useMemo(() => [{ name: 'Visitors', data: stats?.trafficGraph?.data || [0, 0, 0, 0, 0, 0, 0] }], [stats?.trafficGraph]);
 
   // Donut Chart Config: Traffic Source
-  const sourceOptions: ApexOptions = {
+  const sourceOptions: ApexOptions = React.useMemo(() => ({
     chart: { type: 'donut', fontFamily: 'Outfit' },
     colors: ['#1570EF', '#2E90FA', '#B2DDFF'],
     labels: ['Desktop', 'Mobile', 'Tablet'],
@@ -88,7 +98,12 @@ const Dashboard: React.FC = () => {
             total: {
               show: true,
               label: 'Total',
-              formatter: () => '11.4k',
+              formatter: () => {
+                const total = (stats?.deviceDistribution?.desktop || 0) +
+                  (stats?.deviceDistribution?.mobile || 0) +
+                  (stats?.deviceDistribution?.tablet || 0);
+                return total >= 1000 ? (total / 1000).toFixed(1) + 'k' : total.toString();
+              },
               color: '#181D27',
               fontSize: '16px',
               fontWeight: 700
@@ -97,15 +112,15 @@ const Dashboard: React.FC = () => {
         }
       }
     },
-    legend: { position: 'bottom', labels: { colors: '#717680' } },
+    legend: { show: false },
     dataLabels: { enabled: false },
     stroke: { show: false },
     tooltip: { theme: 'light' }
-  };
+  }), [stats?.deviceDistribution]);
 
-  const sourceSeries = [6420, 4210, 770];
+  // const sourceSeries = [6420, 4210, 770];
 
-  if (loading) return <div className="p-10 text-center text-sm font-bold text-[var(--color-20)]">Analyzing Dashboard Metrics...</div>;
+  if (loading) return <LoadingScreen text="Analyzing Metrics" />;
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-10">
@@ -127,16 +142,31 @@ const Dashboard: React.FC = () => {
         <StatCard title="Click Rate" value={stats?.clickRate || '0%'} trend="0.8%" icon={HiOutlineCursorClick} isPositive={false} />
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <StatCard title="Active Roles" value={stats?.activeJobs || '0'} trend="0%" icon={HiOutlineBriefcase} isPositive={true} />
+        <StatCard title="Applications" value={stats?.applications || '0'} trend="0%" icon={HiOutlineUserGroup} isPositive={true} />
+        <StatCard title="Departments" value={stats?.departments || '0'} trend="0%" icon={HiOutlineCollection} isPositive={true} />
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-[var(--color-2)] p-6 rounded-2xl border border-[var(--color-23)] shadow-sm">
           <div className="flex items-center justify-between mb-8">
             <div>
               <h3 className="text-lg font-bold text-[var(--color-16)]">Website Traffic</h3>
-              <p className="text-xs text-[var(--color-21)]">Daily visitor count for the current week</p>
+              <p className="text-xs text-[var(--color-21)]">
+                {timeRange === '7d' ? 'Daily visitor count for the current week' :
+                  timeRange === '30d' ? 'Visitor summary for the last 30 days' :
+                    'Monthly visitor summary for the past year'}
+              </p>
             </div>
-            <select className="bg-[var(--color-24)] border border-[var(--color-23)] rounded-lg px-3 py-1.5 text-xs font-bold text-[var(--color-19)] outline-none cursor-pointer">
-              <option>Last 7 Days</option>
-              <option>Last 30 Days</option>
+            <select
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value)}
+              className="bg-[var(--color-24)] border border-[var(--color-23)] rounded-lg px-3 py-1.5 text-xs font-bold text-[var(--color-19)] outline-none cursor-pointer"
+            >
+              <option value="7d">Last 7 Days</option>
+              <option value="30d">Last 30 Days</option>
+              <option value="1y">Last 1 Year</option>
             </select>
           </div>
           <Chart options={visitorOptions} series={visitorSeries} type="area" height={320} />
@@ -149,13 +179,12 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="flex-1 flex items-center justify-center">
             <Chart options={sourceOptions} series={[
-              stats?.deviceDistribution?.desktop || 6420,
-              stats?.deviceDistribution?.mobile || 4210,
-              stats?.deviceDistribution?.tablet || 770
+              stats?.deviceDistribution?.desktop || 0,
+              stats?.deviceDistribution?.mobile || 0,
+              stats?.deviceDistribution?.tablet || 0
             ]} type="donut" width="100%" />
           </div>
           <div className="mt-6 space-y-3">
-            {/* Dynamic mapping or static legend - keeping static style for now but could map */}
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-[#1570EF]"></div>
@@ -170,6 +199,13 @@ const Dashboard: React.FC = () => {
               </div>
               <span className="font-bold text-[var(--color-16)]">{stats?.deviceDistribution?.mobile || 0} hits</span>
             </div>
+            <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-[#B2DDFF]"></div>
+                <span className="text-[var(--color-19)]">Tablet</span>
+              </div>
+              <span className="font-bold text-[var(--color-16)]">{stats?.deviceDistribution?.tablet || 0} hits</span>
+            </div>
           </div>
         </div>
       </div>
@@ -177,7 +213,28 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Enquiries */}
         <div className="bg-[var(--color-2)] p-6 rounded-2xl border border-[var(--color-23)] shadow-sm">
-          <h3 className="text-lg font-bold text-[var(--color-16)] mb-6">Recent Enquiries</h3>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-bold text-[var(--color-16)]">Recent Enquiries</h3>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setEnquiryPage(p => Math.max(1, p - 1))}
+                disabled={enquiryPage === 1}
+                className="p-1.5 rounded-lg border border-[var(--color-23)] text-[var(--color-20)] hover:bg-[var(--color-24)] disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+              >
+                <HiOutlineChevronLeft size={16} />
+              </button>
+              <span className="text-xs font-bold text-[var(--color-21)] min-w-[3rem] text-center">
+                Page {enquiryPage}
+              </span>
+              <button
+                onClick={() => setEnquiryPage(p => p + 1)}
+                disabled={!stats?.recentEnquiries || (enquiryPage * PAGE_SIZE >= stats.recentEnquiries.length)}
+                className="p-1.5 rounded-lg border border-[var(--color-23)] text-[var(--color-20)] hover:bg-[var(--color-24)] disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+              >
+                <HiOutlineChevronRight size={16} />
+              </button>
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
@@ -189,18 +246,20 @@ const Dashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--color-23)]">
-                {stats?.recentEnquiries?.length > 0 ? stats.recentEnquiries.map((enquiry: any, i: number) => (
-                  <tr key={i} className="group hover:bg-[var(--color-25)] transition-colors">
-                    <td className="py-4 text-sm font-bold text-[var(--color-16)]">{enquiry.name}</td>
-                    <td className="py-4 text-sm text-[var(--color-20)] truncate max-w-[150px]">{enquiry.source || 'Website'}</td>
-                    <td className="py-4 text-xs text-[var(--color-21)]">{new Date(enquiry.createdAt).toLocaleDateString()}</td>
-                    <td className="py-4">
-                      <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase ${enquiry.status === 'New' ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'}`}>
-                        {enquiry.status}
-                      </span>
-                    </td>
-                  </tr>
-                )) : (
+                {stats?.recentEnquiries?.length > 0 ? stats.recentEnquiries
+                  .slice((enquiryPage - 1) * PAGE_SIZE, enquiryPage * PAGE_SIZE)
+                  .map((enquiry: any, i: number) => (
+                    <tr key={i} className="group hover:bg-[var(--color-25)] transition-colors">
+                      <td className="py-4 text-sm font-bold text-[var(--color-16)]">{enquiry.name}</td>
+                      <td className="py-4 text-sm text-[var(--color-20)] truncate max-w-[150px]">{enquiry.source || 'Website'}</td>
+                      <td className="py-4 text-xs text-[var(--color-21)]">{new Date(enquiry.createdAt).toLocaleDateString()}</td>
+                      <td className="py-4">
+                        <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase ${enquiry.status === 'New' ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'}`}>
+                          {enquiry.status}
+                        </span>
+                      </td>
+                    </tr>
+                  )) : (
                   <tr><td colSpan={4} className="py-4 text-center text-xs text-[var(--color-21)]">No recent enquiries</td></tr>
                 )}
               </tbody>
@@ -210,30 +269,51 @@ const Dashboard: React.FC = () => {
 
         {/* Recent Visitors Log */}
         <div className="bg-[var(--color-2)] p-6 rounded-2xl border border-[var(--color-23)] shadow-sm">
-          <h3 className="text-lg font-bold text-[var(--color-16)] mb-6">Live Visitor Log</h3>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-bold text-[var(--color-16)]">Live Visitor Log</h3>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setVisitorPage(p => Math.max(1, p - 1))}
+                disabled={visitorPage === 1}
+                className="p-1.5 rounded-lg border border-[var(--color-23)] text-[var(--color-20)] hover:bg-[var(--color-24)] disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+              >
+                <HiOutlineChevronLeft size={16} />
+              </button>
+              <span className="text-xs font-bold text-[var(--color-21)] min-w-[3rem] text-center">
+                Page {visitorPage}
+              </span>
+              <button
+                onClick={() => setVisitorPage(p => p + 1)}
+                disabled={!stats?.recentVisitors || (visitorPage * PAGE_SIZE >= stats.recentVisitors.length)}
+                className="p-1.5 rounded-lg border border-[var(--color-23)] text-[var(--color-20)] hover:bg-[var(--color-24)] disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+              >
+                <HiOutlineChevronRight size={16} />
+              </button>
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-[var(--color-23)]">
                   <th className="pb-4 text-xs font-bold text-[var(--color-21)] uppercase">Location</th>
                   <th className="pb-4 text-xs font-bold text-[var(--color-21)] uppercase">Device/OS</th>
-                  <th className="pb-4 text-xs font-bold text-[var(--color-21)] uppercase">IP Address</th>
                   <th className="pb-4 text-xs font-bold text-[var(--color-21)] uppercase">Time</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--color-23)]">
-                {stats?.recentVisitors?.length > 0 ? stats.recentVisitors.map((visitor: any, i: number) => (
-                  <tr key={i} className="group hover:bg-[var(--color-25)] transition-colors">
-                    <td className="py-4 text-sm font-bold text-[var(--color-16)] flex flex-col">
-                      <span>{visitor.city || 'Unknown'}</span>
-                      <span className="text-[10px] text-[var(--color-20)] uppercase font-medium">{visitor.country || 'Unknown'}</span>
-                    </td>
-                    <td className="py-4 text-sm text-[var(--color-20)]">{visitor.device} • {visitor.os?.split(' ')[0]}</td>
-                    <td className="py-4 text-xs text-[var(--color-21)] font-mono">{visitor.ip}</td>
-                    <td className="py-4 text-xs text-[var(--color-21)]">{new Date(visitor.visitedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
-                  </tr>
-                )) : (
-                  <tr><td colSpan={4} className="py-4 text-center text-xs text-[var(--color-21)]">No recent data</td></tr>
+                {stats?.recentVisitors?.length > 0 ? stats.recentVisitors
+                  .slice((visitorPage - 1) * PAGE_SIZE, visitorPage * PAGE_SIZE)
+                  .map((visitor: any, i: number) => (
+                    <tr key={i} className="group hover:bg-[var(--color-25)] transition-colors">
+                      <td className="py-4 text-sm font-bold text-[var(--color-16)] flex flex-col">
+                        <span>{visitor.city || 'Unknown'}</span>
+                        <span className="text-[10px] text-[var(--color-20)] uppercase font-medium">{visitor.country || 'Unknown'}</span>
+                      </td>
+                      <td className="py-4 text-sm text-[var(--color-20)]">{visitor.device} • {visitor.os?.split(' ')[0]}</td>
+                      <td className="py-4 text-xs text-[var(--color-21)]">{new Date(visitor.visitedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                    </tr>
+                  )) : (
+                  <tr><td colSpan={3} className="py-4 text-center text-xs text-[var(--color-21)]">No recent data</td></tr>
                 )}
               </tbody>
             </table>

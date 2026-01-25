@@ -7,6 +7,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import "./admin.css"
 
 
+import LoadingScreen from './components/LoadingScreen';
+
 interface LayoutProps {
   children: React.ReactNode;
 }
@@ -44,17 +46,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   if (isAuthChecking) {
-    return (
-      <div className="min-h-screen bg-[var(--color-25)] flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-[var(--color-7)]/20 border-t-[var(--color-7)] rounded-full animate-spin"></div>
-      </div>
-    );
+    return <LoadingScreen text="Loading" />;
   }
 
   return (
-    <div className="flex min-h-screen bg-[var(--color-25)] overflow-hidden">
+    <div className="flex h-[100dvh] bg-[var(--color-25)] overflow-hidden">
       <aside className={`fixed inset-y-0 left-0 z-50 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:relative md:translate-x-0 transition-transform duration-300 ease-in-out`}>
+        } md:sticky md:top-0 md:h-[100dvh] md:translate-x-0 transition-transform duration-300 ease-in-out`}>
         <Sidebar onClose={() => setIsSidebarOpen(false)} />
       </aside>
 
@@ -65,9 +63,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         />
       )}
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full">
         <Navbar onMenuClick={toggleSidebar} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 bg-[var(--color-25)]">
           {children}
         </main>
       </div>

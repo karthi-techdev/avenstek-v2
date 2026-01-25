@@ -121,13 +121,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
         })}
       </nav>
 
-      {/* User / Footer Section */}
-      <div className="p-2 border-t border-[var(--color-23)]">
-        <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-[var(--color-20)] hover:text-[var(--color-27)] hover:bg-white transition-all rounded-xl font-bold text-xs border border-transparent hover:border-red-100">
-          <HiOutlineLogout size={18} />
-          <span>Sign Out</span>
-        </button>
-      </div>
     </div>
   );
 };

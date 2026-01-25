@@ -4,13 +4,13 @@ import React, { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { useModal } from '@/app/components/ConfirmModal';
 import { useToast } from '../components/Toast';
+import LoadingScreen from '../components/LoadingScreen';
 import {
   HiOutlineUsers,
   HiOutlineTrash,
   HiOutlineSearch,
   HiOutlineDownload,
-  HiOutlineMailOpen,
-  HiOutlineBan
+  HiOutlineMailOpen
 } from 'react-icons/hi';
 
 interface Subscriber {
@@ -24,7 +24,7 @@ interface Subscriber {
 }
 
 const SubscribersManagement: React.FC = () => {
-  const { showAlert, showConfirm } = useModal();
+  const { showConfirm } = useModal();
   const { showToast } = useToast();
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,7 +53,7 @@ const SubscribersManagement: React.FC = () => {
         showToast('success', 'Removed', 'Subscriber deleted successfully.');
       } catch (err) {
         console.error("Error deleting subscriber", err);
-        showAlert('Delete Failed', 'Failed to remove subscriber.');
+        showToast('error', 'Delete Failed', 'Failed to remove subscriber.');
       }
     }
   };
@@ -62,14 +62,7 @@ const SubscribersManagement: React.FC = () => {
     s.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-        <div className="w-12 h-12 border-4 border-[var(--color-7)]/20 border-t-[var(--color-7)] rounded-full animate-spin"></div>
-        <p className="text-[var(--color-21)] font-bold animate-pulse uppercase tracking-widest text-xs">Syncing Audience...</p>
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingScreen text="Syncing Audience" />;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-10">
@@ -157,27 +150,6 @@ const SubscribersManagement: React.FC = () => {
             <p className="text-sm text-[var(--color-20)]">There are no matching subscribers in your database.</p>
           </div>
         )}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-        <div className="bg-[var(--color-16)] p-8 rounded-[2.5rem] text-white flex items-center gap-6 shadow-xl border border-white/5 cursor-pointer hover:bg-[var(--color-16)]/90 transition-all">
-          <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center border border-white/10">
-            <HiOutlineMailOpen size={24} className="text-[var(--color-8)]" />
-          </div>
-          <div>
-            <h4 className="text-xl font-black tracking-tight">Broadcast Campaign</h4>
-            <p className="text-xs text-[var(--color-21)] font-medium">Draft a new newsletter to send to all active members.</p>
-          </div>
-        </div>
-        <div className="bg-white p-8 rounded-[2.5rem] border border-[var(--color-23)] flex items-center gap-6 shadow-sm cursor-pointer hover:bg-[var(--color-24)] transition-all">
-          <div className="w-14 h-14 bg-[var(--color-13)] rounded-2xl flex items-center justify-center border border-[var(--color-11)]">
-            <HiOutlineBan size={24} className="text-[var(--color-27)]" />
-          </div>
-          <div>
-            <h4 className="text-xl font-black text-[var(--color-16)] tracking-tight">Blacklist Rules</h4>
-            <p className="text-xs text-[var(--color-20)] font-medium">Prevent specific domains or IPs from subscribing.</p>
-          </div>
-        </div>
       </div>
     </div>
   );

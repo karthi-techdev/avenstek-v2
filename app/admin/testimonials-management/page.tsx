@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { HiOutlineTrash, HiOutlinePhotograph, HiOutlinePlus, HiOutlineSave } from 'react-icons/hi';
 import api from '@/lib/api';
 import { API_BASE_URL } from '@/lib/api-config';
+import LoadingScreen from '../components/LoadingScreen';
 
 interface Testimonial {
   _id?: string;
@@ -57,8 +58,7 @@ const TestimonialsManagement: React.FC = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await api.post('/content/testimonials', items);
-      const { data } = await api.get('/content/testimonials');
+      const { data } = await api.post('/content/testimonials', items);
       setItems(data);
       showToast('success', 'Testimonials Saved', 'Social proof section updated.');
     } catch (err) {
@@ -86,7 +86,7 @@ const TestimonialsManagement: React.FC = () => {
     }
   };
 
-  if (isLoading) return <div className="p-10 text-center text-sm font-bold text-[var(--color-20)]">Loading Testimonials...</div>;
+  if (isLoading) return <LoadingScreen text="Loading Testimonials" />;
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-10">

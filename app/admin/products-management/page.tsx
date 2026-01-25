@@ -10,6 +10,7 @@ import {
 } from 'react-icons/hi';
 import api from '@/lib/api';
 import { API_BASE_URL } from '@/lib/api-config';
+import LoadingScreen from '../components/LoadingScreen';
 
 interface Product {
   id?: string;
@@ -119,13 +120,13 @@ const ProductsManagement: React.FC = () => {
     setDraggedIndex(null);
   };
 
-  if (isLoading) return <div className="p-10 text-center text-sm font-bold text-[var(--color-20)]">Loading Products...</div>;
+  if (isLoading) return <LoadingScreen text="Loading Inventory" />;
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-4 duration-500 pb-10">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-16)]">Products Management</h1>
+          <h1 className="text-2xl font-bold text-[var(--color-16)]">Products Navbar</h1>
           <p className="text-[var(--color-20)]">Drag and drop to reorder items in the Navbar dropdown menu.</p>
         </div>
         <div className="flex gap-3">

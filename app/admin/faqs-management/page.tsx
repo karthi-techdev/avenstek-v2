@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '@/lib/api';
 import { HiOutlinePlus, HiOutlineTrash, HiOutlineSave } from 'react-icons/hi';
+import LoadingScreen from '../components/LoadingScreen';
 
 interface FAQ {
   _id?: string;
@@ -52,8 +53,7 @@ const FAQManagement: React.FC = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await api.post('/content/faqs', faqs);
-      const { data } = await api.get('/content/faqs');
+      const { data } = await api.post('/content/faqs', faqs);
       setFaqs(data);
       showToast('success', 'FAQs Published', 'Knowledge base has been updated.');
     } catch (err) {
@@ -64,14 +64,7 @@ const FAQManagement: React.FC = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-        <div className="w-12 h-12 border-4 border-[var(--color-7)]/20 border-t-[var(--color-7)] rounded-full animate-spin"></div>
-        <p className="text-[var(--color-21)] font-bold animate-pulse uppercase tracking-widest text-xs">Loading Knowledge Base...</p>
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingScreen text="Loading Knowledge Base" />;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-10">

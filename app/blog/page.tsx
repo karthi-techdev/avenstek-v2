@@ -322,7 +322,7 @@ export default function BlogPage() {
           </div>
 
           {/* Blog Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 hover:bg-[var(--color-25)]">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {filteredPosts.map((post, index) => (
               <motion.div
                 key={post._id || post.id || index}

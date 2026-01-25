@@ -355,54 +355,119 @@ router.get('/notifications', protect, async (req, res) => {
     }
 });
 
+router.post('/notifications/read', protect, async (req, res) => {
+    try {
+        const { id, type } = req.body;
+        if (type === 'Enquiry') {
+            await Contact.findByIdAndUpdate(id, { status: 'Read' });
+        } else if (type === 'Application') {
+            await JobApplication.findByIdAndUpdate(id, { status: 'Read' });
+        }
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+router.post('/notifications/read-all', protect, async (req, res) => {
+    try {
+        await Promise.all([
+            Contact.updateMany({ status: 'New' }, { status: 'Read' }),
+            JobApplication.updateMany({ status: { $in: ['Review', 'New'] } }, { status: 'Read' })
+        ]);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // Dashboard Stats
 router.get('/dashboard-stats', protect, async (req, res) => {
     try {
-        const totalBlogs = await BlogPost.countDocuments();
-        const totalEnquiries = await Contact.countDocuments();
-        const totalSubscribers = await Subscriber.countDocuments();
-        const totalVisitors = await Visitor.countDocuments();
+        const { range = '7d' } = req.query;
 
-        // Get recent visitors
-        const recentVisitors = await Visitor.find().sort('-visitedAt').limit(5);
-
-        // Get recent enquiries
-        const recentEnquiries = await Contact.find().sort('-createdAt').limit(5);
-
-        // Mocking traffic source distribution for now, or aggregate from 'device' field if populated
-        // Let's try basic aggregation if we have data, else fallbacks
-        // Traffic Graph (Last 7 Days)
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-        const trafficStats = await Visitor.aggregate([
-            { $match: { visitedAt: { $gte: sevenDaysAgo } } },
-            {
-                $group: {
-                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$visitedAt" } },
-                    count: { $sum: 1 }
-                }
-            },
-            { $sort: { _id: 1 } }
+        const [
+            totalBlogs,
+            totalEnquiries,
+            totalSubscribers,
+            totalVisitors,
+            totalJobs,
+            totalApplications,
+            totalDepartments,
+            recentVisitors,
+            recentEnquiries
+        ] = await Promise.all([
+            BlogPost.countDocuments(),
+            Contact.countDocuments(),
+            Subscriber.countDocuments(),
+            Visitor.countDocuments(),
+            Job.countDocuments({ status: true }),
+            JobApplication.countDocuments(),
+            Department.countDocuments(),
+            Visitor.find().sort('-visitedAt').limit(50),
+            Contact.find().sort('-createdAt').limit(50)
         ]);
 
-        // Fill in missing days
+        // Date Range Logic
+        let startDate = new Date();
+        let days = 7;
+        let format = "%Y-%m-%d";
+
+        if (range === '30d') {
+            days = 30;
+        } else if (range === '1y') {
+            days = 365;
+            format = "%Y-%m"; // Group by month for year
+        }
+        startDate.setDate(startDate.getDate() - days);
+
+        const [trafficStats, deviceStats] = await Promise.all([
+            Visitor.aggregate([
+                { $match: { visitedAt: { $gte: startDate } } },
+                {
+                    $group: {
+                        _id: { $dateToString: { format, date: "$visitedAt" } },
+                        count: { $sum: 1 }
+                    }
+                },
+                { $sort: { _id: 1 } }
+            ]),
+            Visitor.aggregate([
+                { $match: { visitedAt: { $gte: startDate } } },
+                { $group: { _id: "$device", count: { $sum: 1 } } }
+            ])
+        ]);
+
+        // Fill in missing slots for graph
         const trafficData = [];
         const labels = [];
-        for (let i = 6; i >= 0; i--) {
-            const d = new Date();
-            d.setDate(d.getDate() - i);
-            const dateStr = d.toISOString().split('T')[0];
-            const found = trafficStats.find(s => s._id === dateStr);
-            trafficData.push(found ? found.count : 0);
-            labels.push(d.toLocaleDateString('en-US', { weekday: 'short' }));
+
+        if (range === '1y') {
+            for (let i = 11; i >= 0; i--) {
+                const d = new Date();
+                d.setMonth(d.getMonth() - i);
+                const monthStr = d.toISOString().substring(0, 7); // YYYY-MM
+                const found = trafficStats.find(s => s._id === monthStr);
+                trafficData.push(found ? found.count : 0);
+                labels.push(d.toLocaleDateString('en-US', { month: 'short' }));
+            }
+        } else {
+            for (let i = days - 1; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dateStr = d.toISOString().split('T')[0];
+                const found = trafficStats.find(s => s._id === dateStr);
+                trafficData.push(found ? found.count : 0);
+                // Only show labels for specific points if range is 30d to avoid clutter, or always show for 7d
+                if (range === '30d') {
+                    if (i % 5 === 0) labels.push(d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }));
+                    else labels.push("");
+                } else {
+                    labels.push(d.toLocaleDateString('en-US', { weekday: 'short' }));
+                }
+            }
         }
 
-        const deviceStats = await Visitor.aggregate([
-            { $group: { _id: "$device", count: { $sum: 1 } } }
-        ]);
-
-        // Simple mapping for frontend chart
         let desktop = 0, mobile = 0, tablet = 0;
         deviceStats.forEach(d => {
             if (d._id === 'Mobile') mobile += d.count;
@@ -411,11 +476,14 @@ router.get('/dashboard-stats', protect, async (req, res) => {
         });
 
         res.json({
-            visitors: totalVisitors + 11400, // + Legacy/Base count
+            visitors: totalVisitors + 11400,
             blogs: totalBlogs,
             enquiries: totalEnquiries,
             subscribers: totalSubscribers,
-            clickRate: "3.42%", // Keep mock for now
+            clickRate: "3.42%",
+            activeJobs: totalJobs,
+            applications: totalApplications,
+            departments: totalDepartments,
             recentVisitors,
             recentEnquiries,
             deviceDistribution: { desktop, mobile, tablet },

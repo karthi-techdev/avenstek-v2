@@ -13,6 +13,7 @@ import {
   HiOutlineHashtag
 } from 'react-icons/hi';
 import { useModal } from '@/app/components/ConfirmModal';
+import LoadingScreen from '../components/LoadingScreen';
 
 interface GeneralSettings {
   companyName: string;
@@ -37,7 +38,7 @@ import { useToast } from '../components/Toast';
 
 const Settings: React.FC = () => {
   const { showToast } = useToast();
-  const { showAlert } = useModal();
+  const { showConfirm } = useModal();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [settings, setSettings] = useState<GeneralSettings>({
@@ -129,18 +130,11 @@ const Settings: React.FC = () => {
       updateSettings(key, data.url);
     } catch (err) {
       console.error("Upload failed", err);
-      showAlert("Upload Failed", "Failed to upload image. Please try again.");
+      showToast("error", "Upload Failed", "Failed to upload image. Please try again.");
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-        <div className="w-12 h-12 border-4 border-[var(--color-7)]/20 border-t-[var(--color-7)] rounded-full animate-spin"></div>
-        <p className="text-[var(--color-21)] font-bold animate-pulse uppercase tracking-widest text-xs">Loading Configuration...</p>
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingScreen text="Loading Configuration" />;
 
   return (
     <div className="space-y-8 animate-in pb-20">
@@ -319,11 +313,6 @@ const Settings: React.FC = () => {
               {settings.isMaintenanceMode ? 'Deactivate Maintenance' : 'Go Into Maintenance'}
             </button>
           </section>
-
-          <div className="bg-blue-50 border border-blue-100 p-8 rounded-[2.5rem] text-blue-800 space-y-4 shadow-sm">
-            <h4 className="text-xs font-black uppercase tracking-widest flex items-center gap-2"><HiOutlineColorSwatch /> Global Theme</h4>
-            <p className="text-[11px] leading-relaxed font-medium">Lumina Admin allows you to globally control the visual fingerprint of your public-facing website through these brand settings.</p>
-          </div>
         </div>
       </div>
     </div>

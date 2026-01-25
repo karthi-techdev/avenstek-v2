@@ -1,5 +1,5 @@
 import React from 'react';
-import { HiMenuAlt2, HiOutlineBell, HiOutlineSearch, HiOutlineLogout, HiX } from 'react-icons/hi';
+import { HiMenuAlt2, HiOutlineBell, HiOutlineSearch, HiOutlineLogout, HiX, HiOutlineCheck } from 'react-icons/hi';
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '@/lib/api-config';
 
@@ -89,12 +89,43 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
     router.replace('/admin');
   };
 
-  const handleNotificationClick = (type: string) => {
+  const handleNotificationClick = async (id: string, type: string) => {
+    await markAsRead(id, type);
     setShowNotifications(false);
     if (type === 'Enquiry') {
       router.push('/admin/contact-management');
     } else if (type === 'Application') {
       router.push('/admin/careers-management');
+    }
+  };
+
+  const markAsRead = async (id: string, type: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      await fetch(`${API_BASE_URL}/api/content/notifications/read`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ id, type })
+      });
+      setNotifications(prev => prev.filter(n => n.id !== id));
+    } catch (err) {
+      console.error("Failed to mark as read");
+    }
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await fetch(`${API_BASE_URL}/api/content/notifications/read-all`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setNotifications([]);
+    } catch (err) {
+      console.error("Failed to mark all as read");
     }
   };
 
@@ -184,35 +215,67 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 mt-2 w-72 md:w-80 bg-white border border-[var(--color-23)] rounded-2xl shadow-xl overflow-hidden z-50 animate-in slide-in-from-top-2">
-              <div className="p-4 border-b border-[var(--color-23)] flex justify-between items-center bg-[var(--color-24)]">
-                <h4 className="font-bold text-[var(--color-16)] text-sm">Notifications</h4>
-                <span className="text-[10px] bg-[var(--color-7)] text-white px-2 py-0.5 rounded-full">{notifications.length} New</span>
-              </div>
-              <div className="max-h-[300px] overflow-y-auto">
-                {notifications.length > 0 ? (
-                  notifications.map((notif, idx) => (
-                    <div
-                      key={idx}
-                      onClick={() => handleNotificationClick(notif.type)}
-                      className="p-4 border-b border-[var(--color-23)] hover:bg-[var(--color-25)] transition-colors cursor-pointer"
-                    >
-                      <div className="flex justify-between items-start mb-1">
-                        <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${notif.type === 'Enquiry' ? 'bg-blue-100 text-blue-600' : 'bg-purple-100 text-purple-600'}`}>
-                          {notif.type}
-                        </span>
-                        <span className="text-[10px] text-[var(--color-21)]">{new Date(notif.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                      </div>
-                      <p className="text-xs font-medium text-[var(--color-16)] line-clamp-2">{notif.message}</p>
-                    </div>
-                  ))
-                ) : (
-                  <div className="p-8 text-center text-[var(--color-21)] text-xs">No new notifications</div>
+            <div className="absolute right-0 mt-3 w-80 md:w-96 bg-white border border-[var(--color-23)] rounded-[1.5rem] shadow-2xl overflow-hidden z-50 animate-in slide-in-from-top-2">
+              <div className="p-5 border-b border-[var(--color-23)] flex justify-between items-center bg-white">
+                <div>
+                  <h4 className="font-black text-[var(--color-16)] text-sm tracking-tight">Recent Notifications</h4>
+                  <p className="text-[10px] text-[var(--color-21)] font-bold uppercase tracking-wider">Stay updated with site activity</p>
+                </div>
+                {notifications.length > 0 && (
+                  <button 
+                    onClick={markAllAsRead}
+                    className="text-[10px] font-black text-[var(--color-7)] hover:underline uppercase tracking-tighter"
+                  >
+                    Clear All
+                  </button>
                 )}
               </div>
+              
+              <div className="max-h-[380px] overflow-y-auto">
+                {notifications.length > 0 ? (
+                  <div className="divide-y divide-[var(--color-24)]">
+                    {notifications.map((notif, idx) => (
+                      <div
+                        key={idx}
+                        className="group relative p-4 hover:bg-[var(--color-25)] transition-all cursor-pointer flex gap-4"
+                        onClick={() => handleNotificationClick(notif.id, notif.type)}
+                      >
+                        <div className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${notif.type === 'Enquiry' ? 'bg-blue-500' : 'bg-purple-500'}`}></div>
+                        <div className="flex-1 space-y-1">
+                          <div className="flex justify-between items-center">
+                            <span className={`text-[9px] font-black uppercase tracking-widest ${notif.type === 'Enquiry' ? 'text-blue-600' : 'text-purple-600'}`}>
+                              {notif.type}
+                            </span>
+                            <span className="text-[9px] font-bold text-[var(--color-21)]">{new Date(notif.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          </div>
+                          <p className="text-[12px] font-semibold text-[var(--color-16)] leading-snug">{notif.message}</p>
+                          <p className="text-[10px] text-[var(--color-21)] font-medium">{new Date(notif.time).toLocaleDateString()}</p>
+                        </div>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); markAsRead(notif.id, notif.type); }}
+                          className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-white text-[var(--color-21)] hover:text-[var(--color-7)] transition-all flex items-center justify-center shrink-0"
+                        >
+                          <HiOutlineCheck size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-16 flex flex-col items-center justify-center space-y-3 opacity-40">
+                    <HiOutlineBell size={40} className="text-[var(--color-23)]" />
+                    <p className="text-xs font-bold text-[var(--color-21)] uppercase tracking-widest">Inbox is clear</p>
+                  </div>
+                )}
+              </div>
+              
               {notifications.length > 0 && (
-                <div className="p-2 text-center border-t border-[var(--color-23)] bg-[var(--color-25)]">
-                  <button className="text-[10px] font-bold text-[var(--color-7)] hover:underline">View All Activity</button>
+                <div className="p-4 border-t border-[var(--color-23)] bg-[var(--color-24)]/50">
+                  <button 
+                     onClick={() => { setShowNotifications(false); router.push('/admin/contact-management'); }}
+                     className="w-full py-2 bg-white border border-[var(--color-23)] rounded-xl text-[10px] font-black uppercase text-[var(--color-18)] hover:bg-[var(--color-25)] transition-all shadow-sm border-[var(--color-23)]"
+                  >
+                    View All Activity
+                  </button>
                 </div>
               )}
             </div>

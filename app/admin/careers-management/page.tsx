@@ -1,15 +1,14 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import * as HiIcons from 'react-icons/hi';
 import {
   HiOutlineSave, HiOutlinePlus, HiOutlineTrash, HiOutlinePhotograph,
   HiOutlineBriefcase, HiOutlineUserGroup, HiOutlineTemplate, HiOutlineLightningBolt,
   HiOutlineAdjustments, HiOutlineChevronDown, HiOutlineExternalLink, HiOutlineDownload,
-  HiOutlineCollection, HiOutlineIdentification, HiOutlineGlobe, HiOutlineCube,
-  HiOutlineSearch
+  HiOutlineCollection, HiOutlineIdentification, HiOutlineSearch, HiOutlinePencilAlt
 } from 'react-icons/hi';
 import api from '@/lib/api';
 import { API_BASE_URL } from '@/lib/api-config';
+import LoadingScreen from '../components/LoadingScreen';
 
 // Import your custom RichTextEditor
 import RichTextEditor from '../components/RichTextEditor';
@@ -90,7 +89,7 @@ import { IconRenderer, IconPickerModal } from '../components/IconPicker';
 
 const CareersManagement: React.FC = () => {
   const { showToast } = useToast();
-  const { showAlert, showConfirm } = useModal();
+  const { showConfirm } = useModal();
   const [activeTab, setActiveTab] = useState<'hero' | 'culture' | 'departments' | 'jobs' | 'applications' | 'seo'>('hero');
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -125,7 +124,14 @@ const CareersManagement: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const { data: config } = await api.get('/content/careers/config');
+      const [configRes, deptsRes, jobsRes, appsRes] = await Promise.all([
+        api.get('/content/careers/config'),
+        api.get('/content/departments'),
+        api.get('/content/jobs'),
+        api.get('/content/applications')
+      ]);
+
+      const config = configRes.data;
       if (config) {
         if (config.hero) setHero(config.hero);
         if (config.seo) setPageSeo(config.seo);
@@ -133,14 +139,9 @@ const CareersManagement: React.FC = () => {
         if (config.principles) setPrinciples(config.principles);
       }
 
-      const { data: depts } = await api.get('/content/departments');
-      setDepartments(depts || []);
-
-      const { data: jobList } = await api.get('/content/jobs');
-      setJobs(jobList || []);
-
-      const { data: apps } = await api.get('/content/applications');
-      setApplications(apps || []);
+      setDepartments(deptsRes.data || []);
+      setJobs(jobsRes.data || []);
+      setApplications(appsRes.data || []);
     } catch (err) {
       console.error('Error fetching careers data:', err);
     } finally {
@@ -167,20 +168,20 @@ const CareersManagement: React.FC = () => {
       callback(data.url);
     } catch (err) {
       console.error("Upload failed", err);
-      showAlert("Upload Error", "Failed to upload image. Please try again.");
+      showToast("error", "Upload Error", "Failed to upload image. Please try again.");
     }
   };
 
   const handleSave = async () => {
     // Basic validation
     if (departments.length === 0 && jobs.length > 0) {
-      showAlert('Requirement Error', 'Please create at least one department before saving jobs.');
+      showToast('error', 'Requirement Error', 'Please create at least one department before saving jobs.');
       return;
     }
 
     const invalidJobs = jobs.filter(j => !j.departmentId || (typeof j.departmentId === 'string' && j.departmentId.trim() === ''));
     if (invalidJobs.length > 0) {
-      showAlert('Assignment Error', `"${invalidJobs[0].title}" has no department selected.`);
+      showToast('error', 'Assignment Error', `"${invalidJobs[0].title}" has no department selected.`);
       setEditingJobId(getId(invalidJobs[0]));
       setJobViewMode('edit');
       setIsSaving(false);
@@ -224,11 +225,11 @@ const CareersManagement: React.FC = () => {
 
       await api.post('/content/jobs', cleanedJobs);
 
-      alert('All career infrastructure saved successfully!');
+      showToast('success', 'Success', 'All career infrastructure saved successfully!');
       fetchData(); // Refresh to get real IDs
     } catch (err: any) {
       console.error('Error saving career details:', err);
-      showAlert('Save Failed', 'Failed to save changes: ' + (err.response?.data?.message || err.message));
+      showToast('error', 'Save Failed', 'Failed to save changes: ' + (err.response?.data?.message || err.message));
     } finally {
       setIsSaving(false);
     }
@@ -241,7 +242,7 @@ const CareersManagement: React.FC = () => {
       await api.delete(`/content/applications/${id}`);
       setApplications(prev => prev.filter(a => getId(a) !== id));
     } catch (err) {
-      showAlert('Error', 'Failed to delete application');
+      showToast('error', 'Error', 'Failed to delete application');
     }
   };
 
@@ -259,7 +260,7 @@ const CareersManagement: React.FC = () => {
       {/* HEADER */}
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--color-16)]">Careers Laboratory</h1>
+          <h1 className="text-2xl font-bold text-[var(--color-16)]">Careers Management</h1>
           <p className="text-[var(--color-20)]">Manage hiring branding, job roles, and global SEO.</p>
         </div>
         <button
@@ -324,7 +325,7 @@ const CareersManagement: React.FC = () => {
                     accept="image/*"
                     onChange={(e) => {
                       if (hero.images.length >= 6) {
-                        alert("Max 6 images allowed.");
+                        showToast('error', 'Limit Reached', "Max 6 images allowed.");
                         return;
                       }
                       handleImageUpload(e, (url) => setHero(prev => ({ ...prev, images: [...prev.images, url] })));
@@ -503,7 +504,7 @@ const CareersManagement: React.FC = () => {
                   <button
                     onClick={() => {
                       if (departments.length === 0) {
-                        alert('Please create at least one department first.');
+                        showToast('error', 'Requirement Missing', 'Please create at least one department first.');
                         return;
                       }
                       const newId = 'new-' + Date.now();
@@ -565,7 +566,7 @@ const CareersManagement: React.FC = () => {
                               onClick={() => { setEditingJobId(getId(job)); setJobViewMode('edit'); }}
                               className="p-2 text-[var(--color-7)] hover:bg-[var(--color-13)] rounded-lg transition-colors"
                             >
-                              <HiIcons.HiOutlinePencilAlt size={18} />
+                              <HiOutlinePencilAlt size={18} />
                             </button>
                             <button
                               onClick={() => setJobs(prev => prev.filter(j => getId(j) !== getId(job)))}
@@ -641,38 +642,83 @@ const CareersManagement: React.FC = () => {
                         </div>
 
                         <div className="pt-8 border-t border-[var(--color-23)] space-y-6 bg-[var(--color-25)]/50 p-6 rounded-[2rem]">
-                          <div className="flex items-center gap-2 mb-2">
-                            <HiOutlineSearch className="text-[var(--color-7)]" size={20} />
-                            <h4 className="text-xs font-black text-[var(--color-16)] uppercase tracking-widest">Job-Specific SEO Settings</h4>
-                          </div>
-                          <div className="grid grid-cols-1 gap-5">
-                            <div>
-                              <label className="text-[9px] font-black text-[var(--color-21)] uppercase mb-1.5 block px-1">Meta Title</label>
-                              <input
-                                value={job.seoTitle}
-                                onChange={e => setJobs(prev => prev.map(j => getId(j) === getId(job) ? { ...j, seoTitle: e.target.value } : j))}
-                                className="w-full bg-white border border-[var(--color-23)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:ring-1 focus:ring-[var(--color-7)]"
-                                placeholder="SEO-friendly job title..."
-                              />
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                            <div className="bg-white p-8 rounded-3xl border border-[var(--color-23)] space-y-6 shadow-sm">
+                              <h3 className="text-lg font-bold text-[var(--color-16)] flex items-center gap-2 border-b pb-4"><HiOutlineSearch className="text-[var(--color-7)]" /> Job SEO Meta</h3>
+                              <div className="grid grid-cols-1 gap-5">
+                                <div>
+                                  <label className="text-[9px] font-black text-[var(--color-21)] uppercase mb-1.5 block px-1">Meta Title</label>
+                                  <input
+                                    value={job.seoTitle}
+                                    onChange={e => setJobs(prev => prev.map(j => getId(j) === getId(job) ? { ...j, seoTitle: e.target.value } : j))}
+                                    className="w-full bg-white border border-[var(--color-23)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:ring-1 focus:ring-[var(--color-7)]"
+                                    placeholder="SEO-friendly job title..."
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-[9px] font-black text-[var(--color-21)] uppercase mb-1.5 block px-1">Meta Description</label>
+                                  <textarea
+                                    value={job.seoDescription}
+                                    onChange={e => setJobs(prev => prev.map(j => getId(j) === getId(job) ? { ...j, seoDescription: e.target.value } : j))}
+                                    rows={4}
+                                    className="w-full bg-white border border-[var(--color-23)] rounded-xl px-4 py-2.5 text-xs font-medium outline-none focus:ring-1 focus:ring-[var(--color-7)] resize-none"
+                                    placeholder="Meta description for search engines..."
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-[9px] font-black text-[var(--color-21)] uppercase mb-1.5 block px-1">Keywords</label>
+                                  <input
+                                    value={job.seoKeywords}
+                                    onChange={e => setJobs(prev => prev.map(j => getId(j) === getId(job) ? { ...j, seoKeywords: e.target.value } : j))}
+                                    className="w-full bg-white border border-[var(--color-23)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:ring-1 focus:ring-[var(--color-7)]"
+                                    placeholder="Separate keywords with commas..."
+                                  />
+                                </div>
+                              </div>
                             </div>
-                            <div>
-                              <label className="text-[9px] font-black text-[var(--color-21)] uppercase mb-1.5 block px-1">Meta Description</label>
-                              <textarea
-                                value={job.seoDescription}
-                                onChange={e => setJobs(prev => prev.map(j => getId(j) === getId(job) ? { ...j, seoDescription: e.target.value } : j))}
-                                rows={2}
-                                className="w-full bg-white border border-[var(--color-23)] rounded-xl px-4 py-2.5 text-xs font-medium outline-none focus:ring-1 focus:ring-[var(--color-7)] resize-none"
-                                placeholder="Meta description for search engines..."
-                              />
-                            </div>
-                            <div>
-                              <label className="text-[9px] font-black text-[var(--color-21)] uppercase mb-1.5 block px-1">Keywords</label>
-                              <input
-                                value={job.seoKeywords}
-                                onChange={e => setJobs(prev => prev.map(j => getId(j) === getId(job) ? { ...j, seoKeywords: e.target.value } : j))}
-                                className="w-full bg-white border border-[var(--color-23)] rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:ring-1 focus:ring-[var(--color-7)]"
-                                placeholder="Separate keywords with commas..."
-                              />
+
+                            <div className="bg-white p-8 rounded-3xl border border-[var(--color-23)] space-y-6 shadow-sm min-h-[400px]">
+                              <h3 className="text-lg font-bold text-[var(--color-16)] border-b pb-4 flex items-center gap-2">
+                                <HiOutlineSearch className="text-[var(--color-7)]" /> Search Engine Preview
+                              </h3>
+
+                              <div className="bg-[#f8f9fa] p-8 rounded-2xl border border-gray-100">
+                                <div className="flex flex-col gap-1 max-w-xl">
+                                  <div className="flex items-center gap-2 text-sm text-[#202124]">
+                                    <div className="w-7 h-7 bg-white rounded-full border border-gray-200 flex items-center justify-center p-1 overflow-hidden">
+                                      <img src="/favicon.ico" alt="fav" className="w-full h-full object-contain" />
+                                    </div>
+                                    <div className="flex flex-col">
+                                      <span className="text-[14px] leading-tight font-medium">Avenstek Solutions</span>
+                                      <span className="text-[12px] text-[#4d5156] leading-tight">https://avenstek.com › jobs › {job.slug || '...'}</span>
+                                    </div>
+                                  </div>
+                                  <h3 className="text-[20px] text-[#1a0dab] font-medium leading-tight hover:underline cursor-pointer mt-1">
+                                    {job.seoTitle || `${job.title} | Avenstek Solutions Careers`}
+                                  </h3>
+                                  <p className="text-[14px] text-[#4d5156] leading-relaxed mt-1 line-clamp-2">
+                                    {job.seoDescription || `Apply for the ${job.title} role at Avenstek Solutions. Join our ${departments.find(d => getId(d) === getId(job.departmentId))?.name} team in ${job.location}.`}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="space-y-4 pt-4">
+                                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-tighter">
+                                  <span className="text-[var(--color-21)]">Title Score</span>
+                                  <span className={(job.seoTitle || '').length > 60 || (job.seoTitle || '').length < 30 ? "text-amber-500" : "text-green-500"}>{(job.seoTitle || '').length} / 60</span>
+                                </div>
+                                <div className="w-full h-1.5 bg-[var(--color-24)] rounded-full overflow-hidden">
+                                  <div className={`h-full transition-all ${(job.seoTitle || '').length > 60 || ((job.seoTitle || '').length < 30 && (job.seoTitle || '').length > 0) ? "bg-amber-500" : "bg-green-500"}`} style={{ width: `${Math.min(((job.seoTitle || '').length / 60) * 100, 100)}%` }}></div>
+                                </div>
+
+                                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-tighter pt-2">
+                                  <span className="text-[var(--color-21)]">Description Score</span>
+                                  <span className={(job.seoDescription || '').length > 160 || (job.seoDescription || '').length < 70 ? "text-amber-500" : "text-green-500"}>{(job.seoDescription || '').length} / 160</span>
+                                </div>
+                                <div className="w-full h-1.5 bg-[var(--color-24)] rounded-full overflow-hidden">
+                                  <div className={`h-full transition-all ${(job.seoDescription || '').length > 160 || ((job.seoDescription || '').length < 70 && (job.seoDescription || '').length > 0) ? "bg-amber-500" : "bg-green-500"}`} style={{ width: `${Math.min(((job.seoDescription || '').length / 160) * 100, 100)}%` }}></div>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -813,92 +859,90 @@ const CareersManagement: React.FC = () => {
       {/* PAGE SEO */}
       {
         activeTab === 'seo' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-            <div className="bg-white p-8 rounded-3xl border border-[var(--color-23)] space-y-6 shadow-sm">
-              <h3 className="text-lg font-bold text-[var(--color-16)] border-b pb-4">Careers Landing Page SEO</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-[var(--color-19)] mb-1.5 capitalize">Page Meta Title</label>
-                  <input
-                    type="text"
-                    value={pageSeo.title}
-                    onChange={e => setPageSeo({ ...pageSeo, title: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-23)] bg-[var(--color-24)] text-sm focus:ring-2 focus:ring-[var(--color-11)] outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-[var(--color-19)] mb-1.5 capitalize">Page Meta Description</label>
-                  <textarea
-                    value={pageSeo.description}
-                    onChange={e => setPageSeo({ ...pageSeo, description: e.target.value })}
-                    rows={4}
-                    className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-23)] bg-[var(--color-24)] text-sm focus:ring-2 focus:ring-[var(--color-11)] outline-none resize-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-[var(--color-19)] mb-1.5 capitalize">Meta Keywords</label>
-                  <input
-                    type="text"
-                    value={pageSeo.keywords}
-                    onChange={e => setPageSeo({ ...pageSeo, keywords: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-23)] bg-[var(--color-24)] text-sm focus:ring-2 focus:ring-[var(--color-11)] outline-none"
-                  />
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          <div className="bg-white p-8 rounded-3xl border border-[var(--color-23)] space-y-6 shadow-sm">
+            <h3 className="text-lg font-bold text-[var(--color-16)] border-b pb-4">Careers Landing Page SEO</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-[var(--color-19)] mb-1.5 capitalize">Page Meta Title</label>
+                <input
+                  type="text"
+                  value={pageSeo.title}
+                  onChange={e => setPageSeo({ ...pageSeo, title: e.target.value })}
+                  className="w-full px-4 py-3 rounded-2xl border border-[var(--color-23)] bg-[var(--color-24)] text-sm focus:ring-2 focus:ring-[var(--color-11)] outline-none transition-all"
+                />
               </div>
-            </div>
-            <div className="bg-white p-8 rounded-3xl border border-[var(--color-23)] space-y-6 shadow-sm">
-              <h4 className="text-xs font-bold text-[var(--color-21)] uppercase flex items-center gap-2">
-                <HiOutlineSearch /> Search Engine Preview
-              </h4>
-              <div className="space-y-1.5 p-6 bg-[var(--color-25)] rounded-2xl border border-[var(--color-23)]">
-                <p className="text-xs text-[#202124] flex items-center gap-1">
-                  <HiOutlineGlobe size={14} /> avenstek.com › careers
-                </p>
-                <h3 className="text-xl text-[#1a0dab] font-medium hover:underline cursor-pointer truncate">
-                  {pageSeo.title || "Careers | Avenstek"}
-                </h3>
-                <p className="text-sm text-[#4d5156] leading-relaxed line-clamp-3">
-                  {pageSeo.description || "Join our team. Explore career opportunities."}
-                </p>
+              <div>
+                <label className="block text-sm font-semibold text-[var(--color-19)] mb-1.5 capitalize">Page Meta Description</label>
+                <textarea
+                  value={pageSeo.description}
+                  onChange={e => setPageSeo({ ...pageSeo, description: e.target.value })}
+                  rows={4}
+                  className="w-full px-4 py-3 rounded-2xl border border-[var(--color-23)] bg-[var(--color-24)] text-sm focus:ring-2 focus:ring-[var(--color-11)] outline-none resize-none transition-all"
+                />
               </div>
-              <div className="p-4 bg-[var(--color-13)] rounded-xl border border-[var(--color-11)] text-[var(--color-7)] text-[10px] font-bold">
-                Main page SEO settings help search engines discover your employer brand. Individual jobs manage their own SEO in the Jobs tab.
+              <div>
+                <label className="block text-sm font-semibold text-[var(--color-19)] mb-1.5 capitalize">Meta Keywords</label>
+                <input
+                  type="text"
+                  value={pageSeo.keywords}
+                  onChange={e => setPageSeo({ ...pageSeo, keywords: e.target.value })}
+                  className="w-full px-4 py-3 rounded-2xl border border-[var(--color-23)] bg-[var(--color-24)] text-sm focus:ring-2 focus:ring-[var(--color-11)] outline-none transition-all"
+                />
               </div>
             </div>
           </div>
+
+          <div className="bg-white p-8 rounded-3xl border border-[var(--color-23)] space-y-6 shadow-sm min-h-[400px]">
+            <h3 className="text-lg font-bold text-[var(--color-16)] border-b pb-4 flex items-center gap-2">
+              <HiOutlineSearch className="text-[var(--color-7)]" /> Search Engine Preview
+            </h3>
+
+            <div className="bg-[#f8f9fa] p-8 rounded-2xl border border-gray-100">
+              <div className="flex flex-col gap-1 max-w-xl">
+                <div className="flex items-center gap-2 text-sm text-[#202124]">
+                  <div className="w-7 h-7 bg-white rounded-full border border-gray-200 flex items-center justify-center p-1 overflow-hidden">
+                    <img src="/favicon.ico" alt="fav" className="w-full h-full object-contain" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[14px] leading-tight font-medium">Avenstek Solutions</span>
+                    <span className="text-[12px] text-[#4d5156] leading-tight">https://avenstek.com › careers</span>
+                  </div>
+                </div>
+                <h3 className="text-[20px] text-[#1a0dab] font-medium leading-tight hover:underline cursor-pointer mt-1">
+                  {pageSeo.title || "Careers | Avenstek Solutions | Build Your Future"}
+                </h3>
+                <p className="text-[14px] text-[#4d5156] leading-relaxed mt-1 line-clamp-2">
+                  {pageSeo.description || "Join Avenstek Solutions and be part of a team that values innovation, reliability, and technical excellence. Explore our open roles today."}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4 pt-4">
+              <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-tighter">
+                <span className="text-[var(--color-21)]">Title Score</span>
+                <span className={(pageSeo.title || '').length > 60 || (pageSeo.title || '').length < 30 ? "text-amber-500" : "text-green-500"}>{(pageSeo.title || '').length} / 60</span>
+              </div>
+              <div className="w-full h-1.5 bg-[var(--color-24)] rounded-full overflow-hidden">
+                <div className={`h-full transition-all ${(pageSeo.title || '').length > 60 || ((pageSeo.title || '').length < 30 && (pageSeo.title || '').length > 0) ? "bg-amber-500" : "bg-green-500"}`} style={{ width: `${Math.min(((pageSeo.title || '').length / 60) * 100, 100)}%` }}></div>
+              </div>
+
+              <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-tighter pt-2">
+                <span className="text-[var(--color-21)]">Description Score</span>
+                <span className={(pageSeo.description || '').length > 160 || (pageSeo.description || '').length < 70 ? "text-amber-500" : "text-green-500"}>{(pageSeo.description || '').length} / 160</span>
+              </div>
+              <div className="w-full h-1.5 bg-[var(--color-24)] rounded-full overflow-hidden">
+                <div className={`h-full transition-all ${(pageSeo.description || '').length > 160 || ((pageSeo.description || '').length < 70 && (pageSeo.description || '').length > 0) ? "bg-amber-500" : "bg-green-500"}`} style={{ width: `${Math.min(((pageSeo.description || '').length / 160) * 100, 100)}%` }}></div>
+              </div>
+            </div>
+
+            <div className="p-4 bg-[var(--color-13)] rounded-xl border border-[var(--color-11)] text-[var(--color-7)] text-[10px] font-medium leading-relaxed">
+              <strong>Tip:</strong> Main page SEO settings help search engines discover your employer brand. Individual careers manage their own SEO within their respective editors.
+            </div>
+          </div>
+        </div>
         )
       }
-
-      {/* DASHBOARD STATS FOOTER */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
-        <div className="bg-white p-6 rounded-2xl border border-[var(--color-23)] shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-black text-[var(--color-21)] uppercase tracking-widest mb-1">Active Roles</p>
-            <h3 className="text-2xl font-black text-[var(--color-16)]">{jobs.filter(j => j.status).length}</h3>
-          </div>
-          <div className="p-3 bg-[var(--color-13)] text-[var(--color-7)] rounded-xl border border-[var(--color-12)]">
-            <HiOutlineBriefcase size={20} />
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-2xl border border-[var(--color-23)] shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-black text-[var(--color-21)] uppercase tracking-widest mb-1">Applications</p>
-            <h3 className="text-2xl font-black text-[var(--color-16)]">{applications.length}</h3>
-          </div>
-          <div className="p-3 bg-[var(--color-13)] text-[var(--color-7)] rounded-xl border border-[var(--color-12)]">
-            <HiOutlineUserGroup size={20} />
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-2xl border border-[var(--color-23)] shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-black text-[var(--color-21)] uppercase tracking-widest mb-1">Departments</p>
-            <h3 className="text-2xl font-black text-[var(--color-16)]">{departments.length}</h3>
-          </div>
-          <div className="p-3 bg-[var(--color-13)] text-[var(--color-7)] rounded-xl border border-[var(--color-12)]">
-            <HiOutlineCollection size={20} />
-          </div>
-        </div>
-      </div>
 
       <IconPickerModal
         isOpen={!!iconPickerTarget}
