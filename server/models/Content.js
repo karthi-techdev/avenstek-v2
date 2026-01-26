@@ -224,6 +224,24 @@ const footerSchema = new mongoose.Schema({
     }]
 }, { timestamps: true });
 
+const termsAndConditionsSchema = new mongoose.Schema({
+    content: String,
+    seo: {
+        title: String,
+        description: String,
+        keywords: String
+    }
+}, { timestamps: true });
+
+const privacyPolicySchema = new mongoose.Schema({
+    content: String,
+    seo: {
+        title: String,
+        description: String,
+        keywords: String
+    }
+}, { timestamps: true });
+
 const visitorSchema = new mongoose.Schema({
     ip: String,
     city: String,
@@ -255,5 +273,7 @@ module.exports = {
     Setting: mongoose.model('Setting', settingSchema),
     Product: mongoose.model('Product', productSchema),
     Footer: mongoose.model('Footer', footerSchema),
+    TermsAndConditions: mongoose.model('TermsAndConditions', termsAndConditionsSchema),
+    PrivacyPolicy: mongoose.model('PrivacyPolicy', privacyPolicySchema),
     Visitor: mongoose.model('Visitor', visitorSchema)
 };

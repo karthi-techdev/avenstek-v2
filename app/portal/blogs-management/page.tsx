@@ -78,6 +78,18 @@ const BlogManagement: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 5;
+
+  // Reset to page 1 when tab changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab]);
+
+  const totalPages = Math.ceil(posts.length / postsPerPage);
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
 
 
   useEffect(() => {
@@ -405,7 +417,7 @@ const BlogManagement: React.FC = () => {
 
           {activeTab === 'posts' && (
             <div className="grid grid-cols-1 gap-4">
-              {posts.map(post => {
+              {currentPosts.map(post => {
                 const author = getAuthor(post.authorId);
                 const cat = getCategory(post.categoryId);
                 const postId = post._id || post.id!;
@@ -443,6 +455,39 @@ const BlogManagement: React.FC = () => {
                   </div>
                 );
               })}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-8">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className={`p-2 rounded-xl transition-all ${currentPage === 1 ? 'text-[var(--color-21)] opacity-50' : 'text-[var(--color-18)] hover:bg-[var(--color-24)]'}`}
+                  >
+                    <HiIcons.HiOutlineChevronLeft size={20} />
+                  </button>
+
+                  <div className="flex gap-2">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`w-10 h-10 rounded-xl font-bold transition-all ${currentPage === page ? 'bg-[var(--color-7)] text-white' : 'text-[var(--color-18)] hover:bg-[var(--color-24)]'}`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className={`p-2 rounded-xl transition-all ${currentPage === totalPages ? 'text-[var(--color-21)] opacity-50' : 'text-[var(--color-18)] hover:bg-[var(--color-24)]'}`}
+                  >
+                    <HiIcons.HiOutlineChevronRight size={20} />
+                  </button>
+                </div>
+              )}
             </div>
           )}
           {activeTab === 'categories' && (

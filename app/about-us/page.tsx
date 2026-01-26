@@ -23,6 +23,7 @@ import venkatImg from '../../public/images/team/venkatesan.png'
 import karthiImg from '../../public/images/team/karthi.jpg'
 import sasithraImg from '../../public/images/team/sasithra.jpg'
 import { usePageSEO } from '../hooks/usePageTitles';
+import { MdGroups, MdGroups2, MdOutlineGroups } from 'react-icons/md';
 
 export default function About() {
 
@@ -99,8 +100,11 @@ export default function About() {
       <section className="bg-white text-gray-900">
         {/* Hero Section */}
         <section className="py-16 sm:py-24 text-center px-4 sm:px-6 lg:px-8">
-          <div className="inline-flex items-center gap-2 mb-4 sm:mb-6 px-3 py-1 rounded-lg bg-[var(--color-12)] text-[var(--color-7)] shadow-md text-sm sm:text-base mx-auto">
-            <IoPeople /><span className="font-medium">About Avenstek</span>
+          <div className="inline-block mb-[1rem]">
+                  <div className="text-[var(--color-8)] bg-[var(--color-13)] flex text-[0.9rem] py-[0.6rem] px-4 rounded-lg items-center justify-center">
+                     <MdGroups2 className="text-[1rem]"/>
+                      <h2 className="ps-2 font-semibold whitespace-nowrap">About Avenstek</h2>
+                  </div>
           </div>
 
           <h1 className="leading-tight text-3xl sm:text-4xl lg:text-6xl font-bold tracking-tight mb-6">

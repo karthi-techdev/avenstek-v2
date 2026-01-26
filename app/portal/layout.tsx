@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from './components/sidebar';
 import Navbar from './components/navbar';
 import { usePathname, useRouter } from 'next/navigation';
-import "./admin.css"
+import "./portal.css"
 
 
 import LoadingScreen from './components/LoadingScreen';
@@ -20,7 +20,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isAuthChecking, setIsAuthChecking] = useState(true);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-  const isLoginPage = pathname === '/admin';
+  const isLoginPage = pathname === '/portal';
 
   useEffect(() => {
     const checkAuth = () => {
@@ -28,7 +28,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       const isLoggedIn = localStorage.getItem('isLoggedIn');
 
       if (!isLoginPage && (!token || !isLoggedIn)) {
-        router.replace('/admin');
+        router.replace('/portal');
       } else {
         setIsAuthChecking(false);
       }

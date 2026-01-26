@@ -86,16 +86,16 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('isLoggedIn');
-    router.replace('/admin');
+    router.replace('/portal');
   };
 
   const handleNotificationClick = async (id: string, type: string) => {
     await markAsRead(id, type);
     setShowNotifications(false);
     if (type === 'Enquiry') {
-      router.push('/admin/contact-management');
+      router.push('/portal/contact-management');
     } else if (type === 'Application') {
-      router.push('/admin/careers-management');
+      router.push('/portal/careers-management');
     }
   };
 
@@ -271,7 +271,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
               {notifications.length > 0 && (
                 <div className="p-4 border-t border-[var(--color-23)] bg-[var(--color-24)]/50">
                   <button 
-                     onClick={() => { setShowNotifications(false); router.push('/admin/contact-management'); }}
+                     onClick={() => { setShowNotifications(false); router.push('/portal/contact-management'); }}
                      className="w-full py-2 bg-white border border-[var(--color-23)] rounded-xl text-[10px] font-black uppercase text-[var(--color-18)] hover:bg-[var(--color-25)] transition-all shadow-sm border-[var(--color-23)]"
                   >
                     View All Activity

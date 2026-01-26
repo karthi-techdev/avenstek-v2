@@ -5,7 +5,8 @@ const upload = require('../middleware/upload');
 const {
     Home, About, BlogPost, Category, Author, Contact,
     Subscriber, FAQ, ServicesPage, CareersPage, Department, Job,
-    JobApplication, Testimonial, Setting, Product, Footer, Visitor
+    JobApplication, Testimonial, Setting, Product, Footer, Visitor,
+    TermsAndConditions, PrivacyPolicy
 } = require('../models/Content');
 
 // --- Helper for Single Document (Home, About, Settings) ---
@@ -55,10 +56,10 @@ router.get('/search', protect, async (req, res) => {
         ]);
 
         const results = [
-            ...blogs.map(b => ({ type: 'Blog', title: b.title, url: '/admin/blogs-management' })),
-            ...jobs.map(j => ({ type: 'Job', title: j.title, url: '/admin/careers-management' })),
-            ...contacts.map(c => ({ type: 'Enquiry', title: c.name, url: '/admin/contact-management' })),
-            ...products.map(p => ({ type: 'Product', title: p.title, url: '/admin/products-management' }))
+            ...blogs.map(b => ({ type: 'Blog', title: b.title, url: '/portal/blogs-management' })),
+            ...jobs.map(j => ({ type: 'Job', title: j.title, url: '/portal/careers-management' })),
+            ...contacts.map(c => ({ type: 'Enquiry', title: c.name, url: '/portal/contact-management' })),
+            ...products.map(p => ({ type: 'Product', title: p.title, url: '/portal/products-management' }))
         ];
 
         res.json(results);
@@ -275,6 +276,12 @@ router.route('/applications/:id').delete(protect, async (req, res) => {
 
 // Footer
 router.route('/footer').get(handleSingleDoc(Footer)).post(protect, handleSingleDoc(Footer));
+
+// Terms & Conditions
+router.route('/terms').get(handleSingleDoc(TermsAndConditions)).post(protect, handleSingleDoc(TermsAndConditions));
+
+// Privacy Policy
+router.route('/privacy').get(handleSingleDoc(PrivacyPolicy)).post(protect, handleSingleDoc(PrivacyPolicy));
 
 // Contacts (Enquiries)
 router.route('/contacts').get(protect, async (req, res) => res.json(await Contact.find().sort('-createdAt'))).post(async (req, res) => res.json(await Contact.create(req.body)));

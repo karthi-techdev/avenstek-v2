@@ -17,7 +17,7 @@ import { FaNetworkWired } from "react-icons/fa";
 import { BsGlobe } from "react-icons/bs";
 import { FiSmartphone } from "react-icons/fi";
 import { FiMonitor } from "react-icons/fi";
-import { IconRenderer } from "../admin/components/IconPicker";
+import { IconRenderer } from "../portal/components/IconPicker";
 import { usePageSEO } from '../hooks/usePageTitles';
 
 export default function Services() {

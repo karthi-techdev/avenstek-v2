@@ -18,7 +18,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const fullPath = headerList.get("x-url") || "";
 
   // Check if current path is admin to avoid wrapping with public site wrapper if needed
-  const isAdmin = fullPath.includes("/admin");
+  const isAdmin = fullPath.includes("/portal");
   if (isAdmin) {
     // Admin layout handles its own structure, but we need HTML/Body if this is RootLayout
     // Usually Admin pages are nested, so if this is ROOT, we must render html/body

@@ -72,14 +72,26 @@ const company = [
 
 export const metadata = rootMetadata;
 
+import SiteLoader from "./components/SiteLoader";
 import VisitorTracker from "./components/VisitorTracker";
 
 export default function ClientWrapper({ children, }: Readonly<{ children: React.ReactNode; }>) {
   const { showToast } = useToast();
   const pathname = usePathname();
+  const [isNavigating, setIsNavigating] = useState(false);
 
-  // Check if the current route starts with /admin
-  const isAdminPage = pathname.startsWith("/admin");
+  // Check if the current route starts with /portal
+  const isAdminPage = pathname.startsWith("/portal");
+
+  useEffect(() => {
+    if (!isAdminPage) {
+      setIsNavigating(true);
+      const timer = setTimeout(() => {
+        setIsNavigating(false);
+      }, 500); // Brief loader duration for smooth feel
+      return () => clearTimeout(timer);
+    }
+  }, [pathname, isAdminPage]);
 
   if (isAdminPage) {
     // Return only the children for admin pages (Disables Root Layout UI)
@@ -136,6 +148,7 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
   }, []);
   return (
     <>
+      {isNavigating && !isAdminPage && <SiteLoader />}
       <VisitorTracker />
       <header className="bg-white dark:bg-gray-900 fixed w-[100%] top-[0] z-10000 border-b-[1px]">
         <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
@@ -755,12 +768,12 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
                       type="email"
                       required
                       placeholder="Enter your email"
-                      className="w-full px-4 py-3 rounded-lg bg-[var(--color-2)] border border-[var(--color-19)] text-[var(--color-20)] placeholder-[var(--color-20)]/60 focus:outline-none focus:border-[var(--color-8)] focus:ring-1 focus:ring-[var(--color-8)]"
+                      className="w-full px-4 py-3 rounded-lg bg-[var(--color-2)] border border-[var(--color-22)] text-[var(--color-20)] placeholder-[var(--color-20)]/60 focus:outline-none focus:border-[var(--color-8)] focus:ring-1 focus:ring-[var(--color-8)]"
                     />
                   </div>
                   <button
                     type="submit"
-                    className="px-6 py-3 rounded-lg bg-[var(--color-8)] text-[var(--color-2)] font-semibold hover:bg-[var(--color-7)] transition duration-300 border border-[var(--color-19)] disabled:opacity-50"
+                    className="px-6 py-3 rounded-lg bg-[var(--color-8)] text-[var(--color-2)] font-semibold hover:bg-[var(--color-7)] transition duration-300 border border-[var(--color-22)] disabled:opacity-50"
                   >
                     Subscribe
                   </button>
@@ -775,8 +788,12 @@ export default function ClientWrapper({ children, }: Readonly<{ children: React.
 
         <hr className="text-[var(--color-20)]"></hr>
 
-        <div className="p-5 flex justify-center lg:gap-8 gap-4 lg:px-[6rem] lg:w-[90%] lg:mx-auto">
-          <p className="text-left text-[var(--color-20)] text-md pb-2 tracking-normal">© {new Date().getFullYear()} {settings?.companyName || "Avenstek"}. All rights reserved.</p>
+        <div className="p-5 flex flex-col md:flex-row justify-center items-center lg:gap-8 gap-4 lg:px-[6rem] lg:w-[90%] lg:mx-auto border-t border-[var(--color-23)]/50 mt-10">
+          <p className="text-left text-[var(--color-20)] text-md tracking-normal">© {new Date().getFullYear()} {settings?.companyName || "Avenstek"}. All rights reserved.</p>
+          <div className="flex gap-6">
+            <Link href="/terms-and-conditions" className="text-[var(--color-20)] text-md tracking-normal hover:text-[var(--color-8)] transition-colors">Terms & Conditions</Link>
+            <Link href="/privacy-policy" className="text-[var(--color-20)] text-md tracking-normal hover:text-[var(--color-8)] transition-colors">Privacy Policy</Link>
+          </div>
         </div>
       </footer>
     </>

@@ -52,19 +52,21 @@ const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
   }, []);
 
   const navItems = [
-    { label: 'Dashboard', icon: HiOutlineViewGrid, path: '/admin/dashboard' },
-    { label: 'Home Page', icon: HiOutlineHome, path: '/admin/home-management' },
-    { label: 'About us Page', icon: HiOutlineInformationCircle, path: '/admin/about-management' },
-    { label: 'Products Navbar', icon: HiOutlineMenu, path: '/admin/products-management' },
-    { label: 'Services', icon: HiOutlineLightningBolt, path: '/admin/services-management' },
-    { label: 'Testimonials', icon: HiOutlineChatAlt, path: '/admin/testimonials-management' },
-    { label: 'Blogs', icon: HiOutlinePencilAlt, path: '/admin/blogs-management' },
-    { label: 'Footer Config', icon: HiOutlineTemplate, path: '/admin/footer-management' },
-    { label: 'FAQs', icon: HiOutlineQuestionMarkCircle, path: '/admin/faqs-management' },
-    { label: 'Contact', icon: HiOutlineMail, path: '/admin/contact-management' },
-    { label: 'Subscribers', icon: HiOutlineUsers, path: '/admin/subscribers-management' },
-    { label: 'Careers', icon: HiOutlineAcademicCap, path: '/admin/careers-management' },
-    { label: 'Settings', icon: HiOutlineCog, path: '/admin/settings' },
+    { label: 'Dashboard', icon: HiOutlineViewGrid, path: '/portal/dashboard' },
+    { label: 'Home Page', icon: HiOutlineHome, path: '/portal/home-management' },
+    { label: 'About us Page', icon: HiOutlineInformationCircle, path: '/portal/about-management' },
+    { label: 'Products Navbar', icon: HiOutlineMenu, path: '/portal/products-management' },
+    { label: 'Services', icon: HiOutlineLightningBolt, path: '/portal/services-management' },
+    { label: 'Testimonials', icon: HiOutlineChatAlt, path: '/portal/testimonials-management' },
+    { label: 'Blogs', icon: HiOutlinePencilAlt, path: '/portal/blogs-management' },
+    { label: 'Footer Config', icon: HiOutlineTemplate, path: '/portal/footer-management' },
+    { label: 'FAQs', icon: HiOutlineQuestionMarkCircle, path: '/portal/faqs-management' },
+    { label: 'Contact', icon: HiOutlineMail, path: '/portal/contact-management' },
+    { label: 'Subscribers', icon: HiOutlineUsers, path: '/portal/subscribers-management' },
+    { label: 'Careers', icon: HiOutlineAcademicCap, path: '/portal/careers-management' },
+    { label: 'Terms & Conditions', icon: HiOutlineTemplate, path: '/portal/terms-management' },
+    { label: 'Privacy Policy', icon: HiOutlineTemplate, path: '/portal/privacy-management' },
+    { label: 'Settings', icon: HiOutlineCog, path: '/portal/settings' },
   ];
 
   return (

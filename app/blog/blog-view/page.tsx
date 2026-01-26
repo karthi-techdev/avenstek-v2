@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState, Suspense } from "react";
 import { ArrowLeft, BookOpen, GamepadDirectional } from "lucide-react";
 import { usePageSEO } from "@/app/hooks/usePageTitles";
-import { ToastProvider, useToast } from "@/app/admin/components/Toast";
+import { ToastProvider, useToast } from "@/app/portal/components/Toast";
 import { API_ENDPOINTS } from "@/lib/api-config";
 
 interface BlogSection {

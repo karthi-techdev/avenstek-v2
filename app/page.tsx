@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from "@/lib/api-config";
 import { usePageSEO } from "./hooks/usePageTitles";
-import { IconRenderer } from "./admin/components/IconPicker";
+import { IconRenderer } from "./portal/components/IconPicker";
 import Image from "next/image";
 import LogoLoop from '@/components/LogoLoop';
 import { FaArrowRight, FaCheck, FaChevronRight, FaRegCalendarCheck, FaRegCircle } from "react-icons/fa";

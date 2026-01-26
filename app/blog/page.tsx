@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { usePageSEO } from "../hooks/usePageTitles";
 import { API_ENDPOINTS } from "@/lib/api-config";
+import { MdGroups, MdOutlineLibraryBooks } from "react-icons/md";
 
 interface BlogPost {
   id: number;
@@ -64,6 +65,19 @@ export default function BlogPage() {
     return matchCategory && matchSearch;
   });
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 6;
+
+  // Reset to page 1 when filter or search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeFilter, searchQuery]);
+
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+
   const getCategoryColor = (category: string) => {
     switch (category) {
       case "Founder Insights": return "text-[var(--color-9)]";
@@ -80,8 +94,11 @@ export default function BlogPage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white pt-30 pb-18">
         <div className="container mx-auto px-3 sm:px-6 lg:px-10 max-w-2xl">
           <div className="text-center max-w-2xl mx-auto">
-            <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-[var(--color-12)] text-[var(--color-7)] text-[14.5px] font-medium tracking-wide mb-6">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20" /><path d="M9 10h6" /></svg>Insights & Playbooks
+            <div className="inline-block mb-[1rem]">
+                             <div className="text-[var(--color-8)] bg-[var(--color-13)] flex text-[0.9rem] py-[0.6rem] px-4 rounded-lg items-center justify-center">
+                                <MdOutlineLibraryBooks className="text-[1rem]"/>
+                                 <h2 className="ps-2 font-semibold whitespace-nowrap">Insights & Playbooks</h2>
+                             </div>
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--color-15)] tracking-tight mb-8">Ideas for teams who <span className="text-[var(--color-19)]">sell with precision</span>
@@ -323,7 +340,7 @@ export default function BlogPage() {
 
           {/* Blog Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {filteredPosts.map((post, index) => (
+            {currentPosts.map((post, index) => (
               <motion.div
                 key={post._id || post.id || index}
                 initial={{ opacity: 0, y: 40 }}
@@ -394,6 +411,61 @@ export default function BlogPage() {
               </motion.div>
             ))}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-3 mt-16 pb-10">
+              <button
+                onClick={() => {
+                  setCurrentPage(prev => Math.max(prev - 1, 1));
+                  window.scrollTo({ top: 600, behavior: 'smooth' });
+                }}
+                disabled={currentPage === 1}
+                className={`p-3 rounded-full transition-all duration-300 ${currentPage === 1
+                  ? "opacity-30 cursor-not-allowed"
+                  : "bg-[var(--color-2)] text-[var(--color-20)] hover:bg-[var(--color-14)] hover:shadow-md border border-[var(--color-22)]"
+                  }`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              <div className="flex gap-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => {
+                      setCurrentPage(page);
+                      window.scrollTo({ top: 600, behavior: 'smooth' });
+                    }}
+                    className={`w-11 h-11 rounded-full font-bold transition-all duration-300 ${currentPage === page
+                      ? "bg-[var(--color-8)] text-[var(--color-2)] shadow-lg"
+                      : "bg-[var(--color-2)] text-[var(--color-20)] hover:bg-[var(--color-14)] hover:shadow-md border border-[var(--color-22)]"
+                      }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => {
+                  setCurrentPage(prev => Math.min(prev + 1, totalPages));
+                  window.scrollTo({ top: 600, behavior: 'smooth' });
+                }}
+                disabled={currentPage === totalPages}
+                className={`p-3 rounded-full transition-all duration-300 ${currentPage === totalPages
+                  ? "opacity-30 cursor-not-allowed"
+                  : "bg-[var(--color-2)] text-[var(--color-20)] hover:bg-[var(--color-14)] hover:shadow-md border border-[var(--color-22)]"
+                  }`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       </section>
     </div>

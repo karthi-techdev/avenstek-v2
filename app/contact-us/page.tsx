@@ -4,6 +4,7 @@ import { useState } from "react";
 import { usePageSEO } from '../hooks/usePageTitles';
 import api from '@/lib/api';
 import { useToast } from '../components/Toast';
+import { BsChatRightDots } from 'react-icons/bs';
 
 export default function Contact() {
 
@@ -107,11 +108,11 @@ export default function Contact() {
       <section className="min-h-auto sm:min-h-[65vh] bg-[var(--color-2)] flex items-start justify-center px-4 sm:px-0 pt-20 sm:pt-28 md:pt-32">
         <div className="text-center max-w-2xl mx-auto">
           <div className="mb-6 sm:mb-10 lg:mb-5">
-            <div className="inline-flex items-center px-3 sm:px-4 py-2.5 bg-[var(--color-13)] rounded-lg gap-2 lg:px-3 lg:py-1.9">
-              <FiVolume2 className="text-[var(--color-8)] text-sm sm:text-base" />
-              <span className="text-xs sm:text-lg lg:text-sm font-medium text-[var(--color-8)]">
-                Talk to Us
-              </span>
+           <div className="inline-block mb-[1rem]">
+              <div className="text-[var(--color-8)] bg-[var(--color-13)] flex text-[0.9rem] py-[0.6rem] px-4 rounded-lg items-center justify-center">
+                  <BsChatRightDots className="text-[1rem]"/>
+                  <h2 className="ps-2 font-semibold whitespace-nowrap">Talk to Us</h2>
+              </div>
             </div>
           </div>
 

@@ -27,7 +27,7 @@ const Login = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      router.replace('/admin/dashboard');
+      router.replace('/portal/dashboard');
     }
 
     // Check for existing lockout
@@ -78,7 +78,7 @@ const Login = () => {
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.removeItem('loginAttempts');
       localStorage.removeItem('loginLockout');
-      router.replace('/admin/dashboard');
+      router.replace('/portal/dashboard');
     } catch (err: any) {
       const newAttempts = attempts + 1;
       setAttempts(newAttempts);
@@ -115,7 +115,7 @@ const Login = () => {
               </div>
             ) : (
               <div>
-                
+
               </div>
             )}
           </div>
