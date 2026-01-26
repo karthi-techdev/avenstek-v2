@@ -9,11 +9,14 @@ import {
   HiOutlineGlobe,
   HiOutlinePhotograph,
   HiOutlineLink,
-  HiOutlineArrowsExpand
+  HiOutlineArrowsExpand,
+  HiOutlineChevronLeft,
+  HiOutlineChevronRight
 } from 'react-icons/hi';
 import api from '@/lib/api';
 import { API_BASE_URL } from '@/lib/api-config';
 import LoadingScreen from '../components/LoadingScreen';
+import { motion } from 'framer-motion';
 
 interface HeroSection {
   heroTitle: string;
@@ -106,6 +109,24 @@ const AboutUsManagement: React.FC = () => {
       order: team.length + 1,
       status: true
     }]);
+  };
+
+  const handleReorder = (newTeam: TeamMember[]) => {
+    const updatedTeam = newTeam.map((m, index) => ({ ...m, order: index + 1 }));
+    setTeam(updatedTeam);
+  };
+
+  const moveMember = (index: number, direction: 'up' | 'down') => {
+    const newTeam = [...team].sort((a, b) => a.order - b.order);
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+    if (targetIndex < 0 || targetIndex >= newTeam.length) return;
+
+    const temp = newTeam[index];
+    newTeam[index] = newTeam[targetIndex];
+    newTeam[targetIndex] = temp;
+
+    handleReorder(newTeam);
   };
 
   const handleSave = async () => {
@@ -251,10 +272,13 @@ const AboutUsManagement: React.FC = () => {
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {team.sort((a, b) => a.order - b.order).map(member => (
-              <div key={member._id || member.id} className="p-6 border border-[var(--color-23)] rounded-3xl bg-[var(--color-25)] flex flex-col items-center text-center space-y-4 relative group hover:border-[var(--color-7)] transition-all">
-                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => setTeam(prev => prev.filter(m => (m._id || m.id) !== (member._id || member.id)))} className="text-[var(--color-27)] p-2 bg-white rounded-lg shadow-md hover:bg-red-50 transition-colors">
+            {team.sort((a, b) => a.order - b.order).map((member, index) => (
+              <div
+                key={member._id || member.id}
+                className="p-6 border border-[var(--color-23)] rounded-3xl bg-[var(--color-25)] flex flex-col items-center text-center space-y-4 relative group hover:border-[var(--color-7)] transition-all"
+              >
+                <div className="absolute top-4 right-4">
+                  <button onClick={() => setTeam(prev => prev.filter(m => (m._id || m.id) !== (member._id || member.id)))} className="h-fit text-[var(--color-27)] p-2 bg-white rounded-lg shadow-md hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100 transition-opacity">
                     <HiOutlineTrash size={16} />
                   </button>
                 </div>
@@ -270,14 +294,27 @@ const AboutUsManagement: React.FC = () => {
                   <input type="text" value={member.position} onChange={e => updateMember((member._id || member.id)!, { position: e.target.value })} className="w-full text-center bg-transparent border-none text-[10px] text-[var(--color-21)] font-bold uppercase p-0 outline-none focus:ring-0" />
                 </div>
                 <div className="flex items-center gap-3 pt-4 border-t border-[var(--color-23)] w-full justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[9px] font-black text-[var(--color-21)] uppercase">Order</span>
-                    <input
-                      type="number"
-                      value={member.order}
-                      onChange={e => updateMember((member._id || member.id)!, { order: parseInt(e.target.value) })}
-                      className="w-8 bg-transparent text-[10px] font-bold text-[var(--color-20)] outline-none"
-                    />
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => moveMember(index, 'up')}
+                      disabled={index === 0}
+                      className="text-[var(--color-21)] p-1 hover:text-[var(--color-7)] disabled:opacity-20 transition-colors"
+                      title="Move Left"
+                    >
+                      <HiOutlineChevronLeft size={14} />
+                    </button>
+                    <div className="flex flex-col items-center min-w-[40px]">
+                      <span className="text-[7px] font-black text-[var(--color-21)] uppercase leading-none">Order</span>
+                      <span className="text-[10px] font-black text-[var(--color-7)] bg-[var(--color-13)] px-1.5 py-0.5 rounded-md leading-none mt-0.5">{member.order}</span>
+                    </div>
+                    <button
+                      onClick={() => moveMember(index, 'down')}
+                      disabled={index === team.length - 1}
+                      className="text-[var(--color-21)] p-1 hover:text-[var(--color-7)] disabled:opacity-20 transition-colors"
+                      title="Move Right"
+                    >
+                      <HiOutlineChevronRight size={14} />
+                    </button>
                   </div>
                   <button
                     onClick={() => updateMember((member._id || member.id)!, { status: !member.status })}
